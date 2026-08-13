@@ -1,0 +1,261 @@
+/* ---- layout ---- */
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+.card.wide {
+  max-width: 780px;
+}
+
+/* ---- nav ---- */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+.nav .brand {
+  font-weight: 600;
+  text-decoration: none;
+  color: #111827;
+}
+.nav-spacer { flex: 1; }
+.nav-email { color: #6b7280; font-size: 0.85rem; }
+
+/* ---- generic controls ---- */
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+}
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+h3 {
+  margin: 24px 0 8px;
+  font-size: 1rem;
+}
+
+/* rows of inline fields */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+.row > div { flex: 1; min-width: 90px; }
+.row input,
+.row select {
+  margin-bottom: 0;
+}
+.submit.compact {
+  width: auto;
+  padding: 10px 18px;
+  white-space: nowrap;
+}
+
+/* ---- small buttons ---- */
+.btn-sm {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: #374151;
+}
+.btn-sm:hover { background: #f3f4f6; }
+.btn-sm.danger { color: #b91c1c; border-color: #fecaca; }
+
+/* ---- subject cards ---- */
+.subj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.subj-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+.subj-card b { font-size: 1.05rem; }
+.subj-card span { color: #6b7280; font-size: 0.85rem; }
+.subj-links {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+}
+
+/* ---- question bank ---- */
+.q-form { margin-bottom: 8px; }
+.unit-block { margin-top: 8px; }
+.count { color: #9ca3af; font-weight: normal; }
+.q-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #eef0f2;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.q-row.inactive { opacity: 0.5; }
+.q-meta {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  min-width: 120px;
+}
+.q-text { flex: 1; font-size: 0.9rem; }
+
+/* ---- format picker ---- */
+.fmt-grid {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.fmt-card {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.fmt-card.sel { border-color: #2563eb; background: #eff6ff; }
+.fmt-card input { width: auto; margin: 0 0 6px; }
+.fmt-card span { color: #6b7280; font-size: 0.8rem; }
+
+/* ---- download ---- */
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ---- admin tables (all papers, audit log) ---- */
+.tbl-wrap {
+  overflow-x: auto;          /* wide tables scroll, page never does */
+  margin-bottom: 16px;
+}
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.tbl th {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tbl td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: top;
+}
+.tbl tr.row-bad { background: #fef2f2; }
+.nowrap { white-space: nowrap; }
+.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.78rem; }
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  background: #f3f4f6;
+  color: #374151;
+  white-space: nowrap;
+}
+.pill.ok   { background: #ecfdf5; color: #047857; }
+.pill.warn { background: #fffbeb; color: #b45309; }
+.pill.bad  { background: #fef2f2; color: #b91c1c; }
+
+.json {
+  margin: 6px 0 0;
+  padding: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  max-width: 320px;
+  overflow-x: auto;
+}
+
+/* ---- destructive confirmation modal ---- */
+.modal-back {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+.modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 22px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.warn-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  margin: 12px 0 8px;
+}
+.impact {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  font-size: 0.88rem;
+  color: #374151;
+}
+.impact li { margin-bottom: 2px; }
+.submit.danger-btn { background: #b91c1c; }
+.submit.danger-btn:disabled { background: #d1d5db; }
+
+/* Paper render source for PDF/image capture. Off-screen but fully laid out &
+   opaque (not clipped, not transparent). html2canvas captures it by document
+   coordinates, so off-screen is fine and it never shows to the user. */
+.paper-render {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 794px;      /* ~A4 @ 96dpi */
+  padding: 40px;
+  background: #fff;
+  color: #000;
+  font-size: 14px;
+}
