@@ -142,7 +142,7 @@ class Canvas:
 # ============================================================== FIGURE 1 ====
 def architecture():
     c = Canvas(1100, 760)
-    c._ctext(550, 14, "System Architecture — TeacherEase", font(16, True), INK)
+    c._ctext(550, 14, "System Architecture — Smart Question Paper Generator", font(16, True), INK)
 
     # ---- Presentation layer
     c.band(40, 55, 1020, 150, "PRESENTATION LAYER  —  React Single Page Application")
@@ -193,7 +193,7 @@ def architecture():
     c.d.text((905*S, 350*S), "paper id +", font=font(9), fill=MUTED)
     c.d.text((905*S, 362*S), "stored rows only", font=font(9), fill=MUTED)
 
-    c.caption(710, "Fig. 1  Layered system architecture of TeacherEase")
+    c.caption(710, "Fig. 1  Layered system architecture of the proposed system")
     c.d.text((40*S, 732*S),
              "Question selection never leaves the data layer; the browser receives "
              "only the identifier of the generated paper.",

@@ -9,6 +9,10 @@ import AdminHome from './pages/AdminHome';
 import AllPapers from './pages/AllPapers';
 import AuditLog from './pages/AuditLog';
 import TeacherHome from './pages/TeacherHome';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 import QuestionBank from './pages/QuestionBank';
 import GeneratePaper from './pages/GeneratePaper';
 import DownloadPaper from './pages/DownloadPaper';
@@ -37,7 +41,12 @@ export default function App() {
       <Nav email={session.user.email} />
       <div className="page">
         <Routes>
-          <Route path="/" element={<HomeRedirect />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          {/* Kept for links that expect role-based landing. */}
+          <Route path="/start" element={<HomeRedirect />} />
           <Route
             path="/admin"
             element={<RequireRole role="admin"><AdminHome /></RequireRole>}

@@ -14,8 +14,9 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 OUT = "SYNOPSIS_TeacherEase.docx"
-TITLE = ("TeacherEase: Automated Question Paper Generation System "
-         "with Cycle-Aware Non-Repetition")
+TITLE = ("Smart Question Paper Generator: Automated Question Paper Generation "
+         "System with Cycle-Aware Non-Repetition")
+SHORT = "Smart Question Paper Generator"   # running header, in-body references
 GREY = RGBColor(0x9C, 0xA3, 0xAF)     # placeholder text — overwrite in Word
 MAROON = RGBColor(0xC0, 0x00, 0x00)   # cover labels, as in the sample synopsis
 
@@ -189,7 +190,7 @@ def table(headers, rows, *, size=8, widths=None, tall=False):
 # ------------------------------------------------------- header & footer ----
 hdr = sec.header.paragraphs[0]
 hdr.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-hr = hdr.add_run("TeacherEase")
+hr = hdr.add_run(SHORT)
 hr.bold, hr.font.size = True, Pt(10)
 
 ftr = sec.footer.paragraphs[0]
@@ -301,44 +302,32 @@ para("Fill the page numbers after the logo and member names are added — the "
 page_break()
 heading("Abstract")
 rich([(TITLE, {"bold": True}),
-      (" is a web-based academic solution designed to automate the preparation of "
-       "examination question papers in autonomous engineering institutes. Question "
-       "paper setting is presently a manual, repetitive and confidentiality-sensitive "
-       "activity in which a teacher selects questions from personal records, arranges "
-       "them according to a prescribed pattern, and formats the document by hand. This "
-       "practice results in unbalanced syllabus coverage, accidental repetition of "
-       "questions between the regular and backlog papers of the same examination, "
-       "avoidable clerical effort, and multiple points of exposure for confidential "
-       "content.", {})])
+      (" is a web-based academic solution that automates the preparation of "
+       "examination question papers in autonomous engineering institutes. At present "
+       "the task is manual, repetitive and confidentiality-sensitive: a teacher "
+       "selects questions from personal records, arranges them according to a "
+       "prescribed pattern and formats the document by hand, which results in "
+       "unbalanced syllabus coverage, accidental repetition of questions between the "
+       "regular and backlog papers of the same examination, avoidable clerical effort "
+       "and repeated exposure of confidential content. The proposed system separates "
+       "the question pool from the paper recipe: a unit-wise question bank stores each "
+       "question with its unit number, mark value, difficulty, Bloom's Taxonomy level "
+       "and Course Outcome mapping, while a reusable JSON blueprint fixes how many "
+       "questions must be drawn from each unit at each mark value.", {})])
 
-for t in [
-    "The proposed system separates the question pool from the paper recipe. A "
-    "unit-wise question bank stores each question with its unit number, mark value, "
-    "difficulty, Bloom's Taxonomy level and Course Outcome mapping, while a reusable "
-    "JSON blueprint defines how many questions must be drawn from each unit at each "
-    "mark value. A server-side PostgreSQL routine combines the two, selects the "
-    "questions, and records the outcome — the client application never performs the "
-    "selection.",
-
-    "The system is developed using React for the frontend and Supabase (PostgreSQL) "
-    "for the database, authentication and Row Level Security. Selection logic, "
-    "non-repetition enforcement, sufficiency validation and audit logging are "
-    "implemented as SECURITY DEFINER database functions and triggers executing inside "
-    "a single transaction, so the guarantees cannot be bypassed by any client. Random "
-    "selection is performed inside the database using an ORDER BY random() bounded "
-    "top-N selection over the filtered candidate set, which ensures that only the "
-    "questions actually printed are ever transmitted to the browser.",
-
-    "The defining feature of the proposed system is cycle-aware non-repetition. Every "
-    "question issued in a paper is recorded against its examination cycle; a "
-    "subsequent paper generated in the same cycle — typically the backlog paper — "
-    "excludes those questions at the query level, making overlap between the regular "
-    "and backlog papers impossible rather than merely unlikely. The generated paper is "
-    "exported in Word, PDF and image formats from a single HTML representation, "
-    "ensuring that all three downloads are identical, and question text is never "
-    "displayed on screen at any stage.",
-]:
-    para(t)
+para("The system is developed using React for the frontend and Supabase "
+     "(PostgreSQL) for the database, authentication and Row Level Security. Selection "
+     "logic, non-repetition enforcement, sufficiency validation and audit logging are "
+     "implemented as SECURITY DEFINER database functions and triggers executing inside "
+     "a single transaction, so the guarantees cannot be bypassed by any client and the "
+     "browser never receives the candidate pool. The defining feature of the system is "
+     "cycle-aware non-repetition: every question issued in a paper is recorded against "
+     "its examination cycle, and a subsequent paper generated in the same cycle — "
+     "typically the backlog paper — excludes those questions at the query level, "
+     "making overlap between the regular and backlog papers impossible rather than "
+     "merely unlikely. The generated paper is exported in Word, PDF and image formats "
+     "from a single HTML representation, and question text is never displayed on "
+     "screen at any stage.")
 
 rich([("Keywords: ", {"bold": True}),
       ("Question Paper Generation, Question Bank, Bloom's Taxonomy, Course Outcome, "
@@ -363,7 +352,8 @@ para("At present most departments still prepare question papers using word "
      "of the syllabus, accidental repetition of questions between the regular and "
      "backlog papers of the same examination, loss of institutional knowledge when a "
      "teacher is transferred, and repeated exposure of confidential content across "
-     "e-mail attachments and removable media. TeacherEase addresses these problems by "
+     "e-mail attachments and removable media. The proposed system addresses these "
+     "problems by "
      "providing a secure, role-based and rule-driven system in which the academic "
      "constraints of a question paper are enforced by the database itself rather than "
      "by the diligence of the person setting the paper.")
@@ -375,7 +365,7 @@ para("Departments continue to depend on manual question selection, personal ques
      "examination, and weak confidentiality of the paper during preparation. The most "
      "serious of these is repetition between the regular and backlog papers of the "
      "same examination cycle, which directly affects the fairness of the examination. "
-     "TeacherEase is motivated by the need for a centralized platform that automates "
+     "The proposed system is motivated by the need for a centralized platform that automates "
      "question selection under a fixed blueprint, guarantees non-repetition within an "
      "examination cycle, preserves the departmental question bank as an institutional "
      "asset, and produces a print-ready paper without ever displaying its contents on "
@@ -612,7 +602,7 @@ para("The system follows a four-layer architecture. The presentation layer is a 
      "response returned to the browser carries only the identifier of the generated "
      "paper and the stored rows required to render it, never the candidate pool.")
 figure("fig1_architecture.png",
-       "Fig. 1  Layered system architecture of TeacherEase")
+       "Fig. 1  Layered system architecture of the proposed system")
 
 sub("6.3 System Workflow")
 para("The generation workflow begins when an authenticated teacher selects a paper "
@@ -634,8 +624,12 @@ sub("6.4 Tools, Software, and Technologies to Be Used")
 para("The proposed system uses a modern and maintainable technology stack chosen for "
      "reliability and low operational overhead.")
 bullets([
-    ("Frontend:", "React (Create React App) with React Router for a single-page "
-     "role-based interface."),
+    ("Frontend:", "React (Create React App) with React Router for building a "
+     "multi-page role-based web application. The interface includes modules such as "
+     "Home Page, Login/Signup Page, User Dashboard, Question Bank Management, Question "
+     "Paper Generation, Audit Log Viewer, User Profile Management, Settings Page, and "
+     "an Administrator Control Panel with complete system access and monitoring "
+     "capabilities."),
     ("Backend / Database:", "Supabase (PostgreSQL) providing an auto-generated REST "
      "API, managed authentication and Row Level Security."),
     ("Business Logic:", "PostgreSQL PL/pgSQL routines and triggers, executed as "
@@ -722,7 +716,7 @@ bullets([
 # ================================== CHALLENGES / OUTCOMES / INNOVATION ======
 page_break()
 heading("7. Challenges / Limitations")
-para("The development of TeacherEase may encounter several technical and "
+para("The development of the proposed system may encounter several technical and "
      "project-level challenges.")
 para("Technical Challenges:", bold=True, space_after=4)
 bullets([
