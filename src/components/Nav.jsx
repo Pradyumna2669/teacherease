@@ -8,7 +8,16 @@ export default function Nav({ email }) {
 
   return (
     <nav className="nav">
-      <Link to="/" className="brand">📄 Paper Generator</Link>
+      <Link to="/" className="brand">
+        <img
+          className="brand-mark"
+          src={`${process.env.PUBLIC_URL}/crest.jpg`}
+          alt=""
+          width="28"
+          height="28"
+        />
+        <span>Paper Generator</span>
+      </Link>
       <NavLink to="/dashboard">Dashboard</NavLink>
       {admin
         ? <NavLink to="/admin">Admin</NavLink>

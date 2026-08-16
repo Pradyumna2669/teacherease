@@ -40,9 +40,21 @@ export default function Login() {
   return (
     <div className="container">
       <div className="card">
+        {/* PUBLIC_URL, not a relative path — Login renders at whatever route the
+            signed-out user landed on, including nested ones like /subject/x/bank. */}
+        <img
+          className="crest"
+          src={`${process.env.PUBLIC_URL}/crest.jpg`}
+          alt="P. R. Pote Patil College of Engineering & Management, Amravati"
+          width="96"
+          height="96"
+        />
+        <p className="eyebrow">Department of Computer Science &amp; Engineering</p>
         <h1>Smart Question Paper Generator</h1>
         <p className="subtitle">
-          {isSignIn ? 'Sign in to your account' : 'Create an account'}
+          {isSignIn
+            ? 'Sign in to reach your subjects and question bank.'
+            : 'Create an account. An admin will allot your subjects.'}
         </p>
 
         <form onSubmit={handleSubmit}>

@@ -20,7 +20,7 @@ export function loadSettings() {
 // confirmDelete affects the extra prompt, not the confirmation the RPC requires.
 export default function Settings() {
   const [s, setS] = useState(DEFAULTS);
-  const [msg, setMsg] = useState('');
+  const [msg, setMsg] = useState('');   // always a confirmation here
 
   useEffect(() => { setS(loadSettings()); }, []);
 
@@ -78,7 +78,7 @@ export default function Settings() {
         Reset settings
       </button>
 
-      {msg && <p className="msg">{msg}</p>}
+      {msg && <p className="msg ok">{msg}</p>}
     </div>
   );
 }

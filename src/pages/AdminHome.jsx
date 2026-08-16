@@ -11,6 +11,7 @@ export default function AdminHome() {
   const [nsub, setNsub] = useState({ code: '', name: '', semester: '' });
   const [asg, setAsg] = useState({ teacher_id: '', subject_id: '' });
   const [msg, setMsg] = useState('');
+  const [msgOk, setMsgOk] = useState(false);       // green vs alert styling
   const [toDelete, setToDelete] = useState(null); // subject pending confirmation
 
   const load = useCallback(async () => {
@@ -32,6 +33,7 @@ export default function AdminHome() {
   async function addSubject(e) {
     e.preventDefault();
     setMsg('');
+    setMsgOk(false);
     const { error } = await supabase.from('subjects').insert({
       code: nsub.code.trim(),
       name: nsub.name.trim(),
@@ -45,6 +47,7 @@ export default function AdminHome() {
   async function assign(e) {
     e.preventDefault();
     setMsg('');
+    setMsgOk(false);
     if (!asg.teacher_id || !asg.subject_id) return setMsg('Pick teacher and subject.');
     const { error } = await supabase.from('teacher_subjects').insert(asg);
     if (error) return setMsg(error.message);
@@ -68,6 +71,7 @@ export default function AdminHome() {
       `Deleted ${subject.code} — ${counts?.questions ?? 0} questions and ` +
       `${counts?.papers ?? 0} papers removed. Recorded in the audit log.`
     );
+    setMsgOk(true);
     load();
   }
 
@@ -108,7 +112,7 @@ export default function AdminHome() {
         </select>
         <button className="submit compact">Assign</button>
       </form>
-      {msg && <p className="msg">{msg}</p>}
+      {msg && <p className={`msg ${msgOk ? 'ok' : ''}`}>{msg}</p>}
 
       <h3>Current allotments</h3>
       {allot.length === 0 && <p className="subtitle">None yet.</p>}

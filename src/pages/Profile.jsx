@@ -9,7 +9,8 @@ export default function Profile() {
   const [name, setName] = useState('');
   const [pw, setPw] = useState({ next: '', confirm: '' });
   const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState('');
+  // { text, ok } — ok drives the green confirmation style instead of the alert one.
+  const [msg, setMsg] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -29,25 +30,27 @@ export default function Profile() {
   async function saveName(e) {
     e.preventDefault();
     setBusy(true);
-    setMsg('');
+    setMsg(null);
     const { error } = await supabase
       .from('profiles')
       .update({ full_name: name.trim() })
       .eq('id', user.id);
     setBusy(false);
-    setMsg(error ? error.message : 'Name updated.');
+    setMsg(error ? { text: error.message } : { text: 'Name updated.', ok: true });
   }
 
   async function changePassword(e) {
     e.preventDefault();
-    if (pw.next.length < 6) return setMsg('Password must be at least 6 characters.');
-    if (pw.next !== pw.confirm) return setMsg('Passwords do not match.');
+    if (pw.next.length < 6) {
+      return setMsg({ text: 'Password must be at least 6 characters.' });
+    }
+    if (pw.next !== pw.confirm) return setMsg({ text: 'Passwords do not match.' });
     setBusy(true);
-    setMsg('');
+    setMsg(null);
     const { error } = await supabase.auth.updateUser({ password: pw.next });
     setBusy(false);
     setPw({ next: '', confirm: '' });
-    setMsg(error ? error.message : 'Password changed.');
+    setMsg(error ? { text: error.message } : { text: 'Password changed.', ok: true });
   }
 
   if (!user) return <div className="card"><p>Loading…</p></div>;
@@ -88,7 +91,7 @@ export default function Profile() {
         <button className="submit compact" disabled={busy}>Change password</button>
       </form>
 
-      {msg && <p className="msg">{msg}</p>}
+      {msg && <p className={`msg ${msg.ok ? 'ok' : ''}`}>{msg.text}</p>}
     </div>
   );
 }
