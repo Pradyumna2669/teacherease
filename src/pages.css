@@ -4,11 +4,81 @@
 
 /* ---------------------------------------------------------------- layout */
 .page {
-  max-width: 980px;
+  max-width: 1020px;
   margin: 0 auto;
-  padding: 28px 20px 64px;
+  padding: 32px 20px 72px;
+  animation: pageIn var(--slow) both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
 }
 .card.wide { max-width: 100%; }
+
+/* Sign-in: a two-panel sheet. Left panel carries the institutional identity,
+   right panel is the form. Collapses to one column on small screens. */
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 16px;
+}
+.container .card {
+  max-width: 880px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  box-shadow: var(--e3);
+}
+.auth-aside {
+  padding: 46px 38px;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 26px,
+                              rgba(255, 255, 255, .05) 26px 27px),
+    var(--aside-grad);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.auth-aside .crest {
+  margin: 0 0 22px;
+  border-color: rgba(255, 255, 255, .25);
+}
+.auth-aside .eyebrow { color: rgba(255, 255, 255, .62); }
+.auth-aside h1 { color: #fff; margin-bottom: 12px; }
+.auth-aside p { color: rgba(255, 255, 255, .74); font-size: 0.92rem; margin: 0; }
+.auth-points {
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.auth-points li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  color: rgba(255, 255, 255, .8);
+  font-size: 0.87rem;
+  line-height: 1.45;
+}
+.auth-points li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: #E08494;
+}
+.auth-form { padding: 46px 40px; }
+.auth-form h2 {
+  margin: 0 0 4px;
+  font-size: 1.28rem;
+}
 
 /* Rows of inline fields (filters, question entry) */
 .row {
@@ -16,63 +86,107 @@
   flex-wrap: wrap;
   gap: 12px;
   align-items: flex-end;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
-.row > div { flex: 1; min-width: 110px; }
+.row > div { flex: 1; min-width: 112px; }
 .row input,
 .row select { margin-bottom: 0; }
 .row .btn-sm { margin-bottom: 1px; }
+.submit.compact { width: auto; padding: 12px 22px; }
 
-.submit.compact { width: auto; padding: 11px 20px; }
-
-/* ------------------------------------------------------- subject cards --- */
+/* ------------------------------------------------------- stat tiles --- */
 .subj-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
-  margin-top: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 16px;
+  margin-top: 6px;
 }
 
 .subj-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 16px 16px 14px;
+  gap: 4px;
+  padding: 20px 18px 16px;
   background: var(--sheet);
   border: 1px solid var(--edge);
-  border-left: 3px solid var(--ink);
-  border-radius: var(--r-sm);
-  transition: border-left-color .12s ease, box-shadow .12s ease;
+  border-radius: var(--r);
+  box-shadow: var(--e1);
+  overflow: hidden;
+  transition: transform var(--fast), box-shadow var(--fast), border-color var(--fast);
+}
+.subj-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--ink);
+  transition: background var(--fast);
 }
 .subj-card:hover {
-  border-left-color: var(--seal);
-  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+  box-shadow: var(--e3);
+  border-color: var(--edge);
 }
-/* Subject code reads as a record identifier, so it is set in mono. */
+.subj-card:hover::before { background: var(--seal); }
+
+/* Subject code and stat numbers are records — set in mono / display. */
 .subj-card b {
   font-family: var(--font-mono);
-  font-size: 1.05rem;
-  letter-spacing: -0.01em;
+  font-size: 1.02rem;
+  letter-spacing: -0.02em;
 }
-.subj-card span { color: var(--ink-2); font-size: 0.88rem; }
+.subj-card span { color: var(--ink-2); font-size: 0.87rem; }
+
+/* Dashboard tiles reuse .subj-card, with a large display numeral. */
+.stat b {
+  font-family: var(--font-display);
+  font-size: 2.35rem;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+.stat span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
 
 .subj-links {
   display: flex;
-  gap: 14px;
-  margin-top: 10px;
-  font-size: 0.86rem;
+  gap: 8px;
+  margin-top: 14px;
+}
+.subj-links a {
+  padding: 6px 11px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-pill);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-size: 0.8rem;
   font-weight: 600;
 }
-.subj-links a { color: var(--seal); text-decoration: none; }
-.subj-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.subj-links a:hover {
+  background: var(--seal-tint);
+  border-color: var(--seal);
+  color: var(--seal);
+}
 
 /* --------------------------------------------------------- question bank */
-.q-form { margin-bottom: 4px; }
+.q-form {
+  margin-bottom: 6px;
+  padding: 22px 22px 18px;
+  background: var(--paper);
+  border: 1px solid var(--edge);
+  border-radius: var(--r);
+}
 
-/* Register margin: the unit number sits in the left rule, as in a ledger. */
+/* Register margin: the unit sits against a ruled edge, as in a ledger. */
 .unit-block {
-  margin: 18px 0;
-  padding-left: 16px;
+  margin: 22px 0;
+  padding-left: 18px;
   border-left: 2px solid var(--edge);
 }
 .unit-block h3 { margin-top: 0; }
@@ -81,150 +195,174 @@
 .q-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  margin-bottom: 6px;
+  gap: 14px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
   background: var(--sheet);
   border: 1px solid var(--edge-soft);
   border-radius: var(--r-sm);
+  transition: border-color var(--fast), box-shadow var(--fast);
 }
-.q-row:hover { border-color: var(--edge); }
-.q-row.inactive { opacity: .5; }
+.q-row:hover { border-color: var(--edge); box-shadow: var(--e2); }
+.q-row.inactive { opacity: .48; }
 
 .q-meta {
   flex-shrink: 0;
-  min-width: 132px;
+  min-width: 196px;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
 }
 .q-text { flex: 1; font-size: 0.93rem; }
+
+.q-thumb {
+  display: block;
+  max-width: 190px;
+  max-height: 128px;
+  margin-top: 10px;
+  padding: 5px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-sm);
+  background: #fff;
+  box-shadow: var(--e1);
+}
 
 /* -------------------------------------------------------- format picker --- */
 .fmt-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 22px;
 }
 .fmt-card {
+  position: relative;
   flex: 1;
-  min-width: 170px;
+  min-width: 180px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 16px;
+  gap: 3px;
+  padding: 18px;
   background: var(--sheet);
   border: 1px solid var(--edge);
-  border-radius: var(--r-sm);
+  border-radius: var(--r);
+  box-shadow: var(--e1);
   cursor: pointer;
-  transition: border-color .12s ease, background .12s ease;
+  transition: border-color var(--fast), background var(--fast),
+              box-shadow var(--fast), transform var(--fast);
 }
-.fmt-card:hover { border-color: var(--ink-3); }
+.fmt-card:hover { border-color: var(--ink-3); transform: translateY(-1px); }
 .fmt-card.sel {
   border-color: var(--seal);
   background: var(--seal-tint);
-  box-shadow: inset 0 0 0 1px var(--seal);
+  box-shadow: var(--e2), inset 0 0 0 1px var(--seal);
 }
-.fmt-card input { width: auto; margin: 0 0 8px; }
+.fmt-card input { width: auto; margin: 0 0 8px; accent-color: var(--seal); }
 .fmt-card b { font-size: 1rem; }
 .fmt-card span {
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.75rem;
   color: var(--ink-2);
 }
 
 /* --------------------------------------------------------------- tables --- */
 .tbl-wrap {
   overflow-x: auto;
-  margin: 4px 0 18px;
+  margin: 6px 0 20px;
   border: 1px solid var(--edge);
-  border-radius: var(--r-sm);
+  border-radius: var(--r);
+  background: var(--sheet);
+  box-shadow: var(--e1);
 }
-.tbl {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.88rem;
-}
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .tbl th {
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: var(--paper);
   border-bottom: 1px solid var(--edge);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-align: left;
-  color: var(--ink-2);
+  color: var(--ink-3);
   white-space: nowrap;
 }
 .tbl td {
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--edge-soft);
   vertical-align: top;
 }
 .tbl tr:last-child td { border-bottom: none; }
+.tbl tbody tr { transition: background var(--fast); }
 .tbl tbody tr:hover { background: var(--paper); }
 .tbl tr.row-bad { background: var(--seal-tint); }
-.tbl tr.row-bad:hover { background: #F7E7E9; }
+.tbl tr.row-bad:hover { background: #F7E5E8; }
 
 .nowrap { white-space: nowrap; }
-.mono { font-family: var(--font-mono); font-size: 0.78rem; }
+.mono { font-family: var(--font-mono); font-size: 0.77rem; color: var(--ink-2); }
 
 /* ---------------------------------------------------------------- pills --- */
 .pill {
   display: inline-block;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: var(--edge-soft);
+  padding: 4px 10px;
+  border: 1px solid var(--edge);
+  border-radius: var(--r-pill);
+  background: var(--paper-2);
   color: var(--ink-2);
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.67rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
 }
-.pill.ok   { background: var(--ok-tint);   color: var(--ok); }
-.pill.warn { background: var(--warn-tint); color: var(--warn); }
-.pill.bad  { background: var(--seal-tint); color: var(--seal); }
+.pill.ok   { background: var(--ok-tint);   color: var(--ok);   border-color: var(--ok-edge); }
+.pill.warn { background: var(--warn-tint); color: var(--warn); border-color: #EFDCBD; }
+.pill.bad  { background: var(--seal-tint); color: var(--seal); border-color: var(--seal-edge); }
 
 .json {
-  margin: 8px 0 0;
-  padding: 10px;
-  max-width: 340px;
+  margin: 10px 0 0;
+  padding: 12px;
+  max-width: 360px;
   overflow-x: auto;
-  background: var(--paper);
-  border: 1px solid var(--edge);
+  background: var(--code-bg);
   border-radius: var(--r-sm);
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--ink-2);
+  font-size: 0.71rem;
+  color: var(--code-fg);
 }
 
 /* -------------------------------------------------------------- modal --- */
 .modal-back {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 60;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgba(22, 35, 60, .55);
-  backdrop-filter: blur(2px);
+  background: rgba(16, 24, 43, .55);
+  backdrop-filter: blur(3px);
+  animation: fade var(--fast) both;
 }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
 .modal {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 26px;
+  padding: 30px;
   background: var(--sheet);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-lg);
+  border-radius: var(--r-lg);
+  box-shadow: var(--e4);
+  animation: pop var(--slow) both;
+}
+@keyframes pop {
+  from { opacity: 0; transform: translateY(10px) scale(.985); }
+  to   { opacity: 1; transform: none; }
 }
 /* Destructive dialogs carry the seal rule too — same device, higher stakes. */
 .modal::before {
@@ -233,13 +371,12 @@
   inset: 0 0 auto 0;
   height: 4px;
   background: var(--seal);
-  border-radius: var(--r) var(--r) 0 0;
 }
 
 .warn-box {
-  margin: 14px 0 10px;
-  padding: 11px 13px;
-  border: 1px solid #E8CDD2;
+  margin: 16px 0 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--seal-edge);
   border-left: 3px solid var(--seal);
   border-radius: var(--r-sm);
   background: var(--seal-tint);
@@ -247,38 +384,71 @@
   font-size: 0.88rem;
 }
 .impact {
-  margin: 0 0 14px;
-  padding-left: 20px;
-  color: var(--ink-2);
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
   font-size: 0.9rem;
+  color: var(--ink-2);
 }
-.impact li { margin-bottom: 3px; }
-.impact b { font-family: var(--font-mono); color: var(--ink); }
+.impact li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px dashed var(--edge);
+}
+.impact li:last-child { border-bottom: none; }
+.impact b {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--ink);
+}
 
 /* ------------------------------------------------------------ download --- */
 .dl-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 16px;
+  gap: 14px;
+  margin-top: 18px;
 }
-.dl-grid .submit { min-height: 52px; }
+.dl-grid .submit { min-height: 58px; }
 
 /* ------------------------------------------------------------- content --- */
 .card ul, .card ol { padding-left: 22px; color: var(--ink-2); }
-.card ul li, .card ol li { margin-bottom: 6px; }
+.card ul li, .card ol li { margin-bottom: 7px; }
 .card ul li a, .card ol li a { color: var(--ink); font-weight: 600; }
 
+/* Empty states are an invitation, not a shrug. */
+.empty {
+  padding: 34px 24px;
+  text-align: center;
+  border: 1px dashed var(--edge);
+  border-radius: var(--r);
+  background: var(--paper);
+  color: var(--ink-2);
+  font-size: 0.92rem;
+}
+
 /* ------------------------------------------------------------- mobile --- */
+@media (max-width: 860px) {
+  .container .card { grid-template-columns: 1fr; }
+  .auth-aside { padding: 34px 28px; }
+  .auth-aside .crest { margin-left: auto; margin-right: auto; }
+  .auth-points { display: none; }
+  .auth-form { padding: 32px 26px 30px; }
+}
+
 @media (max-width: 640px) {
-  .page { padding: 18px 14px 48px; }
-  .card { padding: 24px 18px 22px; }
-  .nav { padding: 12px 14px 10px; }
+  .page { padding: 20px 14px 56px; }
+  .card { padding: 26px 18px 22px; }
+  .nav { padding: 11px 14px 9px; }
   .nav-email { display: none; }
   .dl-grid { grid-template-columns: 1fr; }
   .q-row { flex-wrap: wrap; }
   .q-meta { min-width: 0; }
-  h1 { font-size: 1.45rem; }
+  .q-form { padding: 18px 16px 14px; }
 }
 
 /* Paper render source for PDF/image capture. Off-screen but fully laid out &
@@ -297,3 +467,49 @@
   font-size: 14px;
   font-family: 'Times New Roman', serif;
 }
+
+/* ============================================================
+   PAGES, NOT CARDS
+   Interior pages are the page itself: no wrapper sheet, no
+   border, no shadow. The ruled ground is the paper, and the
+   things ON it — stat tiles, the entry form, tables, question
+   rows — are the sheets. Only the sign-in dialog and the
+   destructive modal stay as cards, because they are objects
+   laid over a page rather than a page.
+   ============================================================ */
+.card.wide {
+  max-width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+/* the seal double rule belongs to a sheet, and this is no longer one */
+.card.wide::before,
+.card.wide::after { content: none; }
+
+/* Masthead of the page: title, its accent rule, then the standfirst,
+   closed by a hairline. Gives a page a top edge without boxing it. */
+.card.wide > h1 {
+  font-size: clamp(1.8rem, 1.3rem + 1.7vw, 2.45rem);
+  padding-bottom: 14px;
+}
+.card.wide > h1::after { width: 62px; height: 3px; }
+.card.wide > .subtitle {
+  margin: 0 0 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--edge);
+  font-size: 0.98rem;
+}
+
+/* The entry form is now a sheet in its own right, not a panel inside one. */
+.q-form {
+  background: var(--sheet);
+  box-shadow: var(--e1);
+  padding: 24px 24px 20px;
+}
+
+/* Loading state matches: skeleton sits on the page, not in a box. */
+.card.wide[aria-busy="true"] { padding-top: 4px; }

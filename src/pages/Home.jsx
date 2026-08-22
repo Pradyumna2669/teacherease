@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useProfile } from '../lib/useProfile';
+import Skeleton from '../components/Skeleton';
 
 // Landing page. Role-aware list of entry points — no data fetching of its own.
 export default function Home() {
   const { profile, loading } = useProfile();
-  if (loading) return <div className="card"><p>Loading…</p></div>;
+  if (loading) return <Skeleton rows={2} />;
 
   const admin = profile?.role === 'admin';
 

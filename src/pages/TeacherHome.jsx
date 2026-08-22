@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import Skeleton from '../components/Skeleton';
 
 // Teacher landing: subjects allotted to me by admin.
 export default function TeacherHome() {
@@ -18,13 +19,13 @@ export default function TeacherHome() {
     })();
   }, []);
 
-  if (loading) return <div className="card"><p>Loading…</p></div>;
+  if (loading) return <Skeleton rows={2} />;
 
   return (
     <div className="card wide">
       <h1>My subjects</h1>
       {subjects.length === 0 && (
-        <p className="subtitle">No subjects allotted yet. Ask the admin.</p>
+        <p className="empty">No subjects allotted yet. Ask an administrator to allot your subjects, and they will appear here.</p>
       )}
       <div className="subj-grid">
         {subjects.map((s) => (

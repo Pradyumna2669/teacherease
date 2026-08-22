@@ -33,6 +33,13 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Smart Question Paper Generator</title>
+    <script>
+      // Runs before first paint: no flash of the default theme on reload.
+      try {
+        var t = (JSON.parse(localStorage.getItem('sqpg.settings') || '{}') || {}).theme;
+        if (t && t !== 'register') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

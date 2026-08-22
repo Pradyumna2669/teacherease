@@ -1,43 +1,66 @@
 /* ============================================================
    Smart Question Paper Generator — foundation
-   Design direction: examination stationery.
+   Direction: examination stationery, elevated.
    The app borrows the vocabulary of the document it produces —
-   the seal-red double rule of the printed header, the register
-   margin, and a clerical mono for anything that is a record.
-   One accent only: seal red means "official" or "destructive".
+   the seal-red double rule of the printed header, the faint ruled
+   ground of answer paper, the register margin, and a clerical
+   mono for anything that is a record.
+   One accent: seal red means official, destructive, or selected.
    ============================================================ */
 
 :root {
   /* paper */
-  --paper:      #FCFBF8;   /* page ground, warm office white */
-  --sheet:      #FFFFFF;   /* cards */
-  --edge:       #E4E0D6;   /* paper edge / borders */
-  --edge-soft:  #F0EDE6;
+  --paper:      #FBFAF6;
+  --paper-2:    #F5F2EA;
+  --sheet:      #FFFFFF;
+  --edge:       #E5E1D6;
+  --edge-soft:  #F1EEE6;
 
   /* ink */
-  --ink:        #16233C;   /* body text, primary actions */
-  --ink-2:      #55617A;   /* secondary text */
-  --ink-3:      #667085;   /* hints, placeholders — 4.6:1 on white */
+  --ink:        #141F35;
+  --ink-2:      #4E5A72;
+  --ink-3:      #667085;
 
-  /* seal red — rules, destructive, backlog */
+  /* seal */
   --seal:       #8E1B2E;
-  --seal-dark:  #6E1424;
-  --seal-tint:  #FBF1F2;
+  --seal-dark:  #6C1322;
+  --seal-tint:  #FBF0F1;
+  --seal-edge:  #E9CDD2;
 
   /* status */
   --ok:         #14603F;
-  --ok-tint:    #EDF6F1;
+  --ok-tint:    #ECF6F0;
+  --ok-edge:    #C7E1D4;
   --warn:       #8A5200;
   --warn-tint:  #FBF3E6;
+  --focus:      #2451B2;
 
-  --focus:      #2451B2;   /* used only for focus rings */
+  /* radii */
+  --r-sm: 8px;
+  --r:    12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
 
-  --r-sm: 6px;
-  --r:    10px;
-  --r-lg: 14px;
+  /* elevation — tinted with ink, never neutral grey */
+  --e1: 0 1px 2px rgba(20, 31, 53, .04);
+  --e2: 0 1px 2px rgba(20, 31, 53, .05), 0 8px 24px -8px rgba(20, 31, 53, .10);
+  --e3: 0 2px 4px rgba(20, 31, 53, .06), 0 18px 48px -12px rgba(20, 31, 53, .18);
+  --e4: 0 32px 80px -20px rgba(20, 31, 53, .35);
 
-  --shadow:    0 1px 2px rgba(22, 35, 60, .05), 0 6px 20px rgba(22, 35, 60, .05);
-  --shadow-lg: 0 8px 40px rgba(22, 35, 60, .16);
+  /* motion */
+  --fast: 120ms cubic-bezier(.2, .6, .3, 1);
+  --slow: 260ms cubic-bezier(.2, .6, .3, 1);
+
+  /* surfaces that themes must be able to move */
+  --nav-bg:     rgba(255, 255, 255, .86);
+  --on-accent:  #FFFFFF;
+  --btn-grad:   linear-gradient(180deg, #22314F 0%, var(--ink) 100%);
+  --btn-grad-danger: linear-gradient(180deg, #A82437 0%, var(--seal) 100%);
+  --code-bg:    #10182B;
+  --code-fg:    #C9D4EA;
+  --aside-grad: linear-gradient(160deg, #1B2942 0%, var(--ink) 55%, #10182B 100%);
+  --ground: radial-gradient(1200px 500px at 50% -10%, rgba(142, 27, 46, .05), transparent 70%);
+  --rule-alpha: rgba(20, 31, 53, .028);
 
   --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
   --font-body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -46,39 +69,55 @@
 
 * { box-sizing: border-box; }
 
+/* Faint ruled ground, like the answer paper this app produces. Two layers:
+   a warm wash, and horizontal rules at 2% so they read as texture, not lines. */
 body {
   margin: 0;
-  background: var(--paper);
+  min-height: 100vh;
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 27px,
+      var(--rule-alpha) 27px 28px
+    ),
+    var(--ground);
+  background-attachment: fixed;
 }
 
 /* ---------------------------------------------------------- typography --- */
 h1 {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 1.75rem;
-  line-height: 1.2;
+  font-size: clamp(1.55rem, 1.2rem + 1.2vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.3rem;
   letter-spacing: -0.01em;
 }
 
-h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.25rem; }
-
-/* Section label: set like a clerical heading, with a rule running to the
-   right edge — the same device the printed paper uses. */
+/* Section label set as a clerical heading, with a rule running to the right
+   edge — the device the printed paper uses for its column headings. */
 h3 {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 28px 0 12px;
+  margin: 32px 0 14px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--ink-2);
 }
@@ -86,28 +125,33 @@ h3::after {
   content: '';
   flex: 1;
   height: 1px;
-  background: var(--edge);
+  background: linear-gradient(to right, var(--edge), transparent);
 }
 
 .subtitle {
-  margin: 0 0 20px;
+  margin: 0 0 22px;
   color: var(--ink-2);
-  font-size: 0.92rem;
+  font-size: 0.94rem;
 }
 
-a { color: var(--ink); text-decoration-color: var(--edge); text-underline-offset: 3px; }
-a:hover { text-decoration-color: var(--seal); }
+a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--edge);
+  transition: border-color var(--fast), color var(--fast);
+}
+a:hover { color: var(--seal); border-bottom-color: var(--seal); }
 
 /* ------------------------------------------------------------- surfaces --- */
 .card {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   background: var(--sheet);
-  padding: 30px 28px 28px;
+  padding: 34px 30px 30px;
   border: 1px solid var(--edge);
   border-radius: var(--r);
-  box-shadow: var(--shadow);
+  box-shadow: var(--e2);
   overflow: hidden;
 }
 
@@ -117,92 +161,97 @@ a:hover { text-decoration-color: var(--seal); }
   position: absolute;
   inset: 0 0 auto 0;
   height: 3px;
-  background: var(--seal);
+  background: linear-gradient(to right, var(--seal), var(--seal-dark) 55%, var(--seal));
 }
 .card::after {
   content: '';
   position: absolute;
-  inset: 5px 0 auto 0;
+  inset: 6px 0 auto 0;
   height: 1px;
   background: var(--seal);
-  opacity: .45;
+  opacity: .4;
 }
-
-.container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 16px;
-}
-/* Sign-in sheet centres its own type; interior pages do not. */
-.container .card h1,
-.container .card .subtitle { text-align: center; }
-.container .card h1 { font-size: 1.5rem; }
 
 /* --------------------------------------------------------------- forms --- */
 label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 0.82rem;
-  font-weight: 600;
+  margin-bottom: 7px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   color: var(--ink-2);
 }
 
 input, select, textarea {
   width: 100%;
-  padding: 11px 12px;
-  margin-bottom: 16px;
+  padding: 12px 13px;
+  margin-bottom: 18px;
   border: 1px solid var(--edge);
   border-radius: var(--r-sm);
   background: var(--sheet);
   color: var(--ink);
   font-family: inherit;
-  font-size: 0.98rem;
-  transition: border-color .12s ease, box-shadow .12s ease;
+  font-size: 0.97rem;
+  box-shadow: var(--e1);
+  transition: border-color var(--fast), box-shadow var(--fast), background var(--fast);
 }
 input::placeholder, textarea::placeholder { color: var(--ink-3); }
-
 input:hover, select:hover, textarea:hover { border-color: var(--ink-3); }
-
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--focus);
-  box-shadow: 0 0 0 3px rgba(36, 81, 178, .16);
+  box-shadow: 0 0 0 3px rgba(36, 81, 178, .15);
 }
-
-input[type="checkbox"] { width: auto; margin: 0 6px 0 0; vertical-align: middle; }
+input[type="checkbox"] {
+  width: auto;
+  margin: 0 8px 0 0;
+  accent-color: var(--seal);
+  vertical-align: middle;
+}
+input[type="file"] {
+  padding: 10px 12px;
+  background: var(--paper-2);
+  font-size: 0.88rem;
+  box-shadow: none;
+}
 
 /* ------------------------------------------------------------- buttons --- */
 .submit {
+  position: relative;
   width: 100%;
-  min-height: 44px;
-  padding: 11px 18px;
+  min-height: 46px;
+  padding: 12px 20px;
   border: 1px solid var(--ink);
   border-radius: var(--r-sm);
-  background: var(--ink);
-  color: #fff;
+  background: var(--btn-grad);
+  color: var(--on-accent);
   font-family: inherit;
-  font-size: 0.98rem;
-  font-weight: 600;
+  font-size: 0.97rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
-  transition: background .12s ease, transform .08s ease;
+  box-shadow: var(--e2);
+  transition: transform var(--fast), box-shadow var(--fast), filter var(--fast);
 }
-.submit:hover:not(:disabled) { background: #0E1932; }
-.submit:active:not(:disabled) { transform: translateY(1px); }
-.submit:disabled { opacity: .45; cursor: not-allowed; }
+.submit:hover:not(:disabled) { filter: brightness(1.12); box-shadow: var(--e3); }
+.submit:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--e1); }
+.submit:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
 
-.submit.danger-btn { background: var(--seal); border-color: var(--seal); }
-.submit.danger-btn:hover:not(:disabled) { background: var(--seal-dark); }
-.submit.danger-btn:disabled { background: var(--ink-3); border-color: var(--ink-3); }
+.submit.danger-btn {
+  border-color: var(--seal);
+  background: var(--btn-grad-danger);
+}
+.submit.danger-btn:disabled {
+  background: var(--ink-3);
+  border-color: var(--ink-3);
+}
 
-/* Small secondary control, also used for links that act as buttons. */
 .btn-sm {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: 34px;
-  padding: 6px 12px;
+  min-height: 36px;
+  padding: 7px 13px;
   border: 1px solid var(--edge);
   border-radius: var(--r-sm);
   background: var(--sheet);
@@ -210,65 +259,127 @@ input[type="checkbox"] { width: auto; margin: 0 6px 0 0; vertical-align: middle;
   font-family: inherit;
   font-size: 0.84rem;
   font-weight: 600;
-  text-decoration: none;
   cursor: pointer;
-  transition: border-color .12s ease, background .12s ease;
+  box-shadow: var(--e1);
+  transition: border-color var(--fast), background var(--fast),
+              box-shadow var(--fast), transform var(--fast);
 }
-.btn-sm:hover { background: var(--paper); border-color: var(--ink-3); }
-.btn-sm.danger { color: var(--seal); border-color: #E8CDD2; }
+.btn-sm:hover {
+  background: var(--paper);
+  border-color: var(--ink-3);
+  box-shadow: var(--e2);
+}
+.btn-sm:active { transform: translateY(1px); }
+.btn-sm.danger { color: var(--seal); border-color: var(--seal-edge); }
 .btn-sm.danger:hover { background: var(--seal-tint); border-color: var(--seal); }
+a.btn-sm { border-bottom: 1px solid var(--edge); }
+a.btn-sm:hover { color: var(--ink); border-color: var(--ink-3); }
+label.btn-sm { cursor: pointer; }
 
 /* ----------------------------------------------------------------- nav --- */
 .nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
-  padding: 14px 24px 12px;
-  background: var(--sheet);
+  padding: 13px 26px 11px;
+  background: var(--nav-bg);
+  backdrop-filter: saturate(180%) blur(14px);
   border-bottom: 3px solid var(--seal);
-  box-shadow: 0 1px 0 0 var(--sheet), 0 2px 0 0 rgba(142, 27, 46, .45);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, .9),
+              0 2px 0 0 rgba(142, 27, 46, .38),
+              0 10px 30px -18px rgba(20, 31, 53, .5);
 }
 
 .nav .brand {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  margin-right: 14px;
+  gap: 10px;
+  margin-right: 16px;
+  border: 0;
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.06rem;
   font-weight: 600;
   color: var(--ink);
-  text-decoration: none;
   white-space: nowrap;
 }
+.nav .brand:hover { color: var(--ink); }
 
 .nav a:not(.brand) {
-  padding: 7px 12px;
+  position: relative;
+  padding: 8px 13px;
+  border: 0;
   border-radius: var(--r-sm);
   color: var(--ink-2);
-  font-size: 0.9rem;
+  font-size: 0.89rem;
   font-weight: 600;
-  text-decoration: none;
   white-space: nowrap;
+  transition: background var(--fast), color var(--fast);
 }
-.nav a:not(.brand):hover { background: var(--paper); color: var(--ink); }
+.nav a:not(.brand):hover { background: var(--paper-2); color: var(--ink); }
 .nav a.active {
   background: var(--seal-tint);
   color: var(--seal);
-  box-shadow: inset 0 -2px 0 var(--seal);
+}
+.nav a.active::after {
+  content: '';
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--seal);
 }
 
 .nav-spacer { flex: 1; }
 .nav-email {
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+  background: var(--paper-2);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
+  color: var(--ink-2);
+}
+
+/* ----------------------------------------------------------------- crest --- */
+.crest {
+  display: block;
+  width: 92px;
+  height: 92px;
+  margin: 2px auto 18px;
+  border-radius: 50%;
+  border: 1px solid var(--edge);
+  object-fit: cover;
+  background: #fff;
+  box-shadow: var(--e2);
+}
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: var(--e1);
+}
+
+/* --------------------------------------------------------------- eyebrow --- */
+.eyebrow {
+  margin: 0 0 12px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--ink-3);
 }
 
 /* -------------------------------------------------------------- toggle --- */
 .toggle {
-  margin-top: 18px;
+  margin-top: 20px;
   text-align: center;
   font-size: 0.9rem;
   color: var(--ink-2);
@@ -279,74 +390,304 @@ input[type="checkbox"] { width: auto; margin: 0 6px 0 0; vertical-align: middle;
   padding: 0;
   color: var(--seal);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  border-bottom: 1px solid var(--seal-edge);
 }
-
-/* ----------------------------------------------------------------- crest --- */
-/* The college seal is a circular crest on a cream JPEG square. Clipping to a
-   circle drops the square corners, so it sits on the sheet as a seal rather
-   than as a pasted photograph. */
-.crest {
-  display: block;
-  width: 96px;
-  height: 96px;
-  margin: 2px auto 16px;
-  border-radius: 50%;
-  border: 1px solid var(--edge);
-  object-fit: cover;
-  background: #fff;
-}
-
-.brand-mark {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-/* --------------------------------------------------------------- eyebrow --- */
-.eyebrow {
-  margin: 0 0 10px;
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  text-align: center;
-}
+.toggle button:hover { border-bottom-color: var(--seal); }
 
 /* ------------------------------------------------------------ messages --- */
-/* Default is a problem the person has to act on. `.ok` confirms something
-   worked — a green line, so "Saved." never arrives looking like an error. */
 .msg {
-  margin-top: 16px;
-  padding: 11px 13px;
-  border: 1px solid #E8CDD2;
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--seal-edge);
   border-left: 3px solid var(--seal);
   border-radius: var(--r-sm);
   background: var(--seal-tint);
   color: var(--seal-dark);
   font-size: 0.88rem;
+  box-shadow: var(--e1);
+  animation: rise var(--slow) both;
 }
 .msg.ok {
-  border-color: #C9E2D5;
+  border-color: var(--ok-edge);
   border-left-color: var(--ok);
   background: var(--ok-tint);
   color: var(--ok);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------ skeleton --- */
+.sk {
+  border-radius: var(--r-sm);
+  background: linear-gradient(90deg, var(--edge-soft) 25%, var(--paper-2) 37%,
+                                     var(--edge-soft) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.sk + .sk { margin-top: 10px; }
+.sk-line { height: 13px; }
+.sk-line.w60 { width: 60%; }
+.sk-line.w40 { width: 40%; }
+.sk-block { height: 74px; }
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to   { background-position: 0 0; }
 }
 
 /* ------------------------------------------------------- accessibility --- */
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
 }
+
+/* Visually hidden, still announced by screen readers. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ============================================================
+   THEMES
+   Components never name a colour; they name a token. A theme is
+   nothing but a different set of values for the same tokens, so
+   switching one cannot break a layout.
+   Applied as data-theme on <html>. Default (absent) = register.
+   ============================================================ */
+
+/* ---- Midnight: dark ink, the seal turned up to carry on dark ---- */
+:root[data-theme="midnight"] {
+  --paper:      #0E1420;
+  --paper-2:    #161E2D;
+  --sheet:      #141B29;
+  --edge:       #27324A;
+  --edge-soft:  #1E2637;
+
+  --ink:        #E9EEF8;
+  --ink-2:      #A7B4CB;
+  --ink-3:      #7F8CA6;
+
+  --seal:       #E4586E;
+  --seal-dark:  #C43F55;
+  --seal-tint:  #2A1922;
+  --seal-edge:  #4A2733;
+
+  --ok:         #4ADE9B;
+  --ok-tint:    #10241D;
+  --ok-edge:    #1F4438;
+  --warn:       #F0C27B;
+  --warn-tint:  #241C10;
+  --focus:      #7AA2F7;
+
+  --e1: 0 1px 2px rgba(0, 0, 0, .4);
+  --e2: 0 1px 2px rgba(0, 0, 0, .5), 0 10px 26px -10px rgba(0, 0, 0, .7);
+  --e3: 0 2px 6px rgba(0, 0, 0, .5), 0 22px 54px -14px rgba(0, 0, 0, .8);
+  --e4: 0 34px 90px -22px rgba(0, 0, 0, .9);
+
+  --nav-bg:     rgba(16, 22, 34, .82);
+  --on-accent:  #0E1420;
+  --btn-grad:   linear-gradient(180deg, #F2F5FB 0%, #D7DEEC 100%);
+  --btn-grad-danger: linear-gradient(180deg, #F0788B 0%, var(--seal) 100%);
+  --code-bg:    #0A0F19;
+  --code-fg:    #AFC0DE;
+  --aside-grad: linear-gradient(160deg, #1D2740 0%, #121A29 55%, #0A0F19 100%);
+  --ground: radial-gradient(1100px 480px at 50% -8%, rgba(228, 88, 110, .12), transparent 70%);
+  --rule-alpha: rgba(255, 255, 255, .028);
+}
+:root[data-theme="midnight"] .submit { border-color: #D7DEEC; }
+:root[data-theme="midnight"] .submit.danger-btn {
+  border-color: var(--seal);
+  color: #1A0E12;
+}
+:root[data-theme="midnight"] .crest,
+:root[data-theme="midnight"] .brand-mark { background: #fff; }
+
+/* ---- Indigo: bright, saturated, the friendliest of the three ---- */
+:root[data-theme="indigo"] {
+  --paper:      #F6F7FD;
+  --paper-2:    #EDF0FB;
+  --sheet:      #FFFFFF;
+  --edge:       #E1E6F5;
+  --edge-soft:  #F0F3FC;
+
+  --ink:        #17203C;
+  --ink-2:      #505E82;
+  --ink-3:      #6E7A9B;
+
+  --seal:       #4F46E5;
+  --seal-dark:  #3B32C4;
+  --seal-tint:  #EEEDFE;
+  --seal-edge:  #CFCBFA;
+
+  --ok:         #0E9F6E;
+  --ok-tint:    #E7F8F1;
+  --ok-edge:    #BFE8D8;
+  --warn:       #B45309;
+  --warn-tint:  #FDF3E7;
+  --focus:      #4F46E5;
+
+  --nav-bg:     rgba(255, 255, 255, .84);
+  --on-accent:  #FFFFFF;
+  --btn-grad:   linear-gradient(135deg, #635BFF 0%, var(--seal) 55%, #3B32C4 100%);
+  --btn-grad-danger: linear-gradient(135deg, #F2617A 0%, #D6294B 100%);
+  --code-bg:    #171B3A;
+  --code-fg:    #CDD3F5;
+  --aside-grad: linear-gradient(150deg, #6D64FF 0%, var(--seal) 45%, #2E2894 100%);
+  --ground: radial-gradient(1100px 480px at 50% -8%, rgba(79, 70, 229, .10), transparent 70%);
+  --rule-alpha: rgba(23, 32, 60, .022);
+}
+/* Indigo leads with the accent, so the primary button is the accent itself. */
+:root[data-theme="indigo"] .submit { border-color: var(--seal-dark); }
+:root[data-theme="indigo"] .submit.danger-btn { border-color: #C21F42; }
+
+/* ---- theme picker (Settings) ---- */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.theme-card {
+  padding: 0;
+  border: 1px solid var(--edge);
+  border-radius: var(--r);
+  background: var(--sheet);
+  box-shadow: var(--e1);
+  cursor: pointer;
+  overflow: hidden;
+  text-align: left;
+  transition: transform var(--fast), box-shadow var(--fast), border-color var(--fast);
+}
+.theme-card:hover { transform: translateY(-2px); box-shadow: var(--e3); }
+.theme-card.sel { border-color: var(--seal); box-shadow: var(--e2), inset 0 0 0 1px var(--seal); }
+.theme-swatch {
+  height: 66px;
+  display: flex;
+}
+.theme-swatch i { flex: 1; }
+.theme-card .theme-name {
+  display: block;
+  padding: 11px 13px 4px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.theme-card .theme-note {
+  display: block;
+  padding: 0 13px 12px;
+  font-size: 0.8rem;
+  color: var(--ink-2);
+}
+
+/* ============================================================
+   CATEGORICAL PALETTE
+   Four hues that identify things rather than decorate them:
+   dashboard tiles, subject cards and unit blocks each cycle
+   through them, so a teacher learns "graphs are the teal one"
+   by position and colour together. Defined per theme.
+   ============================================================ */
+:root {
+  --c1: #1E5C8F;  --c1-tint: #EAF2F9;   /* blue    */
+  --c2: #0F6B57;  --c2-tint: #E8F4F0;   /* green   */
+  --c3: #9A5B00;  --c3-tint: #FBF2E4;   /* amber   */
+  --c4: #8E1B2E;  --c4-tint: #FBF0F1;   /* seal    */
+  --c5: #5B3A8E;  --c5-tint: #F1ECF9;   /* violet  */
+  --c6: #0E6E7A;  --c6-tint: #E7F4F6;   /* teal    */
+}
+
+:root[data-theme="midnight"] {
+  --c1: #7AA2F7;  --c1-tint: #16203A;
+  --c2: #4ADE9B;  --c2-tint: #10241D;
+  --c3: #F0C27B;  --c3-tint: #241C10;
+  --c4: #E4586E;  --c4-tint: #2A1922;
+  --c5: #C4A5FF;  --c5-tint: #1F1930;
+  --c6: #5EDDE6;  --c6-tint: #10262A;
+}
+
+:root[data-theme="indigo"] {
+  --c1: #4F46E5;  --c1-tint: #EEEDFE;
+  --c2: #0E9F6E;  --c2-tint: #E7F8F1;
+  --c3: #D97706;  --c3-tint: #FDF3E4;
+  --c4: #E11D48;  --c4-tint: #FDECF0;
+  --c5: #7C3AED;  --c5-tint: #F3EDFE;
+  --c6: #0891B2;  --c6-tint: #E6F5F9;
+}
+
+/* Cycle: any grid of tiles picks up the palette by position. */
+.subj-card:nth-child(6n + 1) { --c: var(--c1); --c-tint: var(--c1-tint); }
+.subj-card:nth-child(6n + 2) { --c: var(--c2); --c-tint: var(--c2-tint); }
+.subj-card:nth-child(6n + 3) { --c: var(--c3); --c-tint: var(--c3-tint); }
+.subj-card:nth-child(6n + 4) { --c: var(--c4); --c-tint: var(--c4-tint); }
+.subj-card:nth-child(6n + 5) { --c: var(--c5); --c-tint: var(--c5-tint); }
+.subj-card:nth-child(6n + 6) { --c: var(--c6); --c-tint: var(--c6-tint); }
+
+.subj-card {
+  background: linear-gradient(155deg, var(--c-tint, var(--sheet)) 0%,
+                                      var(--sheet) 62%);
+}
+.subj-card::before { background: var(--c, var(--ink)); width: 4px; }
+.subj-card:hover::before { background: var(--c, var(--seal)); }
+.subj-card:hover { border-color: var(--c, var(--edge)); }
+
+/* The number is the point of a stat tile, so the number carries the hue. */
+.stat b { color: var(--c, var(--ink)); }
+.stat span { color: var(--ink-2); }
+
+/* Unit blocks in the question bank cycle the same way, so Unit 3 looks like
+   Unit 3 every time you open the page. */
+.unit-block:nth-child(6n + 1) { --c: var(--c1); }
+.unit-block:nth-child(6n + 2) { --c: var(--c2); }
+.unit-block:nth-child(6n + 3) { --c: var(--c3); }
+.unit-block:nth-child(6n + 4) { --c: var(--c4); }
+.unit-block:nth-child(6n + 5) { --c: var(--c5); }
+.unit-block:nth-child(6n + 6) { --c: var(--c6); }
+.unit-block { border-left-color: var(--c, var(--edge)); border-left-width: 3px; }
+.unit-block h3 { color: var(--c, var(--ink-2)); }
+.unit-block h3::after {
+  background: linear-gradient(to right, var(--c, var(--edge)), transparent);
+  opacity: .35;
+}
+
+/* Page heading gets the accent as a short rule under it, so a page opens on
+   colour instead of on a grey line. */
+.card.wide > h1 { position: relative; padding-bottom: 12px; }
+.card.wide > h1::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 54px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(to right, var(--seal), var(--c1));
+}
+
+/* Nav: the active item now reads as a filled chip in the accent. */
+.nav a.active {
+  background: var(--seal);
+  color: var(--on-accent);
+}
+.nav a.active::after { background: var(--on-accent); opacity: .55; }
+:root[data-theme="midnight"] .nav a.active { color: #1A0E12; }

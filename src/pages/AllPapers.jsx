@@ -81,7 +81,9 @@ export default function AllPapers() {
 
       {err && <p className="msg">{err}</p>}
       {loading && <p className="subtitle">Loading…</p>}
-      {!loading && shown.length === 0 && <p className="subtitle">No papers match.</p>}
+      {!loading && shown.length === 0 && (
+        <p className="empty">No papers match these filters.</p>
+      )}
 
       <div className="tbl-wrap">
         <table className="tbl">

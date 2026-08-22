@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { signedUrls, toDataUrl } from '../lib/questionImages';
 
 // Header shown on every paper. Edit these defaults (or later move to a settings
 // table / per-cycle fields). total_marks & course come from the DB.
@@ -20,6 +21,9 @@ const HEADER = {
 };
 
 const ROMAN = ['i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x'];
+// .paper-render is 794px wide with 40px padding, so the Question column gets
+// about 67% of 714px. 380px leaves room for the 22px indent and cell padding.
+const IMG_W = 380;
 const esc = (s) =>
   String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const pad2 = (v) => (v == null || v === '' ? '' : String(v).padStart(2, '0'));
@@ -27,18 +31,35 @@ const pad2 = (v) => (v == null || v === '' ? '' : String(v).padStart(2, '0'));
 // Build the full paper as a single styled HTML string. This is the ONE source
 // of truth: Word saves it directly, and the off-screen node renders it for the
 // PDF/image snapshots — so all three exports match exactly.
-function buildPaperHtml(paper, groups) {
+function buildPaperHtml(paper, groups, images = {}) {
   // borderless: only cell padding + alignment, no grid lines
-  const cQ = 'padding:2px 4px;vertical-align:top;';
+  const cQ = 'padding:2px 4px;vertical-align:top;word-wrap:break-word;';
   const cN = 'padding:2px 4px;vertical-align:top;text-align:center;white-space:nowrap;';
   const num = (v) => `<td style="${cN}">${pad2(v)}</td>`;
   const blank = '<td></td>';
+  // A question's image prints directly under its text, inside the same cell, so
+  // it stays with the question when the table breaks across pages. The src is a
+  // data URL: that keeps the picture inside the .doc file and lets html2canvas
+  // paint it without a cross-origin fetch at capture time.
+  // Word ignores CSS max-width on images and draws the PNG at its intrinsic
+  // size, which pushes the Marks/BTL/CO columns off the page. The width
+  // ATTRIBUTE is the one thing every target honours, so set it explicitly and
+  // let the height scale with it.
+  const picture = (q) => {
+    const src = images[q?.image_url];
+    if (!src) return '';
+    return `<div style="margin:4px 0 6px;">` +
+      `<img src="${src}" alt="" width="${IMG_W}" ` +
+      `style="width:${IMG_W}px;height:auto;display:block;" /></div>`;
+  };
+
   // sub-questions i) ii) iii) with Marks/BTL/CO cells
   const items = (arr) =>
     arr
       .map(
         (r, i) =>
-          `<tr>${blank}<td style="${cQ}padding-left:22px;">${ROMAN[i]}) ${esc(r.questions?.text)}</td>` +
+          `<tr>${blank}<td style="${cQ}padding-left:22px;">${ROMAN[i]}) ${esc(r.questions?.text)}` +
+          `${picture(r.questions)}</td>` +
           `${num(r.marks)}${num(r.questions?.bt_level)}${num(r.questions?.co_no)}</tr>`
       )
       .join('');
@@ -77,10 +98,10 @@ function buildPaperHtml(paper, groups) {
           <td style="text-align:right;">Max. Marks: ${paper.total_marks}</td></tr>
     </table>
     <div style="margin:6px 0;"><b>Instructions to Candidate</b>${instr}</div>
-    <table style="width:100%;border-collapse:collapse;margin-top:6px;">
+    <table style="width:100%;border-collapse:collapse;margin-top:6px;table-layout:fixed;">
       <thead><tr>
         <th style="${hRule}padding:2px 4px;text-align:left;width:8%;">Q. No</th>
-        <th style="${hRule}padding:2px 4px;text-align:left;">Question</th>
+        <th style="${hRule}padding:2px 4px;text-align:left;width:67%;">Question</th>
         <th style="${hRule}padding:2px 4px;width:9%;">Marks</th>
         <th style="${hRule}padding:2px 4px;width:8%;">BTL</th>
         <th style="${hRule}padding:2px 4px;width:8%;">CO</th>
@@ -95,6 +116,8 @@ function buildPaperHtml(paper, groups) {
 export default function DownloadPaper() {
   const { id } = useParams();
   const [paper, setPaper] = useState(null);
+  const [images, setImages] = useState({});   // object path -> data URL
+  const [imgState, setImgState] = useState('none'); // none | loading | ready | partial
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState('');
   const offRef = useRef(null);
@@ -109,8 +132,34 @@ export default function DownloadPaper() {
         )
         .eq('id', id)
         .single();
-      if (error) setErr(error.message);
-      else setPaper(data);
+      if (error) return setErr(error.message);
+      setPaper(data);
+
+      // Resolve every attached image to a data URL before any download can run.
+      const paths = (data.paper_questions || [])
+        .map((r) => r.questions?.image_url)
+        .filter(Boolean);
+      if (paths.length === 0) return setImgState('none');
+
+      setImgState('loading');
+      try {
+        const urls = await signedUrls(paths);
+        const entries = await Promise.all(
+          Object.entries(urls).map(async ([path, url]) => {
+            try {
+              return [path, await toDataUrl(url)];
+            } catch {
+              return [path, null];   // one bad image must not sink the paper
+            }
+          })
+        );
+        const ok = entries.filter(([, v]) => v);
+        setImages(Object.fromEntries(ok));
+        setImgState(ok.length === paths.length ? 'ready' : 'partial');
+      } catch (e) {
+        setImages({});
+        setImgState('partial');
+      }
     })();
   }, [id]);
 
@@ -132,7 +181,7 @@ export default function DownloadPaper() {
     return Object.values(g).sort((a, b) => a.q_no - b.q_no);
   };
 
-  const paperHtml = paper ? buildPaperHtml(paper, groups()) : '';
+  const paperHtml = paper ? buildPaperHtml(paper, groups(), images) : '';
 
   // Rasterize the render node. html2canvas clones into a sandbox iframe and
   // paints the DOM directly — reliable off-screen and inside WebView2/Edge,
@@ -211,15 +260,26 @@ export default function DownloadPaper() {
     <div className="card wide">
       <h1>Paper ready ✅</h1>
       <p className="subtitle">Questions are hidden. Pick a format to download.</p>
+      {imgState === 'loading' && (
+        <p className="subtitle">Loading question images…</p>
+      )}
+      {imgState === 'partial' && (
+        <p className="msg">Some question images could not be loaded. Download now
+          and those questions will print without their image, or reload the page
+          to try again.</p>
+      )}
 
       <div className="dl-grid">
-        <button className="submit" disabled={!!busy} onClick={downloadPDF}>
+        <button className="submit" disabled={!!busy || imgState === 'loading'}
+          onClick={downloadPDF}>
           {busy === 'pdf' ? '…' : '⬇ PDF'}
         </button>
-        <button className="submit" disabled={!!busy} onClick={downloadWord}>
+        <button className="submit" disabled={!!busy || imgState === 'loading'}
+          onClick={downloadWord}>
           {busy === 'word' ? '…' : '⬇ Word'}
         </button>
-        <button className="submit" disabled={!!busy} onClick={downloadImage}>
+        <button className="submit" disabled={!!busy || imgState === 'loading'}
+          onClick={downloadImage}>
           {busy === 'image' ? '…' : '⬇ Image'}
         </button>
       </div>

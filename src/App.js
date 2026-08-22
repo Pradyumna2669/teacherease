@@ -12,7 +12,7 @@ import TeacherHome from './pages/TeacherHome';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
-import Settings from './pages/Settings';
+import Settings, { loadSettings, applyTheme } from './pages/Settings';
 import QuestionBank from './pages/QuestionBank';
 import GeneratePaper from './pages/GeneratePaper';
 import DownloadPaper from './pages/DownloadPaper';
@@ -22,6 +22,10 @@ import './pages.css';
 export default function App() {
   const [session, setSession] = useState(null);
   const [ready, setReady] = useState(false);
+
+  // Saved theme, applied once on mount. index.html already set it before
+  // first paint; this keeps it correct after a hot reload.
+  useEffect(() => { applyTheme(loadSettings().theme); }, []);
 
   // Who is logged in?
   useEffect(() => {

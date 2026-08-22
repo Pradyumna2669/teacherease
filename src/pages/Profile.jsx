@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import Skeleton from '../components/Skeleton';
 
 // User profile management: display name, plus a password change.
 // Email and role are read-only here — role changes belong to the admin panel.
@@ -53,7 +54,7 @@ export default function Profile() {
     setMsg(error ? { text: error.message } : { text: 'Password changed.', ok: true });
   }
 
-  if (!user) return <div className="card"><p>Loading…</p></div>;
+  if (!user) return <Skeleton rows={2} />;
 
   return (
     <div className="card wide">

@@ -91,7 +91,10 @@ export default function AuditLog() {
       </div>
 
       {err && <p className="msg">{err}</p>}
-      {rows.length === 0 && !err && <p className="subtitle">No entries.</p>}
+      {rows.length === 0 && !err && (
+        <p className="empty">Nothing recorded yet. Entries appear as papers are
+          generated and subjects are changed.</p>
+      )}
 
       <div className="tbl-wrap">
         <table className="tbl">

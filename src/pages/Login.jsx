@@ -40,21 +40,36 @@ export default function Login() {
   return (
     <div className="container">
       <div className="card">
-        {/* PUBLIC_URL, not a relative path — Login renders at whatever route the
-            signed-out user landed on, including nested ones like /subject/x/bank. */}
-        <img
-          className="crest"
-          src={`${process.env.PUBLIC_URL}/crest.jpg`}
-          alt="P. R. Pote Patil College of Engineering & Management, Amravati"
-          width="96"
-          height="96"
-        />
-        <p className="eyebrow">Department of Computer Science &amp; Engineering</p>
-        <h1>Smart Question Paper Generator</h1>
+        {/* Left panel carries the institutional identity, right panel the form. */}
+        <aside className="auth-aside">
+          {/* PUBLIC_URL, not a relative path — Login renders at whatever route
+              the signed-out user landed on, including nested ones. */}
+          <img
+            className="crest"
+            src={`${process.env.PUBLIC_URL}/crest.jpg`}
+            alt="P. R. Pote Patil College of Engineering & Management, Amravati"
+            width="92"
+            height="92"
+          />
+          <p className="eyebrow">Department of Computer Science &amp; Engineering</p>
+          <h1>Smart Question Paper Generator</h1>
+          <p>
+            P. R. Pote Patil College of Engineering &amp; Management, Amravati
+          </p>
+          <ul className="auth-points">
+            <li>Keep a unit-wise question bank with marks, Bloom's level and course outcome.</li>
+            <li>Generate a paper to a fixed blueprint in one click.</li>
+            <li>No question repeats between the regular and backlog paper of a cycle.</li>
+            <li>Download as Word, PDF or image — questions never shown on screen.</li>
+          </ul>
+        </aside>
+
+        <div className="auth-form">
+        <h2>{isSignIn ? 'Sign in' : 'Create account'}</h2>
         <p className="subtitle">
           {isSignIn
-            ? 'Sign in to reach your subjects and question bank.'
-            : 'Create an account. An admin will allot your subjects.'}
+            ? 'Use your college email to reach your subjects.'
+            : 'An admin will allot your subjects after you register.'}
         </p>
 
         <form onSubmit={handleSubmit}>
@@ -110,6 +125,7 @@ export default function Login() {
         </p>
 
         {message && <p className="msg">{message}</p>}
+        </div>
       </div>
     </div>
   );

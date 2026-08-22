@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { useProfile } from '../lib/useProfile';
+import Skeleton from '../components/Skeleton';
 
 const fmt = (s) =>
   s ? new Date(s).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
@@ -54,7 +55,7 @@ export default function Dashboard() {
     })();
   }, [pLoading, profile, count]);
 
-  if (pLoading || (!stats && !err)) return <div className="card"><p>Loading…</p></div>;
+  if (pLoading || (!stats && !err)) return <Skeleton rows={2} />;
 
   const admin = profile?.role === 'admin';
 
@@ -67,20 +68,20 @@ export default function Dashboard() {
       {err && <p className="msg">{err}</p>}
 
       <div className="subj-grid">
-        <div className="subj-card">
+        <div className="subj-card stat">
           <b>{stats?.subjects ?? 0}</b>
           <span>{admin ? 'Subjects' : 'Subjects allotted'}</span>
         </div>
-        <div className="subj-card">
+        <div className="subj-card stat">
           <b>{stats?.questions ?? 0}</b>
           <span>Questions in bank</span>
         </div>
-        <div className="subj-card">
+        <div className="subj-card stat">
           <b>{stats?.papers ?? 0}</b>
           <span>Papers generated</span>
         </div>
         {admin && (
-          <div className="subj-card">
+          <div className="subj-card stat">
             <b>{stats?.audit ?? 0}</b>
             <span>Audit entries</span>
           </div>
