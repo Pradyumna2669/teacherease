@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { supabase } from './supabaseClient';
+import { supabase, isSupabaseConfigured, supabaseConfigMessage } from './supabaseClient';
 import { useProfile } from './lib/useProfile';
 import Login from './pages/Login';
 import Nav from './components/Nav';
@@ -26,6 +26,22 @@ export default function App() {
   // Saved theme, applied once on mount. index.html already set it before
   // first paint; this keeps it correct after a hot reload.
   useEffect(() => { applyTheme(loadSettings().theme); }, []);
+
+  if (!isSupabaseConfigured()) {
+    return (
+      <div className="container">
+        <div className="card">
+          <h2>Backend configuration required</h2>
+          <p>{supabaseConfigMessage}</p>
+          <p>Add these values to a .env.local file in the project root:</p>
+          <pre>
+REACT_APP_SUPABASE_URL=https://dfkpsipqdkbrknxmtzmh.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=your-real-anon-key
+          </pre>
+        </div>
+      </div>
+    );
+  }
 
   // Who is logged in?
   useEffect(() => {

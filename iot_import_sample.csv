@@ -1,0 +1,6 @@
+Unit,Marks,Difficulty,CO,Bloom Level,Question Text
+1,1,easy,1,1,"What is the primary purpose of an IoT sensor?"
+1,4,medium,1,2,"Explain the difference between analog and digital signals in IoT devices."
+2,4,hard,2,4,"Design a smart home system using sensors and actuators. Mention at least three components and their roles."
+2,4,medium,2,3,"Compare Wi-Fi, Bluetooth, and Zigbee for IoT communication in terms of range, power consumption, and use cases."
+3,4,hard,3,5,"Explain how edge computing improves the performance and security of an IoT application."

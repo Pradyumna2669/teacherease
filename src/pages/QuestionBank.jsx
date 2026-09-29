@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { attachImage, removeImage, signedUrls, validateImage }
   from '../lib/questionImages';
+import { parseQuestionFile, validateImportedQuestionRows, formatImportSummary }
+  from '../lib/questionImport';
 import Skeleton from '../components/Skeleton';
 
 const EMPTY = { unit_no: 1, text: '', marks: 2, difficulty: 'medium', co_no: '', bt_level: '' };
@@ -20,17 +22,33 @@ export default function QuestionBank() {
   const [file, setFile] = useState(null);
   const [msg, setMsg] = useState(null);       // { text, ok }
   const [busy, setBusy] = useState(false);
+  const [importPreview, setImportPreview] = useState(null);
+  const [readingImport, setReadingImport] = useState(false);
+  const [importing, setImporting] = useState(false);
   const fileRef = useRef(null);
+  const importFileRef = useRef(null);
 
   const load = useCallback(async () => {
-    const { data: subj } = await supabase.from('subjects').select('*').eq('id', id).single();
+    const { data: subj, error: subjectError } = await supabase
+      .from('subjects')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (subjectError) {
+      setMsg({ text: `Could not load the subject: ${subjectError.message}` });
+      return;
+    }
     setSubject(subj);
-    const { data } = await supabase
+    const { data, error: questionsError } = await supabase
       .from('questions')
       .select('*')
       .eq('subject_id', id)
       .order('unit_no')
       .order('created_at');
+    if (questionsError) {
+      setMsg({ text: `Could not load questions: ${questionsError.message}` });
+      return;
+    }
     const list = data || [];
     setItems(list);
 
@@ -46,6 +64,12 @@ export default function QuestionBank() {
   function pickFile(e) {
     const chosen = e.target.files?.[0] || null;
     if (!chosen) return setFile(null);
+    const extension = chosen.name.toLowerCase().split('.').pop();
+    if (['csv', 'xlsx', 'xls'].includes(extension)) {
+      setMsg({ text: 'Spreadsheet detected. Use the "Choose CSV / Excel file" button above to import questions.' });
+      e.target.value = '';
+      return setFile(null);
+    }
     const problem = validateImage(chosen);
     if (problem) {
       setMsg({ text: problem });
@@ -102,6 +126,73 @@ export default function QuestionBank() {
     load();
   }
 
+  async function handleImportFileChange(e) {
+    const chosen = e.target.files?.[0] || null;
+    if (!chosen) return;
+    e.target.value = '';
+
+    setReadingImport(true);
+    try {
+      setMsg(null);
+      const rows = await parseQuestionFile(chosen);
+      const result = validateImportedQuestionRows(rows);
+
+      setImportPreview({
+        fileName: chosen.name,
+        validRows: result.validRows,
+        invalidRows: result.invalidRows,
+        summary: result.summary,
+        allRows: rows,
+      });
+
+      if (result.validRows.length === 0) {
+        setMsg({ text: 'No valid question rows were found in the uploaded file.' });
+      }
+    } catch (err) {
+      setImportPreview(null);
+      setMsg({ text: `Could not read ${chosen.name}: ${err.message}` });
+    } finally {
+      setReadingImport(false);
+    }
+  }
+
+  async function importSelectedQuestions() {
+    if (!importPreview || importPreview.validRows.length === 0) return;
+
+    setImporting(true);
+    setMsg(null);
+
+    try {
+      const payload = importPreview.validRows.map((row) => ({
+        subject_id: id,
+        unit_no: Number(row.unit_no),
+        text: row.text.trim(),
+        marks: Number(row.marks),
+        difficulty: row.difficulty,
+        co_no: row.co_no != null ? Number(row.co_no) : null,
+        bt_level: row.bt_level != null ? Number(row.bt_level) : null,
+        is_active: true,
+      }));
+
+      const { error } = await supabase.from('questions').insert(payload);
+      if (error) throw error;
+
+      setMsg({ text: `Imported ${payload.length} question(s).`, ok: true });
+      setImportPreview(null);
+      if (importFileRef.current) importFileRef.current.value = '';
+      await load();
+    } catch (err) {
+      setMsg({ text: err.message });
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  function cancelImportPreview() {
+    setImportPreview(null);
+    if (importFileRef.current) importFileRef.current.value = '';
+  }
+
   async function changeImage(q, e) {
     const chosen = e.target.files?.[0];
     e.target.value = '';
@@ -155,6 +246,23 @@ export default function QuestionBank() {
         <Link to={`/subject/${id}/generate`}>→ Generate paper</Link>
       </p>
 
+      <div className="import-toolbar">
+        <button type="button" className="submit compact import-control" disabled={readingImport} onClick={() => importFileRef.current?.click()}>
+          {readingImport ? 'Reading file...' : 'Choose CSV / Excel file'}
+        </button>
+        <input
+          ref={importFileRef}
+          id="import-question-file"
+          data-role="import-question-file"
+          type="file"
+          hidden
+          accept=".csv,.xlsx,.xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          onChange={handleImportFileChange}
+          aria-label="Import questions from CSV or Excel"
+        />
+        <span className="mono">Spreadsheet import: CSV, XLSX, XLS. Select a file to preview its questions.</span>
+      </div>
+
       <form onSubmit={add} className="q-form">
         <div className="row">
           <div>
@@ -192,7 +300,7 @@ export default function QuestionBank() {
         <textarea rows="2" value={f.text}
           onChange={(e) => setF({ ...f, text: e.target.value })} required />
 
-        <label>Image (optional) — diagram, circuit or graph printed under the question</label>
+        <label>Question image (optional) — PNG, JPG, WEBP or GIF only</label>
         <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp,image/gif"
           onChange={pickFile} />
         {file && <p className="subtitle">Attached: {file.name}</p>}
@@ -202,6 +310,82 @@ export default function QuestionBank() {
         </button>
       </form>
       {msg && <p className={`msg ${msg.ok ? 'ok' : ''}`}>{msg.text}</p>}
+
+      {importPreview && (
+        <div className="modal-back">
+          <div className="modal">
+            <h2>Import review</h2>
+            <p className="subtitle">File: {importPreview.fileName}</p>
+            <div className="preview-meta">
+              <span className="pill ok">{formatImportSummary(importPreview.summary)}</span>
+              {importPreview.invalidRows.length > 0 && (
+                <span className="pill bad">{importPreview.invalidRows.length} invalid row(s)</span>
+              )}
+            </div>
+
+            {importPreview.invalidRows.length > 0 && (
+              <div className="warn-box">
+                These rows are excluded from the import until they are corrected.
+              </div>
+            )}
+
+            <div className="tbl-wrap">
+              <table className="tbl">
+                <thead>
+                  <tr>
+                    <th>Unit</th>
+                    <th>Marks</th>
+                    <th>Difficulty</th>
+                    <th>CO</th>
+                    <th>Bloom</th>
+                    <th>Question</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {importPreview.validRows.map((row, index) => (
+                    <tr key={`valid-${index}`}>
+                      <td>{row.unit_no}</td>
+                      <td>{row.marks}</td>
+                      <td>{row.difficulty}</td>
+                      <td>{row.co_no ?? '—'}</td>
+                      <td>{row.bt_level ?? '—'}</td>
+                      <td>{row.text}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {importPreview.invalidRows.length > 0 && (
+              <div className="tbl-wrap">
+                <table className="tbl">
+                  <thead>
+                    <tr>
+                      <th>Row</th>
+                      <th>Issue</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {importPreview.invalidRows.map((row, index) => (
+                      <tr key={`invalid-${index}`} className="row-bad">
+                        <td>{row.rowNumber}</td>
+                        <td>{row.errors.join(' ')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            <div className="row import-actions">
+              <button type="button" className="submit compact" disabled={importing || importPreview.validRows.length === 0} onClick={importSelectedQuestions}>
+                {importing ? 'Importing…' : 'Import questions'}
+              </button>
+              <button type="button" className="btn-sm" onClick={cancelImportPreview}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {Object.keys(byUnit).sort((a, b) => a - b).map((u) => (
         <div key={u} className="unit-block">
