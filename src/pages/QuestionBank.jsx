@@ -6,6 +6,32 @@ import { attachImage, removeImage, signedUrls, validateImage }
 import { parseQuestionFile, validateImportedQuestionRows, formatImportSummary }
   from '../lib/questionImport';
 import Skeleton from '../components/Skeleton';
+import * as XLSX from 'xlsx';
+
+// Generate and download a sample Excel template so teachers know the format.
+function downloadTemplate() {
+  const header = ['unit_no', 'marks', 'difficulty', 'co_no', 'bt_level', 'question_text'];
+  const sample = [
+    [1, 2, 'easy',   1, 1, 'Define the term "algorithm" and give an example.'],
+    [1, 5, 'medium', 1, 3, 'Explain the difference between stack and queue with a diagram.'],
+    [2, 10, 'hard',  2, 5, 'Design a solution using dynamic programming for the knapsack problem.'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet([header, ...sample]);
+
+  // Set reasonable column widths so the file looks neat when opened.
+  ws['!cols'] = [
+    { wch: 8 },   // unit_no
+    { wch: 6 },   // marks
+    { wch: 10 },  // difficulty
+    { wch: 6 },   // co_no
+    { wch: 8 },   // bt_level
+    { wch: 70 },  // question_text
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Questions');
+  XLSX.writeFile(wb, 'question_import_template.xlsx');
+}
 
 const EMPTY = { unit_no: 1, text: '', marks: 2, difficulty: 'medium', co_no: '', bt_level: '' };
 
@@ -260,7 +286,10 @@ export default function QuestionBank() {
           onChange={handleImportFileChange}
           aria-label="Import questions from CSV or Excel"
         />
-        <span className="mono">Spreadsheet import: CSV, XLSX, XLS. Select a file to preview its questions.</span>
+        <button type="button" className="btn-sm" onClick={downloadTemplate}>
+          📥 Download Template
+        </button>
+        <span className="mono">Upload CSV / XLSX / XLS, or download the template first.</span>
       </div>
 
       <form onSubmit={add} className="q-form">
