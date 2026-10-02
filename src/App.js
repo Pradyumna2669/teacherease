@@ -18,16 +18,29 @@ import GeneratePaper from './pages/GeneratePaper';
 import DownloadPaper from './pages/DownloadPaper';
 import './App.css';
 import './pages.css';
+import './charts.css';
 
 export default function App() {
   const [session, setSession] = useState(null);
   const [ready, setReady] = useState(false);
+  const configured = isSupabaseConfigured();
 
   // Saved theme, applied once on mount. index.html already set it before
   // first paint; this keeps it correct after a hot reload.
   useEffect(() => { applyTheme(loadSettings().theme); }, []);
 
-  if (!isSupabaseConfigured()) {
+  // Who is logged in? Only subscribes when Supabase is configured.
+  useEffect(() => {
+    if (!configured) return;
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setReady(true);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    return () => sub.subscription.unsubscribe();
+  }, [configured]);
+
+  if (!configured) {
     return (
       <div className="container">
         <div className="card">
@@ -42,16 +55,6 @@ REACT_APP_SUPABASE_ANON_KEY=your-real-anon-key
       </div>
     );
   }
-
-  // Who is logged in?
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setReady(true);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    return () => sub.subscription.unsubscribe();
-  }, []);
 
   if (!ready) return <div className="container"><p>Loading…</p></div>;
   if (!session) return <Login />;
