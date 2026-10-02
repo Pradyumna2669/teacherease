@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { attachImage, removeImage, signedUrls, validateImage }
@@ -18,7 +18,6 @@ function downloadTemplate() {
   ];
   const ws = XLSX.utils.aoa_to_sheet([header, ...sample]);
 
-  // Set reasonable column widths so the file looks neat when opened.
   ws['!cols'] = [
     { wch: 8 },   // unit_no
     { wch: 6 },   // marks
@@ -33,12 +32,43 @@ function downloadTemplate() {
   XLSX.writeFile(wb, 'question_import_template.xlsx');
 }
 
+// Export the entire question bank for this subject to Excel
+function exportBankToExcel(subjectCode, questions) {
+  if (!questions || questions.length === 0) {
+    alert('No questions available to export.');
+    return;
+  }
+  const header = ['unit_no', 'marks', 'difficulty', 'co_no', 'bt_level', 'question_text', 'status'];
+  const rows = questions.map((q) => [
+    q.unit_no,
+    q.marks,
+    q.difficulty,
+    q.co_no ?? '',
+    q.bt_level ?? '',
+    q.text,
+    q.is_active ? 'active' : 'inactive',
+  ]);
+  const ws = XLSX.utils.aoa_to_sheet([header, ...rows]);
+
+  ws['!cols'] = [
+    { wch: 8 },   // unit_no
+    { wch: 6 },   // marks
+    { wch: 10 },  // difficulty
+    { wch: 6 },   // co_no
+    { wch: 8 },   // bt_level
+    { wch: 70 },  // question_text
+    { wch: 10 },  // status
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'QuestionBank');
+  const filename = `${subjectCode || 'Subject'}_Question_Bank_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  XLSX.writeFile(wb, filename);
+}
+
 const EMPTY = { unit_no: 1, text: '', marks: 2, difficulty: 'medium', co_no: '', bt_level: '' };
 
 // Step 5: unit-wise question bank for one subject.
-// A question may carry one image (diagram, circuit, graph). The image is stored
-// in the question-images bucket under the question's own id, so the question row
-// is all you need to find it.
 export default function QuestionBank() {
   const { id } = useParams();
   const [subject, setSubject] = useState(null);
@@ -53,6 +83,14 @@ export default function QuestionBank() {
   const [importing, setImporting] = useState(false);
   const fileRef = useRef(null);
   const importFileRef = useRef(null);
+
+  // Search and Multi-Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterUnit, setFilterUnit] = useState('');
+  const [filterDifficulty, setFilterDifficulty] = useState('');
+  const [filterBtLevel, setFilterBtLevel] = useState('');
+  const [filterCoNo, setFilterCoNo] = useState('');
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   const load = useCallback(async () => {
     const { data: subj, error: subjectError } = await supabase
@@ -81,11 +119,80 @@ export default function QuestionBank() {
     try {
       setThumbs(await signedUrls(list.map((q) => q.image_url)));
     } catch {
-      // Thumbnails are a convenience; a signing failure must not blank the bank.
       setThumbs({});
     }
   }, [id]);
+
   useEffect(() => { load(); }, [load]);
+
+  // Derived filtered items based on search and multi-filters
+  const filteredItems = useMemo(() => {
+    return items.filter((q) => {
+      if (searchTerm.trim()) {
+        const s = searchTerm.toLowerCase();
+        if (!q.text.toLowerCase().includes(s)) return false;
+      }
+      if (filterUnit && String(q.unit_no) !== String(filterUnit)) return false;
+      if (filterDifficulty && q.difficulty !== filterDifficulty) return false;
+      if (filterBtLevel && String(q.bt_level) !== String(filterBtLevel)) return false;
+      if (filterCoNo && String(q.co_no) !== String(filterCoNo)) return false;
+      return true;
+    });
+  }, [items, searchTerm, filterUnit, filterDifficulty, filterBtLevel, filterCoNo]);
+
+  // Units present in this subject
+  const availableUnits = useMemo(() => {
+    const set = new Set(items.map((q) => q.unit_no).filter(Boolean));
+    return Array.from(set).sort((a, b) => a - b);
+  }, [items]);
+
+  // NBA / OBE Analytics Metrics
+  const analytics = useMemo(() => {
+    const total = items.length;
+    if (total === 0) return null;
+
+    const bloomLevels = [
+      { level: 1, name: 'L1: Remember' },
+      { level: 2, name: 'L2: Understand' },
+      { level: 3, name: 'L3: Apply' },
+      { level: 4, name: 'L4: Analyze' },
+      { level: 5, name: 'L5: Evaluate' },
+      { level: 6, name: 'L6: Create' },
+    ].map((b) => {
+      const count = items.filter((q) => q.bt_level === b.level).length;
+      return { ...b, count, pct: Math.round((count / total) * 100) };
+    });
+
+    const coCounts = [1, 2, 3, 4, 5, 6].map((co) => {
+      const count = items.filter((q) => q.co_no === co).length;
+      return { co: `CO${co}`, count, pct: Math.round((count / total) * 100) };
+    });
+
+    const difficulties = [
+      { key: 'easy', label: 'Easy', color: 'var(--ok, #14603F)' },
+      { key: 'medium', label: 'Medium', color: 'var(--c3, #9A5B00)' },
+      { key: 'hard', label: 'Hard', color: 'var(--seal, #8E1B2E)' },
+    ].map((d) => {
+      const count = items.filter((q) => q.difficulty === d.key).length;
+      return { ...d, count, pct: Math.round((count / total) * 100) };
+    });
+
+    const totalMarks = items.reduce((sum, q) => sum + (q.marks || 0), 0);
+
+    return { bloomLevels, coCounts, difficulties, totalMarks, total };
+  }, [items]);
+
+  function resetFilters() {
+    setSearchTerm('');
+    setFilterUnit('');
+    setFilterDifficulty('');
+    setFilterBtLevel('');
+    setFilterCoNo('');
+  }
+
+  const hasActiveFilters = Boolean(
+    searchTerm || filterUnit || filterDifficulty || filterBtLevel || filterCoNo
+  );
 
   function pickFile(e) {
     const chosen = e.target.files?.[0] || null;
@@ -110,8 +217,7 @@ export default function QuestionBank() {
     e.preventDefault();
     setMsg(null);
     setBusy(true);
-    // Insert first: the image is named after the question id, which the
-    // database assigns, so the row has to exist before the upload.
+
     const { data: row, error } = await supabase
       .from('questions')
       .insert({
@@ -135,7 +241,6 @@ export default function QuestionBank() {
       try {
         await attachImage(row.id, file);
       } catch (err) {
-        // The question is saved; only the image failed. Say so precisely.
         setBusy(false);
         setFile(null);
         if (fileRef.current) fileRef.current.value = '';
@@ -147,7 +252,7 @@ export default function QuestionBank() {
     setBusy(false);
     setFile(null);
     if (fileRef.current) fileRef.current.value = '';
-    setF({ ...EMPTY, unit_no: f.unit_no, marks: f.marks }); // keep unit/marks for fast entry
+    setF({ ...EMPTY, unit_no: f.unit_no, marks: f.marks });
     setMsg({ text: file ? 'Question with image added.' : 'Question added.', ok: true });
     load();
   }
@@ -251,13 +356,13 @@ export default function QuestionBank() {
 
   async function remove(q) {
     if (!window.confirm('Delete this question?')) return;
-    // Drop the image first, or it is left orphaned in the bucket.
     if (q.image_url) await removeImage(q.id, q.image_url).catch(() => {});
     await supabase.from('questions').delete().eq('id', q.id);
     load();
   }
 
-  const byUnit = items.reduce((m, q) => {
+  // Group filtered questions by unit
+  const byUnit = filteredItems.reduce((m, q) => {
     (m[q.unit_no] ??= []).push(q);
     return m;
   }, {});
@@ -268,13 +373,19 @@ export default function QuestionBank() {
     <div className="card wide">
       <h1>Question bank</h1>
       <p className="subtitle">
-        {subject.code} — {subject.name}{'  '}
+        {subject.code} — {subject.name}{' · '}
         <Link to={`/subject/${id}/generate`}>→ Generate paper</Link>
       </p>
 
+      {/* Toolbar: Import / Template / Export / Analytics */}
       <div className="import-toolbar">
-        <button type="button" className="submit compact import-control" disabled={readingImport} onClick={() => importFileRef.current?.click()}>
-          {readingImport ? 'Reading file...' : 'Choose CSV / Excel file'}
+        <button
+          type="button"
+          className="submit compact import-control"
+          disabled={readingImport}
+          onClick={() => importFileRef.current?.click()}
+        >
+          {readingImport ? 'Reading file...' : '📥 Choose CSV / Excel'}
         </button>
         <input
           ref={importFileRef}
@@ -287,11 +398,101 @@ export default function QuestionBank() {
           aria-label="Import questions from CSV or Excel"
         />
         <button type="button" className="btn-sm" onClick={downloadTemplate}>
-          📥 Download Template
+          📄 Download Template
         </button>
-        <span className="mono">Upload CSV / XLSX / XLS, or download the template first.</span>
+        <button
+          type="button"
+          className="btn-sm"
+          onClick={() => exportBankToExcel(subject.code, items)}
+          disabled={items.length === 0}
+        >
+          📤 Export Bank (.xlsx)
+        </button>
+        <button
+          type="button"
+          className={`btn-sm ${showAnalytics ? 'active' : ''}`}
+          onClick={() => setShowAnalytics(!showAnalytics)}
+        >
+          📊 {showAnalytics ? 'Hide OBE Analytics' : 'NBA / OBE Analytics'}
+        </button>
       </div>
 
+      {/* NBA / OBE Analytics Widget */}
+      {showAnalytics && analytics && (
+        <div className="analytics-section">
+          <div className="analytics-header">
+            <h3 style={{ margin: 0 }}>NBA / NAAC Outcome-Based Analytics</h3>
+            <span className="mono">Total questions: {analytics.total} · Total marks: {analytics.totalMarks}m</span>
+          </div>
+
+          <div className="analytics-grid">
+            {/* Bloom's Taxonomy Distribution */}
+            <div className="analytics-subcard">
+              <h5>Bloom's Taxonomy Levels</h5>
+              <div className="progress-list">
+                {analytics.bloomLevels.map((b) => (
+                  <div key={b.level} className="progress-item">
+                    <span className="progress-label" title={b.name}>{b.name.split(':')[0]}</span>
+                    <div className="progress-track">
+                      <div
+                        className="progress-fill"
+                        style={{
+                          width: `${b.pct}%`,
+                          background: 'linear-gradient(90deg, var(--c1) 0%, var(--seal) 100%)',
+                        }}
+                      />
+                    </div>
+                    <span className="progress-val">{b.count} ({b.pct}%)</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Course Outcomes Coverage */}
+            <div className="analytics-subcard">
+              <h5>Course Outcome (CO) Coverage</h5>
+              <div className="progress-list">
+                {analytics.coCounts.map((co) => (
+                  <div key={co.co} className="progress-item">
+                    <span className="progress-label">{co.co}</span>
+                    <div className="progress-track">
+                      <div
+                        className="progress-fill"
+                        style={{
+                          width: `${co.pct}%`,
+                          background: 'var(--c2, #0F6B57)',
+                        }}
+                      />
+                    </div>
+                    <span className="progress-val">{co.count} ({co.pct}%)</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Difficulty Breakdown */}
+            <div className="analytics-subcard">
+              <h5>Difficulty Ratio</h5>
+              <div className="progress-list">
+                {analytics.difficulties.map((d) => (
+                  <div key={d.key} className="progress-item">
+                    <span className="progress-label">{d.label}</span>
+                    <div className="progress-track">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${d.pct}%`, background: d.color }}
+                      />
+                    </div>
+                    <span className="progress-val">{d.count} ({d.pct}%)</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Question Form */}
       <form onSubmit={add} className="q-form">
         <div className="row">
           <div>
@@ -316,12 +517,12 @@ export default function QuestionBank() {
           <div>
             <label>CO</label>
             <input type="number" value={f.co_no}
-              onChange={(e) => setF({ ...f, co_no: e.target.value })} />
+              onChange={(e) => setF({ ...f, co_no: e.target.value })} placeholder="e.g. 1" />
           </div>
           <div>
-            <label>Bloom</label>
+            <label>Bloom (1-6)</label>
             <input type="number" min="1" max="6" value={f.bt_level}
-              onChange={(e) => setF({ ...f, bt_level: e.target.value })} />
+              onChange={(e) => setF({ ...f, bt_level: e.target.value })} placeholder="1..6" />
           </div>
         </div>
 
@@ -340,6 +541,78 @@ export default function QuestionBank() {
       </form>
       {msg && <p className={`msg ${msg.ok ? 'ok' : ''}`}>{msg.text}</p>}
 
+      {/* Search & Multi-Filter Bar */}
+      <div className="bank-filter-bar">
+        <input
+          type="text"
+          className="bank-search-input"
+          placeholder="🔍 Search question text..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <select
+          className="bank-filter-select"
+          value={filterUnit}
+          onChange={(e) => setFilterUnit(e.target.value)}
+        >
+          <option value="">All Units</option>
+          {availableUnits.map((u) => (
+            <option key={u} value={u}>Unit {u}</option>
+          ))}
+        </select>
+
+        <select
+          className="bank-filter-select"
+          value={filterDifficulty}
+          onChange={(e) => setFilterDifficulty(e.target.value)}
+        >
+          <option value="">All Difficulties</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <select
+          className="bank-filter-select"
+          value={filterBtLevel}
+          onChange={(e) => setFilterBtLevel(e.target.value)}
+        >
+          <option value="">All BTL</option>
+          {[1, 2, 3, 4, 5, 6].map((l) => (
+            <option key={l} value={l}>BTL {l}</option>
+          ))}
+        </select>
+
+        <select
+          className="bank-filter-select"
+          value={filterCoNo}
+          onChange={(e) => setFilterCoNo(e.target.value)}
+        >
+          <option value="">All COs</option>
+          {[1, 2, 3, 4, 5, 6].map((co) => (
+            <option key={co} value={co}>CO {co}</option>
+          ))}
+        </select>
+
+        {hasActiveFilters && (
+          <button type="button" className="btn-sm" onClick={resetFilters}>
+            ✕ Clear
+          </button>
+        )}
+
+        <div className="bank-filter-meta">
+          <span>
+            Showing <b>{filteredItems.length}</b> of {items.length} questions
+            {hasActiveFilters && ' (filtered)'}
+          </span>
+          {hasActiveFilters && (
+            <span className="mono">Active filters applied</span>
+          )}
+        </div>
+      </div>
+
+      {/* Import Preview Modal */}
       {importPreview && (
         <div className="modal-back">
           <div className="modal">
@@ -407,15 +680,39 @@ export default function QuestionBank() {
             )}
 
             <div className="row import-actions">
-              <button type="button" className="submit compact" disabled={importing || importPreview.validRows.length === 0} onClick={importSelectedQuestions}>
+              <button
+                type="button"
+                className="submit compact"
+                disabled={importing || importPreview.validRows.length === 0}
+                onClick={importSelectedQuestions}
+              >
                 {importing ? 'Importing…' : 'Import questions'}
               </button>
-              <button type="button" className="btn-sm" onClick={cancelImportPreview}>Cancel</button>
+              <button type="button" className="btn-sm" onClick={cancelImportPreview}>
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* No questions matching search/filter empty state */}
+      {filteredItems.length === 0 && (
+        <div className="empty" style={{ margin: '20px 0' }}>
+          {items.length === 0 ? (
+            <p>No questions in this subject yet. Add questions using the form above or import an Excel/CSV file.</p>
+          ) : (
+            <div>
+              <p>No questions match your current search or filter criteria.</p>
+              <button type="button" className="btn-sm" onClick={resetFilters}>
+                Clear all filters
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Unit Blocks */}
       {Object.keys(byUnit).sort((a, b) => a - b).map((u) => (
         <div key={u} className="unit-block">
           <h3>Unit {u} <span className="count">({byUnit[u].length})</span></h3>

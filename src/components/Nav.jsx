@@ -22,6 +22,7 @@ export default function Nav({ email }) {
       {admin
         ? <NavLink to="/admin">Admin</NavLink>
         : <NavLink to="/teacher">My subjects</NavLink>}
+      <NavLink to="/papers">Papers</NavLink>
       <NavLink to="/profile">Profile</NavLink>
       <NavLink to="/settings">Settings</NavLink>
       <span className="nav-spacer" />

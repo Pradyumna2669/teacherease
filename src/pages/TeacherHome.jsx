@@ -24,14 +24,23 @@ export default function TeacherHome() {
   return (
     <div className="card wide">
       <h1>My subjects</h1>
+      <p className="subtitle">
+        {subjects.length} allotted subject(s) ·{' '}
+        <Link to="/papers">📄 View my generated papers →</Link> ·{' '}
+        <Link to="/dashboard">Dashboard</Link>
+      </p>
+
       {subjects.length === 0 && (
-        <p className="empty">No subjects allotted yet. Ask an administrator to allot your subjects, and they will appear here.</p>
+        <p className="empty">
+          No subjects allotted yet. Ask an administrator to allot your subjects, and they will appear here.
+        </p>
       )}
+
       <div className="subj-grid">
         {subjects.map((s) => (
           <div key={s.id} className="subj-card">
             <b>{s.code}</b>
-            <span>{s.name}</span>
+            <span>{s.name} {s.semester ? `· Sem ${s.semester}` : ''}</span>
             <div className="subj-links">
               <Link to={`/subject/${s.id}/bank`}>Question bank</Link>
               <Link to={`/subject/${s.id}/generate`}>Generate paper</Link>

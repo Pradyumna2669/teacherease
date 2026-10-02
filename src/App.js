@@ -82,6 +82,7 @@ REACT_APP_SUPABASE_ANON_KEY=your-real-anon-key
             path="/admin/audit"
             element={<RequireRole role="admin"><AuditLog /></RequireRole>}
           />
+          <Route path="/papers" element={<AllPapers />} />
           <Route path="/teacher" element={<TeacherHome />} />
           <Route path="/subject/:id/bank" element={<QuestionBank />} />
           <Route path="/subject/:id/generate" element={<GeneratePaper />} />
