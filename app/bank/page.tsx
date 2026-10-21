@@ -1162,6 +1162,15 @@ export default function BankPage() {
         />
       )}
 
+      {/* Autonomous College Blueprint Modal */}
+      {showBlueprintModal && activeSubjectObj && (
+        <CollegeBlueprintModal
+          subject={activeSubjectObj}
+          bankQuestions={items}
+          onClose={() => setShowBlueprintModal(false)}
+        />
+      )}
+
       {/* Sticky action bar */}
       {selected.size > 0 && (
         <div className="fixed bottom-0 inset-x-0 bg-white border-t border-rule z-40 safe-bottom">
