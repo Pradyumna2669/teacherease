@@ -1,0 +1,65 @@
+const fs = require('fs');
+
+function createBagSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 260" width="100%" height="100%">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <!-- Connecting Lines from center 'बाग' (cx: 325, cy: 195) -->
+  <!-- To Top Oval 'प्रसन्नता' (cx: 325, cy: 65) -->
+  <line x1="325" y1="165" x2="325" y2="92" stroke="#222222" stroke-width="2"/>
+
+  <!-- To Left Boxes -->
+  <!-- Top Left (x: 50, y: 30) -->
+  <line x1="300" y1="175" x2="190" y2="55" stroke="#222222" stroke-width="2"/>
+  <!-- Mid Left (x: 30, y: 110) -->
+  <line x1="280" y1="190" x2="170" y2="135" stroke="#222222" stroke-width="2"/>
+  <!-- Bot Left (x: 50, y: 190) -->
+  <line x1="275" y1="200" x2="190" y2="215" stroke="#222222" stroke-width="2"/>
+
+  <!-- To Right Boxes -->
+  <!-- Top Right (x: 460, y: 30) -->
+  <line x1="350" y1="175" x2="460" y2="55" stroke="#222222" stroke-width="2"/>
+  <!-- Mid Right (x: 480, y: 110) -->
+  <line x1="370" y1="190" x2="480" y2="135" stroke="#222222" stroke-width="2"/>
+  <!-- Bot Right (x: 460, y: 190) -->
+  <line x1="375" y1="200" x2="460" y2="215" stroke="#222222" stroke-width="2"/>
+
+  <!-- Top Oval: प्रसन्नता (Example already given) -->
+  <g transform="translate(325, 65)">
+    <ellipse cx="0" cy="0" rx="65" ry="26" fill="#f8fafc" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+    <text x="0" y="7" font-family="'Noto Sans Devanagari', 'Mangal', 'Segoe UI', sans-serif" font-size="20" font-weight="bold" fill="#0f172a" text-anchor="middle">प्रसन्नता</text>
+  </g>
+
+  <!-- Center Root Oval: बाग -->
+  <g transform="translate(325, 195)">
+    <ellipse cx="0" cy="0" rx="58" ry="28" fill="#f1f5f9" stroke="#0f172a" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="0" y="8" font-family="'Noto Sans Devanagari', 'Mangal', 'Segoe UI', sans-serif" font-size="24" font-weight="bold" fill="#000000" text-anchor="middle">बाग</text>
+  </g>
+
+  <!-- Blank Boxes for students to fill (6 boxes) -->
+  <!-- 1. Top Left -->
+  <rect x="50" y="30" width="140" height="46" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- 2. Mid Left -->
+  <rect x="30" y="110" width="140" height="46" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- 3. Bot Left -->
+  <rect x="50" y="190" width="140" height="46" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- 4. Top Right -->
+  <rect x="460" y="30" width="140" height="46" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- 5. Mid Right -->
+  <rect x="480" y="110" width="140" height="46" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- 6. Bot Right -->
+  <rect x="460" y="190" width="140" height="46" rx="8" fill="#ffffff" stroke="#1e293b" stroke-width="2" filter="url(#shadow)"/>
+</svg>`;
+}
+
+fs.writeFileSync('scratch/bag_diagram.svg', createBagSvg());
+console.log('Saved scratch/bag_diagram.svg');

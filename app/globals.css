@@ -1,0 +1,443 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --font-malayalam: 'Noto Sans Malayalam', 'Nirmala UI', 'Malayalam Sangam MN', 'Kartika', sans-serif;
+}
+
+/* One ground colour from the Android splash through to the first paint. Without
+   this the browser paints its own white between the cream splash and the first
+   bg-paper element, which reads as a page loading in a frame. Must stay the
+   same literal as the web and Android manifests. */
+html,
+body {
+  background-color: #fcfcf9;
+}
+
+body {
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+/* ===== NATIVE-APP FEEL ===== */
+/* The tap flash and the overscroll bounce are the two loudest "this is a
+   browser" tells inside the TWA. */
+html {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* Long-pressing a control raises Android's Copy / Web-search toolbar over the
+   app. Chrome offers that only where there is selectable text, so chrome is
+   unselectable and content is not. */
+button,
+[role="button"],
+a,
+nav,
+header,
+label {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* A teacher must still be able to select the question text she typed. */
+input,
+textarea,
+[contenteditable],
+.paper-preview {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* ===== Landing page (scoped under .lp) ===== */
+/* Fill-in-the-blank underline — the brand device. */
+.ink-blank {
+  background-image: linear-gradient(var(--pen, #e0392b), var(--pen, #e0392b));
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  padding-bottom: 1px;
+}
+/* Faint ruled paper, like an answer sheet. */
+.lp-ruled {
+  background-image: repeating-linear-gradient(
+    #ffffff 0 28px,
+    #e7e8e2 28px 29px
+  );
+}
+/* Sheet shadow — a real page lifting off the surface. */
+.lp-sheet {
+  box-shadow:
+    0 1px 2px rgba(22, 36, 59, 0.05),
+    0 22px 50px -24px rgba(22, 36, 59, 0.28);
+}
+/* The single signature animation: a scan line sweeping the hero paper. */
+@keyframes lp-scan {
+  0% { top: 4%; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { top: 94%; opacity: 0; }
+}
+.lp-scanline {
+  animation: lp-scan 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-scanline { animation: none; opacity: 0; }
+}
+.lp a:focus-visible,
+.lp button:focus-visible {
+  outline: 2px solid #e0392b;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Legal / policy page prose */
+.legal-prose h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #16243b;
+  margin-top: 1.75rem;
+  margin-bottom: 0.4rem;
+}
+.legal-prose p,
+.legal-prose li {
+  color: #34425c;
+}
+.legal-prose ul {
+  list-style: disc;
+  padding-left: 1.3rem;
+  margin-top: 0.4rem;
+}
+.legal-prose ol {
+  list-style: decimal;
+  padding-left: 1.4rem;
+  margin-top: 0.4rem;
+}
+.legal-prose p {
+  margin-top: 0.75rem;
+}
+.legal-prose li {
+  margin-top: 0.3rem;
+}
+.legal-prose a {
+  color: #e0392b;
+  text-decoration: underline;
+}
+.legal-prose strong {
+  color: #16243b;
+  font-weight: 600;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+/* ===== REAL PAPER FEEL ===== */
+.paper-container {
+  position: relative;
+  background: #fff;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
+  border-radius: 2px;
+}
+
+/* Subtle paper texture using CSS gradient */
+.paper-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      transparent,
+      transparent 27px,
+      rgba(0, 0, 0, 0.015) 27px,
+      rgba(0, 0, 0, 0.015) 28px
+    );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 2px;
+}
+
+/* Left margin red line - like a real notebook/paper */
+.paper-container.show-margin-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50px;
+  bottom: 0;
+  width: 1px;
+  background: rgba(220, 50, 50, 0.15);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Folded corner effect */
+.paper-container .paper-fold {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #f8f8f8 50%, #e8e8e8 50%);
+  box-shadow: -1px 1px 2px rgba(0, 0, 0, 0.05);
+  z-index: 2;
+}
+
+/* ===== PRINT PREVIEW STYLES ===== */
+.paper-preview {
+  font-family: "Times New Roman", "Noto Serif", Georgia, serif;
+  color: #000;
+  line-height: 1.5;
+  font-size: 12pt;
+  position: relative;
+  z-index: 0;
+}
+
+/* A question-only paper keeps prompts and options but removes student writing
+   space. The class is toggled by PaperSettings.showAnswerSpace. */
+.paper-preview.pp-question-only .pp-answer-space {
+  display: none;
+}
+
+.paper-preview .question-title {
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: var(--pp-title-gap, 4pt);
+  display: flex;
+  align-items: baseline;
+  break-after: avoid;
+  -webkit-column-break-after: avoid;
+  page-break-after: avoid;
+}
+
+/* Push the marks to the right edge from the marks element itself rather than
+   with justify-content: space-between. The PDF exporter can inject a spacer
+   div into any container while paginating; with space-between that extra item
+   redistributes the row and the title slides to the middle. An auto margin
+   pins the marks right and leaves the title at the left however many
+   siblings appear. */
+.paper-preview .question-title > :last-child {
+  margin-left: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-left: 8pt;
+}
+
+/* Force question to start at top of next page when requested */
+.paper-preview .pp-question.pp-break-before {
+  break-before: page;
+  page-break-before: always;
+}
+
+/* Only questions that must be read as a whole resist a page break. A long list
+   of items is allowed to flow on — otherwise it gets pushed to the next page
+   entire and leaves half a sheet blank. */
+.paper-preview .pp-question.pp-keep {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* A split may land between items but never through one. */
+.paper-preview .pp-row,
+.paper-preview .math-problem,
+.paper-preview table tr {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.paper-preview .sub-item {
+  margin-left: 16pt;
+  margin-bottom: 3pt;
+}
+
+.paper-preview .answer-line {
+  border-bottom: 1px solid #000;
+  height: 20pt;
+  margin-top: 2pt;
+}
+
+.paper-preview .blank-underline {
+  display: inline-block;
+  border-bottom: 1.5px solid #000;
+  min-width: 80px;
+  height: 1em;
+  vertical-align: bottom;
+}
+
+.paper-preview .math-grid {
+  display: grid;
+  gap: 12pt;
+}
+
+.paper-preview .math-problem {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: flex-start;
+  font-family: "Courier New", monospace;
+  font-size: 13pt;
+  min-width: 70pt;
+}
+
+.paper-preview .math-problem .math-number {
+  flex-shrink: 0;
+  margin-right: 6pt;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.paper-preview .math-problem .math-body {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+
+.paper-preview .math-problem .math-line {
+  border-top: 1.5px solid #000;
+  width: 100%;
+  min-height: 18pt;
+  /* Clear the digits above. On screen 3pt was enough, but html2canvas lays the
+     digit rows out tighter than the browser does and the raster gap collapsed
+     from 4px to 1px — the rule printed against the numbers even though the
+     preview looked right. Measured in the raster, not on screen. */
+  margin-top: 7pt;
+}
+
+/* Operand rows. The padding is what actually survives rasterisation: html2canvas
+   does not reproduce line-height faithfully, so reserving real box space below
+   each digit row is the part that can be relied on. */
+.paper-preview .math-problem .math-operand {
+  line-height: 1.45;
+  padding-bottom: 2pt;
+}
+
+.paper-preview .match-table {
+  width: 100%;
+  margin-left: 16pt;
+}
+
+.paper-preview .match-table td {
+  padding: 3pt 8pt;
+  vertical-align: top;
+}
+
+.paper-preview .mcq-options {
+  display: grid;
+  gap: 2pt 16pt;
+  margin-left: 24pt;
+  margin-top: 2pt;
+}
+
+.paper-preview .mcq-option-box {
+  display: inline-block;
+  width: 14pt;
+  height: 14pt;
+  border: 1px solid #000;
+  margin-left: 4pt;
+  vertical-align: middle;
+}
+
+/* ===== HEADER STYLE PREVIEW THUMBNAILS ===== */
+.style-thumb {
+  width: 100%;
+  aspect-ratio: 1.4;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.style-thumb:hover {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+}
+
+.style-thumb.active {
+  border-color: #6366f1;
+  background: #eef2ff;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+/* ===== SAFE AREA FOR BOTTOM BAR ===== */
+/* ===== MOBILE INPUT ZOOM GUARD =====
+   iOS Safari auto-zooms the whole page whenever a focused form control renders
+   below 16px, and never zooms back out. Teachers type most of a paper on a
+   phone, so a text-sm input turns every tap into a layout jump. Force 16px on
+   touch-sized viewports; the design keeps its smaller type on desktop. */
+@media (max-width: 1023px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* ===== PRINT MEDIA ===== */
+@media print {
+  @page {
+    size: A4;
+    margin: 1.5cm 1.8cm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #print-area,
+  #print-area * {
+    visibility: visible;
+  }
+
+  #print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .no-print,
+  .adsbygoogle,
+  .ad-banner-container,
+  [data-ad-unit] {
+    display: none !important;
+  }
+
+  .paper-container {
+    box-shadow: none;
+  }
+
+  .paper-container::before,
+  .paper-container::after,
+  .paper-container .paper-fold {
+    display: none;
+  }
+}

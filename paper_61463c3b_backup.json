@@ -1,0 +1,385 @@
+{
+  "id": "61463c3b-167c-4f49-8efd-e659287bab26",
+  "user_id": "56bbd382-cdd0-488a-ac09-20cd629643ca",
+  "title": "Marathi • Summative Assessment-1",
+  "subject": "Marathi",
+  "class_name": "Class - 6",
+  "settings": {
+    "margin": "narrow",
+    "density": "compact",
+    "logoUrl": "",
+    "section": "",
+    "subject": "Marathi",
+    "fontSize": 13,
+    "language": "marathi",
+    "answerKey": false,
+    "className": "Class - 6",
+    "lineStyle": "single",
+    "fontFamily": "serif",
+    "headerRows": [
+      [
+        "name",
+        "rollNo",
+        "marks"
+      ],
+      [
+        "subject",
+        "className",
+        "date"
+      ]
+    ],
+    "schoolName": "SDF Primary School",
+    "totalMarks": 40,
+    "headerStyle": "boxed",
+    "pageColumns": 1,
+    "timeAllowed": "2 hr",
+    "academicYear": "2026-27",
+    "instructions": [],
+    "mcqOptionBox": false,
+    "schoolSubtitle": "",
+    "assessmentTitle": "Summative Assessment-1",
+    "showAnswerSpace": true
+  },
+  "questions": [
+    {
+      "id": "zqi3ofa2",
+      "type": "comprehension",
+      "items": [
+        {
+          "id": "r0r1sn7k",
+          "lines": 0,
+          "answer": "देवकान कोतीन",
+          "content": "आजी आजोबांबरोबर गावात गेलेली ते ठिकाण"
+        },
+        {
+          "id": "g9yw752s",
+          "lines": 0,
+          "answer": "कीर्तन",
+          "content": "कथा, काव्य, नाट्य यांचा सुंदर मिलाप म्हणजे"
+        },
+        {
+          "id": "6lsir26y",
+          "lines": 0,
+          "answer": "पत्र लिहिणारी मुलगी आईला",
+          "content": "मी इथे खूप मजा करत आहे."
+        },
+        {
+          "id": "4nfju8md",
+          "lines": 0,
+          "answer": "कीर्तन खूपच मजेदार होते आणि ती कीर्तनात दंग होऊन गेली होती.",
+          "content": "देवकान दोन तास कसे गेले ते ओवीला समजले नाही कारण-"
+        }
+      ],
+      "marks": 2,
+      "title": "पुढील उतारा वाचून दिलेल्या सूचनांनुसार कृती करा:",
+      "passage": "आई, मी इथे खूप मजा करत आहे. डोंगर, झुळझुळ वाहणारी नदी, पिकानी बहरलेली शेते, डोंगराच्या अवतीभोवती मावळात हे असं निसर्गरम्य सुंदर रूप पाहायला गावालाच यायला हवं. आता दरवर्षी सुट्टीत मी आजीच्या गावाला जायचं ठरवलंय. आजीच्या हातची भाजीभाकरी खूपच चविष्ट लागते, की मला पिझ्झा, बर्गरची मुळीच आठवण येत नाही. काल मी आजोबांबरोबर देवकान कोतीन पहायला गेले होते. कथा, काव्य, नाट्य यांचा सुंदर मिलाप म्हणजे कीर्तन! असे आजोबा म्हणाले, ते कीर्तन खूपच मजेदार होते. कीर्तनात काय काय 'पुढचा रंग' होता, की दोन तास कसे गेले ते समजले नाही. सगळे जण कीर्तनात दंग होऊन गेले होते.",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "uxy9omnh",
+      "type": "long-answer",
+      "items": [
+        {
+          "id": "89w6rp7b",
+          "lines": 0,
+          "content": "आजीने दरवर्षी सुट्टीत गावाला यायचे का ठरवले असावे ते तुमच्या शब्दात लिहा."
+        }
+      ],
+      "marks": 3,
+      "title": "स्वमत:",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "xujto4zd",
+      "type": "short-answer",
+      "items": [],
+      "marks": 2,
+      "title": "आजीने मुलाला दिलेले खाऊ",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "tfe2f4la",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "xflibjmf",
+          "lines": 0,
+          "answer": "डॅश / संयोगचिन्ह",
+          "content": "–"
+        },
+        {
+          "id": "zepljgki",
+          "lines": 0,
+          "answer": "उद्गारचिन्ह",
+          "content": "!"
+        },
+        {
+          "id": "4175q2gl",
+          "lines": 0,
+          "answer": "प्रश्नचिन्ह",
+          "content": "?"
+        }
+      ],
+      "marks": 1,
+      "title": "विरामचिन्हे ओळखा आणि लिहा",
+      "columnsPerRow": 3
+    },
+    {
+      "id": "jsgb28m9",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "v8658wgh",
+          "lines": 0,
+          "content": "ईशाच्या घरी काय कार्यक्रम होता?"
+        },
+        {
+          "id": "2jalb99w",
+          "lines": 0,
+          "content": "आम्ही महाराष्ट्राचे का कवितेत कोणत्या चित्राचे नाव लाल आहे?"
+        },
+        {
+          "id": "94irav3n",
+          "lines": 0,
+          "content": "पूर्वी लोक कोणाची उत्तरेने वाट पाहायचे?"
+        },
+        {
+          "id": "cl2d2wn9",
+          "lines": 0,
+          "content": "मुलांनी बालकांनी झाड लावण्याचे का ठरवले?"
+        },
+        {
+          "id": "mom96dey",
+          "lines": 0,
+          "content": "पावसाळ्यात वाहणारे पाणी आपल्याबरोबर काय घेऊन जाते?"
+        },
+        {
+          "id": "e0yb1b4o",
+          "lines": 0,
+          "content": "यशला आजीच्या डबा भारी भारी का वाटला?"
+        },
+        {
+          "id": "9xbi3b1s",
+          "lines": 0,
+          "content": "सहलीसाठी माथेरान कोणाला जवळ आहे?"
+        },
+        {
+          "id": "o8rabcvp",
+          "lines": 0,
+          "content": "कोणत्याही प्रकारच्या वाहनांना प्रवेश नसणारे थंड हवेचे ठिकाण कोणते?"
+        },
+        {
+          "id": "bzepmbmi",
+          "lines": 0,
+          "content": "आंबाडीला पोहोचण्यासाठी पार करावे लागणारे घाट कोणते?"
+        },
+        {
+          "id": "j4fbya6d",
+          "lines": 0,
+          "content": "पूर्वी चिमण्यांना राहण्यासाठी भरपूर जागा का असायची?"
+        }
+      ],
+      "marks": 8,
+      "title": "खालील प्रश्नांची उत्तर लिहा",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "8fpywsxi",
+      "type": "long-answer",
+      "items": [
+        {
+          "id": "xip8d845",
+          "lines": 0,
+          "content": "\"रंगीत रंगीत फुलाफुलातून हरस्य उमलते नेहा घमघमणार सुवास अपुल्या उरात भरतोय घ्यावा\""
+        }
+      ],
+      "marks": 2,
+      "title": "खालील ओळींचा सरळ अर्थ लिहा",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "ffgbk2kr",
+      "type": "short-answer",
+      "items": [],
+      "marks": 3,
+      "title": "पहा या शब्दांशी संबंधित शब्द रिकाम्या चौकटीमध्ये लिहून पूर्ण करा",
+      "answerNote": "बाग या शब्दाशी संबंधित शब्द: फुले, झाडे, हिरवळ, पक्षी, पाणी, खेळ",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "53stwplj",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "ijs1ayo8",
+          "lines": 0,
+          "content": "भान हरपून जाणे"
+        },
+        {
+          "id": "2lrll9au",
+          "lines": 0,
+          "content": "हेवा वाटणे"
+        },
+        {
+          "id": "ivb2lgzz",
+          "lines": 0,
+          "content": "हाताची घाई करणे"
+        },
+        {
+          "id": "lpl8sgv7",
+          "lines": 0,
+          "content": "आरश्याचा धक्का बसणे"
+        },
+        {
+          "id": "dm6l24td",
+          "lines": 0,
+          "content": "मन मोकळे करणे"
+        }
+      ],
+      "marks": 2,
+      "title": "खालील वाक्यप्रचारांचा अर्थ सांगून वाक्यात उपयोग करा.",
+      "columnsPerRow": 2
+    },
+    {
+      "id": "xldbwna9",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "pxgb96go",
+          "lines": 0,
+          "content": "आकाश"
+        },
+        {
+          "id": "lu0smp6d",
+          "lines": 0,
+          "content": "नदी"
+        },
+        {
+          "id": "vwqfi67z",
+          "lines": 0,
+          "content": "आश्चर्य"
+        },
+        {
+          "id": "ntskpqxj",
+          "lines": 0,
+          "content": "गोष्ट"
+        }
+      ],
+      "marks": 2,
+      "title": "खालील शब्दांचे समानार्थी शब्द लिहा",
+      "columnsPerRow": 2
+    },
+    {
+      "id": "8l7qhr60",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "bxswsfqd",
+          "lines": 0,
+          "content": "भेद"
+        },
+        {
+          "id": "os3ae8tm",
+          "lines": 0,
+          "content": "यश"
+        },
+        {
+          "id": "242qjbeg",
+          "lines": 0,
+          "content": "सुंदर"
+        },
+        {
+          "id": "djaqo500",
+          "lines": 0,
+          "content": "आनंद"
+        }
+      ],
+      "marks": 2,
+      "title": "खालील शब्दांचे विरुद्धार्थी शब्द लिहा",
+      "columnsPerRow": 2
+    },
+    {
+      "id": "57sclemg",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "3mz2qcf5",
+          "lines": 0,
+          "content": "अहाहा किती छान बाई आहे"
+        },
+        {
+          "id": "gh26pl5i",
+          "lines": 0,
+          "content": "तुला गुलाबजाम आवडतात का"
+        }
+      ],
+      "marks": 2,
+      "title": "विरामचिन्हे वापरून वाक्ये पुन्हा लिहा:",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "073w16j4",
+      "type": "table",
+      "items": [],
+      "marks": 2,
+      "title": "खालील शब्दांचे नाम, सर्वनाम, विशेषण व क्रियापद यामध्ये वर्गीकरण करून तक्ता तयार करा: चालतो, वागतो, माझा, मला, हिमालय, सुंदर, रंगीबेरंगी, पटतो, आवड, चविष्ट",
+      "tableRows": [
+        [
+          "नाम",
+          ""
+        ],
+        [
+          "सर्वनाम",
+          ""
+        ],
+        [
+          "विशेषण",
+          ""
+        ],
+        [
+          "क्रियापद",
+          ""
+        ]
+      ],
+      "answerNote": "नाम: हिमालय, आवड\nसर्वनाम: माझा, मला\nविशेषण: सुंदर, रंगीबेरंगी, चविष्ट\nक्रियापद: चालतो, वागतो, पटतो",
+      "tableCaption": "",
+      "columnsPerRow": 1,
+      "tableHeaderCol": true,
+      "tableHeaderRow": true,
+      "tableCellMinHeight": 22
+    },
+    {
+      "id": "gmfdvex0",
+      "type": "composition",
+      "items": [],
+      "marks": 5,
+      "title": "तुमच्या मित्राला / मैत्रिणीला निबंध स्पर्धेत प्रथम पारितोषिक मिळाल्याबद्दल अभिनंदन करणारे पत्र लिहा.",
+      "writingLines": 0,
+      "columnsPerRow": 1,
+      "compositionSentences": []
+    },
+    {
+      "id": "6h9ewg09",
+      "type": "composition",
+      "items": [],
+      "marks": 5,
+      "title": "खालीलपैकी कोणत्याही एका विषयावर निबंध लिहा:",
+      "writingLines": 0,
+      "columnsPerRow": 1,
+      "compositionSentences": [
+        "मी पाहिलेले पर्यटन स्थळ",
+        "आत्मवृत्त - मी पुस्तक बोलतोय ",
+        "माझी मायबोली",
+        "अभ्यासाचे महत्त्व OR \"माझा रेल्वेचा पहिला प्रवास\" या विषयावर अनुभव लेखन करा."
+      ]
+    }
+  ],
+  "created_at": "2026-10-10T17:42:16.815871+00:00",
+  "updated_at": "2026-10-13T16:34:14.110545+00:00",
+  "school_id": null,
+  "status": "draft",
+  "review_feedback": null,
+  "reviewed_by": null,
+  "reviewed_at": null,
+  "method": "scanned"
+}

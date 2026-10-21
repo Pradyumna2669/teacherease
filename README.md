@@ -1,70 +1,156 @@
-# Getting Started with Create React App
+# TeacherEase — Smart Question Paper Generator for Schools & Colleges
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+PaperGen is a web app for creating print-ready school exam papers. Teachers can build a paper from scratch, scan a handwritten paper and turn it into editable questions, use question-bank content, save papers to their account, and export them as PDFs.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Visual paper builder with live A4 preview
+- Handwritten-paper scanning and question extraction
+- AI-assisted question and answer generation
+- Question bank and curriculum content
+- Multiple question types and Indian-language support
+- Saved papers and account dashboard
+- Credits, subscriptions, and Razorpay payments
+- Responsive web app with Android Trusted Web Activity support
+- Admin views for papers and audit information
 
-### `npm start`
+## Tech stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Next.js 14 with the App Router
+- React 18 and TypeScript
+- Tailwind CSS
+- Supabase Auth and Postgres
+- Anthropic, Amazon Bedrock, or Gemini for AI providers
+- Razorpay for payments and subscriptions
+- Vercel for web deployment
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Requirements
 
-### `npm test`
+- Node.js 20 or newer
+- npm
+- A Supabase project
+- Credentials for at least one configured AI provider
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Local setup
 
-### `npm run build`
+1. Install dependencies:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   ```powershell
+   npm install
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Create a local environment file:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   ```powershell
+   Copy-Item .env.example .env.local
+   ```
 
-### `npm run eject`
+   If `.env.example` is not available in your checkout, create `.env.local` manually using the variable list below.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. Add the required Supabase and AI credentials.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. Apply the SQL migrations in `supabase/migrations` to your Supabase project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+5. Start the development server:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   ```powershell
+   npm run dev
+   ```
 
-## Learn More
+   Open [http://localhost:3000](http://localhost:3000).
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Environment variables
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Never commit `.env` or `.env.local`. Keep service-role keys, payment secrets, and AI credentials private.
 
-### Code Splitting
+### Required
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase browser key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-side Supabase admin operations |
+| `NEXT_PUBLIC_SITE_URL` | Canonical application URL, for example `http://localhost:3000` locally |
+| `ANTHROPIC_API_KEY` | Anthropic API access when using the Anthropic provider |
 
-### Analyzing the Bundle Size
+### AI provider configuration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Set `SCAN_PROVIDER` to `anthropic`, `bedrock`, or `gemini` as appropriate. The selected provider needs its corresponding credentials.
 
-### Making a Progressive Web App
+| Variable | Purpose |
+| --- | --- |
+| `SCAN_PROVIDER` | Primary AI provider for scanning and generation |
+| `SCAN_MODEL` | Model used by scan and question-generation routes |
+| `AWS_BEARER_TOKEN_BEDROCK` | Amazon Bedrock bearer token |
+| `AWS_REGION` | AWS region; defaults to `ap-south-1` |
+| `BEDROCK_MODEL` | Bedrock model identifier |
+| `GEMINI_API_KEY` | Google Gemini API access |
+| `GEMINI_MODEL` | Gemini model identifier |
+| `SCAN_MAX_PAGES_PER_CALL` | Optional page limit for scan requests |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Payments and application administration
 
-### Advanced Configuration
+| Variable | Purpose |
+| --- | --- |
+| `RAZORPAY_KEY_ID` | Razorpay public/server key ID |
+| `RAZORPAY_KEY_SECRET` | Razorpay server secret |
+| `RAZORPAY_WEBHOOK_SECRET` | Razorpay webhook verification secret |
+| `CRON_SECRET` | Protects the scheduled reconciliation endpoint |
+| `ADMIN_EMAILS` | Comma-separated admin email addresses |
+| `COMP_EMAILS` | Comma-separated complimentary-credit email addresses |
+| `CREDITS_FAIL_OPEN` | Optional credit-service fallback behavior |
+| `ANDROID_PACKAGE_NAME` | Android application package name |
+| `ANDROID_CERT_FINGERPRINTS` | Comma-separated Android signing fingerprints |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Commands
 
-### Deployment
+```powershell
+npm run dev                 # Start the development server
+npm run build               # Create a production build
+npm run start               # Serve the production build
+npm run verify:curriculum   # Verify curriculum data
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The scripts in `scripts/` are used for bank imports, prompt generation, authentication checks, and provider testing. Review each script before running it because several require production-like credentials or write data.
 
-### `npm run build` fails to minify
+## Project structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```text
+app/                 Next.js routes, pages, API endpoints, and global styles
+components/          Reusable UI components
+lib/                 Auth, Supabase, papers, credits, AI, payments, and domain logic
+prompts/              AI prompt templates and curriculum prompts
+public/               Static assets
+scripts/              Data import, seed, and integration utilities
+supabase/migrations/  Database schema migrations
+android/              Android Trusted Web Activity project
+promo/                Promotional video project
+```
+
+## Database
+
+Supabase is used for authentication, user data, papers, credits, subscriptions, and related application records. Apply migrations in order from `supabase/migrations` before using authenticated features. The application uses the public Supabase client in browser code and the service-role client only on trusted server paths.
+
+## Deployment
+
+The web app is configured for Vercel. Connect the GitHub repository to the intended Vercel account or team, add the environment variables in the Vercel project settings, and deploy the main branch.
+
+`vercel.json` configures a daily Razorpay reconciliation cron job at `/api/razorpay/reconcile`. Vercel cron deployments must include `CRON_SECRET` and the payment credentials required by that route.
+
+For private GitHub repositories on Vercel Hobby, the committing GitHub user must have access to the Vercel project. If multiple Vercel accounts are connected to the same GitHub account, make sure the project is owned by the intended account/team before pushing deployments.
+
+## Android app
+
+The `android/` directory contains the Trusted Web Activity wrapper. Its own build and signing instructions are documented in [android/README.md](android/README.md). The web deployment must be live and configured with the correct package name and certificate fingerprints for Digital Asset Links to work.
+
+## Security notes
+
+- Do not commit `.env`, `.env.local`, Supabase service-role keys, payment secrets, or AI credentials.
+- Keep the Supabase service-role client on the server only.
+- Validate webhook signatures before processing payment events.
+- Review database Row Level Security policies whenever schema changes are added.
+- Treat scripts that seed or import data as privileged operations.
+
+## License
+
+No open-source license is currently declared for this repository.

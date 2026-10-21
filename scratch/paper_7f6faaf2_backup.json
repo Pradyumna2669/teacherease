@@ -1,0 +1,442 @@
+{
+  "id": "7f6faaf2-911b-4b22-836a-432ded2fc7b2",
+  "user_id": "48c06812-71cf-448c-88d1-c71d2b8db11e",
+  "title": "हिंदी (Hindi) • Summative Assessment - I",
+  "subject": "हिंदी (Hindi)",
+  "class_name": "1st",
+  "settings": {
+    "margin": "normal",
+    "density": "comfortable",
+    "logoUrl": "",
+    "section": "",
+    "subject": "हिंदी (Hindi)",
+    "fontSize": 13,
+    "language": "hindi",
+    "answerKey": false,
+    "className": "1st",
+    "lineStyle": "single",
+    "fontFamily": "serif",
+    "headerRows": [
+      [
+        "name",
+        "rollNo",
+        "marks"
+      ],
+      [
+        "subject",
+        "className",
+        "time"
+      ]
+    ],
+    "schoolName": "SDF PRIMARY SCHOOL",
+    "totalMarks": 40,
+    "headerStyle": "boxed",
+    "pageColumns": 1,
+    "timeAllowed": "2 Hours",
+    "academicYear": "2026-27",
+    "instructions": [],
+    "mcqOptionBox": false,
+    "schoolSubtitle": "",
+    "assessmentTitle": "Summative Assessment - I",
+    "showAnswerSpace": true
+  },
+  "questions": [
+    {
+      "id": "h_q1",
+      "type": "handwriting",
+      "items": [
+        {
+          "id": "h_q1_1",
+          "lines": 4,
+          "content": "भरत घर का काम करता था। माता का कहना मानता था। सबका आदर करता था। भरत समझदार लड़का था।"
+        }
+      ],
+      "marks": 2,
+      "title": "प्र. १ अनुलेखन लिखो (सुंदर अक्षरों में पुनः लिखिए):",
+      "writingLines": 4
+    },
+    {
+      "id": "h_q2_a",
+      "type": "short-answer",
+      "hints": " [ ए   |   ओ   |   क   |   अं   |   ज   |   ख   |   औ   |   प   |   ह  ]",
+      "items": [
+        {
+          "id": "h_q2_a_1",
+          "lines": 0,
+          "answer": "ए, ओ, अं, औ",
+          "content": "स्वर :   (१) _________     (२) _________     (३) _________     (४) _________"
+        },
+        {
+          "id": "h_q2_a_2",
+          "lines": 0,
+          "answer": "क, ज, ख, प, ह",
+          "content": "व्यंजन :   (१) _________     (२) _________     (३) _________     (४) _________"
+        }
+      ],
+      "marks": 4,
+      "title": "प्र. २ (अ) दिए गए वर्णों में से स्वर और व्यंजन चुनकर लिखो:",
+      "columnsPerRow": 1
+    },
+    {
+      "id": "h_q2_b",
+      "type": "match",
+      "items": [],
+      "marks": 3,
+      "title": "प्र. २ (ब) उचित जोड़ी लगाओ (शब्द को सही शब्द/चित्र से मिलाओ):",
+      "matchLeft": [
+        "गमला (Flowerpot)",
+        "माला (Garland)",
+        "अनार (Pomegranate)",
+        "छतरी (Umbrella)",
+        "टमाटर (Tomato)",
+        "कान (Ear)"
+      ],
+      "answerNote": "१-ग, २-क, ३-ङ, ४-घ, ५-च, ६-ख",
+      "matchRight": [
+        "माला 📿",
+        "कान 👂",
+        "गमला 🪴",
+        "छतरी☂️",
+        "अनार 🍎",
+        "टमाटर  🍅"
+      ],
+      "matchDivider": false,
+      "matchLeftLabel": "numbers",
+      "matchLeftHeader": "स्तंभ 'अ'",
+      "matchRightLabel": "numbers",
+      "matchRightHeader": "स्तंभ 'ब'"
+    },
+    {
+      "id": "h_q2_c",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "h_q2_c_1",
+          "lines": 1,
+          "answer": "का",
+          "content": "(१) क + आ (ा) ="
+        },
+        {
+          "id": "h_q2_c_2",
+          "lines": 1,
+          "answer": "तू",
+          "content": "(२) त + ऊ (ू) ="
+        },
+        {
+          "id": "h_q2_c_3",
+          "lines": 1,
+          "answer": "लै",
+          "content": "(३) ल + ऐ (ै) ="
+        },
+        {
+          "id": "h_q2_c_4",
+          "lines": 1,
+          "answer": "ची",
+          "content": "(४) च + ई (ी) ="
+        },
+        {
+          "id": "h_q2_c_5",
+          "lines": 1,
+          "answer": "मु",
+          "content": "(५) म + उ (ु) ="
+        },
+        {
+          "id": "h_q2_c_6",
+          "lines": 1,
+          "answer": "गू",
+          "content": "(६) ग + ऊ (ू) ="
+        }
+      ],
+      "marks": 3,
+      "title": "प्र. २ (क) उचित मात्रा लगाकर नया शब्द लिखो:",
+      "columnsPerRow": 2,
+      "answerLinePlacement": "inline"
+    },
+    {
+      "id": "h_q3_a",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "h_q3_a_1",
+          "lines": 0,
+          "answer": "आम, कान",
+          "content": "१. आ (ा) की मात्रा वाले शब्द : १) _______________  २) _______________"
+        },
+        {
+          "id": "h_q3_a_2",
+          "lines": 0,
+          "answer": "दिन, पिन",
+          "content": "२. इ (ि) की मात्रा वाले शब्द : १) _______________  २) _______________"
+        },
+        {
+          "id": "h_q3_a_3",
+          "lines": 0,
+          "answer": "चील, नदी",
+          "content": "३. ई (ी) की मात्रा वाले शब्द : १) _______________  २) _______________"
+        },
+        {
+          "id": "h_q3_a_4",
+          "lines": 0,
+          "answer": "सेब, केला",
+          "content": "४. ए (े) की मात्रा वाले शब्द : १) _______________  २) _______________"
+        }
+      ],
+      "marks": 4,
+      "title": "प्र. ३ (अ) नीचे दी गई मात्राओं वाले दो-दो शब्द लिखो:",
+      "keepTogether": true,
+      "columnsPerRow": 1,
+      "answerLinePlacement": "inline"
+    },
+    {
+      "id": "h_q3_b",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "h_q3_b_1",
+          "lines": 1,
+          "answer": "सात",
+          "content": "🌸 🌸 🌸 🌸 🌸 🌸 🌸 –"
+        },
+        {
+          "id": "h_q3_b_2",
+          "lines": 1,
+          "answer": "एक",
+          "content": "⭐  –"
+        },
+        {
+          "id": "h_q3_b_3",
+          "lines": 1,
+          "answer": "चार",
+          "content": "🍬 🍬 🍬 🍬  –"
+        },
+        {
+          "id": "h_q3_b_4",
+          "lines": 1,
+          "answer": "तीन",
+          "content": "🍎 🍎 🍎 –"
+        },
+        {
+          "id": "h_q3_b_5",
+          "lines": 1,
+          "answer": "दो",
+          "content": "🌸 🌸  –"
+        },
+        {
+          "id": "h_q3_b_6",
+          "lines": 1,
+          "answer": "आठ",
+          "content": "⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ ⚪ –"
+        }
+      ],
+      "marks": 3,
+      "title": "प्र. ३ (ब) चीजें गिनकर उनकी संख्या अक्षरों (शब्दों) में लिखो:",
+      "columnsPerRow": 1,
+      "answerLinePlacement": "inline"
+    },
+    {
+      "id": "h_q3_c",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "h_q3_c_1",
+          "lines": 1,
+          "answer": "घर",
+          "content": "१. 🏠 नाम :"
+        },
+        {
+          "id": "h_q3_c_2",
+          "lines": 1,
+          "answer": "टमाटर",
+          "content": "२. 🍅 नाम :"
+        },
+        {
+          "id": "h_q3_c_3",
+          "lines": 1,
+          "answer": "माला",
+          "content": "३. 📿 नाम :"
+        },
+        {
+          "id": "h_q3_c_4",
+          "lines": 1,
+          "answer": "छाता / छतरी",
+          "content": "४. ☂️ नाम :"
+        }
+      ],
+      "marks": 2,
+      "title": "प्र. ३ (स) चित्र पहचानकर उनके नाम लिखो:",
+      "columnsPerRow": 2,
+      "answerLinePlacement": "inline"
+    },
+    {
+      "id": "h_q4",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "h_q4_1",
+          "lines": 1,
+          "content": "आपका पूरा नाम क्या है?"
+        },
+        {
+          "id": "h_q4_2",
+          "lines": 1,
+          "answer": "मानव शरीर में दो पैर होते हैं।",
+          "content": "मानव शरीर में कितने पैर होते हैं?"
+        },
+        {
+          "id": "h_q4_3",
+          "lines": 1,
+          "answer": "कुत्ता वफादार था।",
+          "content": "कुत्ता कैसा था?"
+        },
+        {
+          "id": "h_q4_4",
+          "lines": 1,
+          "answer": "कुत्ते का नाम टॉमी था।",
+          "content": "कुत्ते का नाम क्या था?"
+        },
+        {
+          "id": "h_q4_5",
+          "lines": 1,
+          "answer": "मुन्ना छाता लेकर निकला।",
+          "content": "मुन्ना क्या लेकर निकला?"
+        },
+        {
+          "id": "h_q4_6",
+          "lines": 1,
+          "answer": "मछली पानी में दिखाई देती है।",
+          "content": "मछली कहाँ दिखाई देती है?"
+        }
+      ],
+      "marks": 6,
+      "title": "प्र. ४ निम्नलिखित प्रश्नों के उत्तर एक वाक्य में लिखो:",
+      "columnsPerRow": 1,
+      "answerLinePlacement": "below"
+    },
+    {
+      "id": "h_q5_a",
+      "type": "fill-blanks",
+      "items": [
+        {
+          "id": "h_q5_a_1",
+          "answer": "आकाश",
+          "content": "तारे देखो ___ में,"
+        },
+        {
+          "id": "h_q5_a_2",
+          "answer": "पानी",
+          "content": "जैसे मछली ___ में।"
+        },
+        {
+          "id": "h_q5_a_3",
+          "answer": "",
+          "content": "सबको धीमे चलते हैं,"
+        },
+        {
+          "id": "h_q5_a_4",
+          "answer": "उजाले",
+          "content": "___ में ये खो जाते हैं।"
+        },
+        {
+          "id": "h_q5_a_5",
+          "answer": "सूरज",
+          "content": "___ से ये डरते हैं,"
+        },
+        {
+          "id": "h_q5_a_6",
+          "answer": "बादलों",
+          "content": "___ में छिप जाते हैं।"
+        }
+      ],
+      "marks": 3,
+      "title": "प्र. ५ (अ) कविता की पंक्तियाँ पूरी करो:",
+      "columnsPerRow": 1,
+      "hideItemNumbering": true
+    },
+    {
+      "id": "h_q5_b",
+      "type": "short-answer",
+      "items": [
+        {
+          "id": "h_q5_b_1",
+          "lines": 1,
+          "answer": "क, का, कि, की, कु, कू, के, कै, को, कौ, कं, कः",
+          "content": "क -"
+        },
+        {
+          "id": "h_q5_b_3",
+          "lines": 1,
+          "answer": "ग, गा, गि, गी, गु, गू, गे, गै, गो, गौ, गं, गः",
+          "content": "ग -"
+        }
+      ],
+      "marks": 4,
+      "title": "प्र. ५ (ब) बारहखड़ी लिखिए:",
+      "keepTogether": true,
+      "columnsPerRow": 1,
+      "answerLinePlacement": "inline"
+    },
+    {
+      "id": "h_q6_a",
+      "type": "fill-blanks",
+      "hints": "सहायक शब्द : [ तारा | गोल | पीला | पूरब | पश्चिम ]",
+      "items": [
+        {
+          "id": "h_q6_a_1",
+          "answer": "तारा",
+          "content": "१. सूरज एक ___ है।"
+        },
+        {
+          "id": "h_q6_a_2",
+          "answer": "गोल",
+          "content": "२. सूरज का आकार ___ होता है।"
+        },
+        {
+          "id": "h_q6_a_3",
+          "answer": "पीला",
+          "content": "३. सूरज का रंग ___ होता है।"
+        },
+        {
+          "id": "h_q6_a_4",
+          "answer": "पूरब",
+          "content": "४. सूरज ___ से उगता है।"
+        },
+        {
+          "id": "h_q6_a_5",
+          "answer": "पश्चिम",
+          "content": "५. सूरज ___ में अस्त होता है।"
+        }
+      ],
+      "marks": 4,
+      "title": "प्र. ६ (अ) दिए गए शब्दों की सहायता से 'सूरज' पर रिक्त स्थान भरकर निबंध पूरा करो:",
+      "columnsPerRow": 1,
+      "hideItemNumbering": true
+    },
+    {
+      "id": "h_q6_b",
+      "type": "draw",
+      "items": [
+        {
+          "id": "h_q6_b_1",
+          "answer": "आम फलों का राजा है।",
+          "content": "वाक्य १ : आम फलों का राजा है।"
+        },
+        {
+          "id": "h_q6_b_2",
+          "answer": "आम खाने में बहुत मीठा और रसीला होता है।",
+          "content": "वाक्य २ : आम खाने में बहुत मीठा और रसीला होता है।"
+        }
+      ],
+      "marks": 2,
+      "title": "प्र. ६ (ब) आम (Mango) का चित्र बनाकर उसके बारे में १ - २ वाक्य लिखिए:",
+      "boxHeight": 90
+    }
+  ],
+  "created_at": "2026-10-09T19:19:36.430475+00:00",
+  "updated_at": "2026-10-12T13:59:07.529213+00:00",
+  "school_id": null,
+  "status": "draft",
+  "review_feedback": null,
+  "reviewed_by": null,
+  "reviewed_at": null,
+  "method": "typed"
+}

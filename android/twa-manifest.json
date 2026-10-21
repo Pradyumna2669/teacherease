@@ -1,0 +1,56 @@
+{
+  "packageId": "online.papergen.app",
+  "host": "papergen.online",
+  "name": "PaperGen — Question Paper Maker",
+  "launcherName": "PaperGen",
+  "display": "standalone",
+  "themeColor": "#16243b",
+  "themeColorDark": "#16243b",
+  "navigationColor": "#16243b",
+  "navigationColorDark": "#16243b",
+  "navigationDividerColor": "#16243b",
+  "navigationDividerColorDark": "#16243b",
+  "backgroundColor": "#FCFCF9",
+  "enableNotifications": false,
+  "startUrl": "/dashboard?src=twa",
+  "iconUrl": "https://papergen.online/icons/icon-512.png",
+  "maskableIconUrl": "https://papergen.online/icons/maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./release.keystore",
+    "alias": "papergen"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Scan a handwritten paper",
+      "shortName": "Scan",
+      "url": "/builder?scan=1&src=twa",
+      "chosenIconUrl": "https://papergen.online/icons/icon-512.png"
+    },
+    {
+      "name": "Question bank",
+      "shortName": "Bank",
+      "url": "/bank?src=twa",
+      "chosenIconUrl": "https://papergen.online/icons/icon-512.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://papergen.online/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://papergen.online/",
+  "minSdkVersion": 24,
+  "orientation": "any",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0"
+}

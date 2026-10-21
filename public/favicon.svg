@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Brand mark: ink page, red margin rule, serif P. Colours match the brand
+       tokens (#16243b ink, #e0392b pen, #faf6ef paper). A single letter, not
+       "PG" — browser tabs render this at 16-20px, where two letters blur into
+       one shape. The larger PNG icons carry the full PG mark. -->
+  <rect width="32" height="32" rx="7" fill="#16243b"/>
+  <rect x="7.5" y="5" width="17" height="22" rx="2.5" fill="#faf6ef"/>
+  <rect x="11" y="5" width="1.1" height="22" fill="#e0392b" opacity="0.5"/>
+  <text
+    x="17.2"
+    y="16.4"
+    dominant-baseline="central"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="17"
+    font-weight="700"
+    fill="#16243b"
+  >P</text>
+</svg>

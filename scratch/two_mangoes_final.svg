@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 205" width="100%" height="100%">
+  <g transform="translate(45, 0)">
+    
+    <g>
+      <!-- Stem -->
+      <path d="M 95 35 C 95 18, 106 6, 118 2 C 115 12, 108 22, 102 35 Z" fill="#6d4c41" stroke="#3e2723" stroke-width="1.8"/>
+      <!-- Green Leaf -->
+      <path d="M 112 14 C 142 6, 168 20, 175 36 C 150 40, 126 30, 112 14 Z" fill="#81c784" stroke="#2e7d32" stroke-width="1.8"/>
+      <path d="M 112 14 C 135 24, 155 30, 175 36" fill="none" stroke="#2e7d32" stroke-width="1.2"/>
+      <!-- Small secondary leaf -->
+      <path d="M 100 24 C 80 14, 62 18, 55 28 C 70 32, 88 30, 100 24 Z" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+
+      <!-- Mango Outline: Authentic Alphonso curve with beak at bottom -->
+      <path d="M 98 35 
+               C 55 38, 15 75, 15 125 
+               C 15 168, 52 195, 100 195 
+               C 135 195, 165 185, 185 165 
+               C 200 150, 202 135, 192 125 
+               C 182 115, 185 95, 175 75 
+               C 160 48, 132 34, 98 35 Z" 
+            fill="#fffde7" stroke="#1a1a1a" stroke-width="2.6" stroke-linejoin="round"/>
+      
+      <!-- Fruit Blush -->
+      <ellipse cx="55" cy="115" rx="14" ry="24" fill="#ffe082" opacity="0.6" transform="rotate(-15 55 115)"/>
+
+      <!-- Title Badge -->
+      <rect x="42" y="90" width="126" height="46" rx="10" fill="#ffffff" stroke="#1a1a1a" stroke-width="2.2"/>
+      <text x="105" y="122" font-family="'Noto Sans Devanagari', 'Mangal', 'Segoe UI', sans-serif" font-size="28" font-weight="bold" fill="#000000" text-anchor="middle">स्वर</text>
+      
+      <!-- Subtext -->
+      <text x="105" y="156" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="bold" fill="#555555" text-anchor="middle">(Vowels)</text>
+    </g>
+  
+  </g>
+  <g transform="translate(365, 0)">
+    
+    <g>
+      <!-- Stem -->
+      <path d="M 95 35 C 95 18, 106 6, 118 2 C 115 12, 108 22, 102 35 Z" fill="#6d4c41" stroke="#3e2723" stroke-width="1.8"/>
+      <!-- Green Leaf -->
+      <path d="M 112 14 C 142 6, 168 20, 175 36 C 150 40, 126 30, 112 14 Z" fill="#81c784" stroke="#2e7d32" stroke-width="1.8"/>
+      <path d="M 112 14 C 135 24, 155 30, 175 36" fill="none" stroke="#2e7d32" stroke-width="1.2"/>
+      <!-- Small secondary leaf -->
+      <path d="M 100 24 C 80 14, 62 18, 55 28 C 70 32, 88 30, 100 24 Z" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+
+      <!-- Mango Outline: Authentic Alphonso curve with beak at bottom -->
+      <path d="M 98 35 
+               C 55 38, 15 75, 15 125 
+               C 15 168, 52 195, 100 195 
+               C 135 195, 165 185, 185 165 
+               C 200 150, 202 135, 192 125 
+               C 182 115, 185 95, 175 75 
+               C 160 48, 132 34, 98 35 Z" 
+            fill="#fffde7" stroke="#1a1a1a" stroke-width="2.6" stroke-linejoin="round"/>
+      
+      <!-- Fruit Blush -->
+      <ellipse cx="55" cy="115" rx="14" ry="24" fill="#ffe082" opacity="0.6" transform="rotate(-15 55 115)"/>
+
+      <!-- Title Badge -->
+      <rect x="42" y="90" width="126" height="46" rx="10" fill="#ffffff" stroke="#1a1a1a" stroke-width="2.2"/>
+      <text x="105" y="122" font-family="'Noto Sans Devanagari', 'Mangal', 'Segoe UI', sans-serif" font-size="28" font-weight="bold" fill="#000000" text-anchor="middle">व्यंजन</text>
+      
+      <!-- Subtext -->
+      <text x="105" y="156" font-family="'Segoe UI', sans-serif" font-size="13" font-weight="bold" fill="#555555" text-anchor="middle">(Consonants)</text>
+    </g>
+  
+  </g>
+</svg>

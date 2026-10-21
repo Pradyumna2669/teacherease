@@ -1,0 +1,418 @@
+{
+  "id": "61463c3b-167c-4f49-8efd-e659287bab26",
+  "user_id": "56bbd382-cdd0-488a-ac09-20cd629643ca",
+  "title": "Marathi • Summative Assessment-1",
+  "subject": "Marathi",
+  "class_name": "Class - 6th std",
+  "settings": {
+    "margin": "narrow",
+    "density": "compact",
+    "logoUrl": "",
+    "section": "",
+    "subject": "Marathi",
+    "fontSize": 13,
+    "language": "marathi",
+    "answerKey": false,
+    "className": "Class - 6th std",
+    "lineStyle": "single",
+    "fontFamily": "serif",
+    "headerRows": [
+      [
+        "name",
+        "rollNo",
+        "marks"
+      ],
+      [
+        "subject",
+        "className",
+        "date"
+      ]
+    ],
+    "schoolName": "SDF Primary English School",
+    "totalMarks": 40,
+    "headerStyle": "boxed",
+    "pageColumns": 1,
+    "timeAllowed": "2 hr",
+    "academicYear": "2026-27",
+    "instructions": [],
+    "mcqOptionBox": false,
+    "schoolSubtitle": "",
+    "assessmentTitle": "Summative Assessment",
+    "showAnswerSpace": true
+  },
+  "questions": [
+    {
+      "id": "q1_comprehension",
+      "type": "comprehension",
+      "title": "प्र. १ ला पुढील उतारा वाचून दिलेल्या सूचनांनुसार कृती करा :",
+      "marks": 4,
+      "passageTitle": "उतारा",
+      "passage": "आई, मी इथे खूप मजा करत आहे. हिरवेगार डोंगर, झुळझुळ वाहणारी नदी, पिकांनी बहरलेलं शेत, डोलणाऱ्या गवतफुलांचे माळरान हे असं निसर्गाचं सुंदर रूप पाहायला गावालाच यायला हवं. आता दरवर्षी सुट्टीत मी आजीच्या गावाला जायचं ठरवलंय. आजीच्या हातची भाजीभाकरी एवढी चविष्ट लागते, की मला पिझ्झा, बर्गरची मुळीच आठवण येत नाही. काल मी आजोबांबरोबर देवळात कीर्तन ऐकायला गेले होते. कथा, काव्य, नाट्य यांचा सुंदर मिलाप म्हणजे कीर्तन! असे आजोबा म्हणाले, ते कीर्तन ऐकल्यावर मला समजलं. कीर्तनाचा कार्यक्रम एवढा रंगला, की दोन तास कसे गेले ते समजलं नाही. सगळे जण कीर्तनात दंग होऊन गेले होते.",
+      "items": [
+        {
+          "id": "q1_item_1",
+          "lines": 0,
+          "content": "चौकटी पूर्ण करा :\nअ) ओवी आजोबांबरोबर गावात गेलेली ते ठिकाण  [ ___________________________ ]\nब) कथा, काव्य, नाट्य यांचा सुंदर मिलाप म्हणजे  [ ___________________________ ]",
+          "answer": "अ) देवळात (कीर्तन ऐकायला)\nब) कीर्तन"
+        },
+        {
+          "id": "q1_item_2",
+          "lines": 0,
+          "content": "कोण कोणास म्हणाले ? ते लिहा :\n\"मी इथे खूप मजा करत आहे.\" - ____________________________________",
+          "answer": "ओवी आईला म्हणाली."
+        },
+        {
+          "id": "q1_item_3",
+          "lines": 0,
+          "content": "कारण लिहा :\nदेवळात दोन तास कसे गेले ते ओवीला समजले नाही कारण - ____________________________________",
+          "answer": "कीर्तनाचा कार्यक्रम एवढा रंगला, की सगळे जण कीर्तनात दंग होऊन गेले होते."
+        }
+      ],
+      "columnsPerRow": 1
+    },
+    {
+      "id": "q1_swamat",
+      "type": "short-answer",
+      "title": "स्वमत :",
+      "marks": 3,
+      "items": [
+        {
+          "id": "q1_swamat_1",
+          "lines": 3,
+          "content": "ओवीने दरवर्षी सुट्टीत गावाला यायचे का ठरवले असावे ते तुमच्या शब्दात लिहा.",
+          "answer": "ओवीला गावातील हिरवेगार डोंगर, वाहणारी नदी, शेते व निसर्गाचे सुंदर रूप खूप आवडले. आजीच्या हातची चविष्ट भाजीभाकरी आणि देवळातील कीर्तनाचा आनंद तिला मिळाला, म्हणून तिने दरवर्षी सुट्टीत गावाला यायचे ठरवले."
+        }
+      ],
+      "columnsPerRow": 1
+    },
+    {
+      "id": "q1_aaji_boxes",
+      "type": "short-answer",
+      "title": "चौकटी पूर्ण करा :",
+      "marks": 2,
+      "items": [
+        {
+          "id": "q1_aaji_1",
+          "lines": 0,
+          "content": "आजीने मुलाला दिलेला खाऊ  ➞  [ ________________________________ ]",
+          "answer": "धपाटे / लाडू"
+        },
+        {
+          "id": "q1_aaji_2",
+          "lines": 0,
+          "content": "आजी मुलाला लाडाने म्हणते  ➞  [ ________________________________ ]",
+          "answer": "लखोबा / राजा"
+        }
+      ],
+      "columnsPerRow": 1
+    },
+    {
+      "id": "q1_viramchinhe",
+      "type": "short-answer",
+      "title": "विरामचिन्हे ओळखा आणि लिहा :",
+      "marks": 1,
+      "columnsPerRow": 3,
+      "items": [
+        {
+          "id": "q1_vc_1",
+          "lines": 0,
+          "content": "[  ,  ]   _________________",
+          "answer": "स्वल्पविराम"
+        },
+        {
+          "id": "q1_vc_2",
+          "lines": 0,
+          "content": "[  !  ]   _________________",
+          "answer": "उद्गारचिन्ह"
+        },
+        {
+          "id": "q1_vc_3",
+          "lines": 0,
+          "content": "[  ?  ]   _________________",
+          "answer": "प्रश्नचिन्ह"
+        }
+      ]
+    },
+    {
+      "id": "q2_a_answers",
+      "type": "short-answer",
+      "title": "प्र. २ (अ) खालील प्रश्नांची उत्तरे लिहा :",
+      "marks": 8,
+      "columnsPerRow": 1,
+      "items": [
+        {
+          "id": "q2_a_1",
+          "lines": 1,
+          "content": "ईशाच्या घरी काय कार्यक्रम होता ?",
+          "answer": "ईशाच्या वाढदिवसाचा कार्यक्रम होता."
+        },
+        {
+          "id": "q2_a_2",
+          "lines": 1,
+          "content": "आम्ही महाराष्ट्रकन्या या कवितेत कोणत्या शिखराचे नाव आले आहे ?",
+          "answer": "कळसूबाई शिखराचे नाव आले आहे."
+        },
+        {
+          "id": "q2_a_3",
+          "lines": 1,
+          "content": "पूर्वी लोक कोणाची उत्सुकतेने वाट पाहायचे ?",
+          "answer": "पूर्वी लोक पोस्टमनची (टपालाची) उत्सुकतेने वाट पाहायचे."
+        },
+        {
+          "id": "q2_a_4",
+          "lines": 1,
+          "content": "ईशाने बाल्कनीत झाडे लावण्याचे का ठरवले ?",
+          "answer": "बाल्कनीत चिमण्या, पक्षी यावेत म्हणून ईशाने झाडे लावण्याचे ठरवले."
+        },
+        {
+          "id": "q2_a_5",
+          "lines": 1,
+          "content": "पावसाळ्यात वाहणारे पाणी आपल्याबरोबर काय घेऊन जाते ?",
+          "answer": "पावसाळ्यात वाहणारे पाणी आपल्याबरोबर मातीचा सुपीक थर वाहून घेऊन जाते."
+        },
+        {
+          "id": "q2_a_6",
+          "lines": 1,
+          "content": "यशला आजोबांचा डबा भारी का वाटला ?",
+          "answer": "आजोबांच्या डब्यात प्रेम आणि आपुलकीची शिदोरी होती, म्हणून यशला आजोबांचा डबा भारी वाटला."
+        },
+        {
+          "id": "q2_a_7",
+          "lines": 1,
+          "content": "सहलीसाठी माथेरान कोणाला जवळ आहे ?",
+          "answer": "सहलीसाठी माथेरान मुंबई आणि पुणेकरांना जवळ आहे."
+        },
+        {
+          "id": "q2_a_8",
+          "lines": 1,
+          "content": "कोणत्याही प्रकारच्या वाहनांना प्रवेश नसणारे थंड हवेचे ठिकाण कोणते ?",
+          "answer": "माथेरान हे कोणत्याही प्रकारच्या वाहनांना प्रवेश नसणारे थंड हवेचे ठिकाण आहे."
+        },
+        {
+          "id": "q2_a_9",
+          "lines": 1,
+          "content": "आंबेवाडीला पोहोचण्यासाठी पार करावे लागणारे धरण कोणते ?",
+          "answer": "भांडारदरा धरण."
+        },
+        {
+          "id": "q2_a_10",
+          "lines": 1,
+          "content": "पूर्वी चिमण्यांना राहण्यासाठी भरपूर जागा का असायची ?",
+          "answer": "पूर्वी कौलारू घरे आणि छपरांच्या फटी असायच्या, त्यामुळे चिमण्यांना राहण्यासाठी भरपूर जागा असायची."
+        }
+      ]
+    },
+    {
+      "id": "q2_b_arth",
+      "type": "short-answer",
+      "title": "ब) खालील ओळींचा सरळ अर्थ लिहा :",
+      "marks": 2,
+      "columnsPerRow": 1,
+      "items": [
+        {
+          "id": "q2_b_1",
+          "lines": 3,
+          "content": "\"रंगीत रंगीत फुलफुलातून हास्य उमलते तेव्हा,\nघमघमणारा सुवास अपुल्या उरात भरूनी घ्यावा\"",
+          "answer": "विविध रंगांच्या सुंदर फुलांमधून जेव्हा हास्य उमलते, तेव्हा त्या फुलांचा सुगंध आणि आनंद आपण मनापासून आपल्या हृदयात साठवून घेतला पाहिजे."
+        }
+      ]
+    },
+    {
+      "id": "q2_c_bag",
+      "type": "short-answer",
+      "title": "क) 'बाग' या शब्दाशी संबंधित शब्द रिकाम्या चौकटीमध्ये लिहून पूर्ण करा :",
+      "marks": 2,
+      "columnsPerRow": 1,
+      "images": [
+        "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NTAgMjUwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIj4KICA8IS0tIENvbm5lY3RpbmcgTGluZXMgZnJvbSAn4KSs4KS+4KSXJyAoY3g6IDMyNSwgY3k6IDE5MCkgLS0+CiAgPGxpbmUgeDE9IjMyNSIgeTE9IjE2MCIgeDI9IjMyNSIgeTI9Ijg4IiBzdHJva2U9IiMzMzMzMzMiIHN0cm9rZS13aWR0aD0iMiIvPgogIAogIDwhLS0gTGVmdCByYWRpYXRpbmcgbGluZXMgLS0+CiAgPGxpbmUgeDE9IjI5NSIgeTE9IjE3MiIgeDI9IjE5MCIgeTI9IjUyIiBzdHJva2U9IiMzMzMzMzMiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIyNzUiIHkxPSIxODUiIHgyPSIxODAiIHkyPSIxMjgiIHN0cm9rZT0iIzMzMzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjI3MiIgeTE9IjE5NiIgeDI9IjE5MCIgeTI9IjIwNCIgc3Ryb2tlPSIjMzMzMzMzIiBzdHJva2Utd2lkdGg9IjIiLz4KCiAgPCEtLSBSaWdodCByYWRpYXRpbmcgbGluZXMgLS0+CiAgPGxpbmUgeDE9IjM1NSIgeTE9IjE3MiIgeDI9IjQ2MCIgeTI9IjUyIiBzdHJva2U9IiMzMzMzMzMiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSIzNzUiIHkxPSIxODUiIHgyPSI0NzAiIHkyPSIxMjgiIHN0cm9rZT0iIzMzMzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjM3OCIgeTE9IjE5NiIgeDI9IjQ2MCIgeTI9IjIwNCIgc3Ryb2tlPSIjMzMzMzMzIiBzdHJva2Utd2lkdGg9IjIiLz4KCiAgPCEtLSBUb3AgT3ZhbDog4KSq4KWN4KSw4KS44KSo4KWN4KSo4KSk4KS+IChFeGFtcGxlIGdpdmVuKSAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMjUsIDYwKSI+CiAgICA8ZWxsaXBzZSBjeD0iMCIgY3k9IjAiIHJ4PSI2OCIgcnk9IjI2IiBmaWxsPSIjZjhmYWZjIiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMiIvPgogICAgPHRleHQgeD0iMCIgeT0iNyIgZm9udC1mYW1pbHk9IidOb3RvIFNhbnMgRGV2YW5hZ2FyaScsICdNYW5nYWwnLCAnU2Vnb2UgVUknLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzBmMTcyYSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+4KSq4KWN4KSw4KS44KSo4KWN4KSo4KSk4KS+PC90ZXh0PgogIDwvZz4KCiAgPCEtLSBDZW50ZXIgUm9vdCBPdmFsOiDgpKzgpL7gpJcgLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzI1LCAxOTApIj4KICAgIDxlbGxpcHNlIGN4PSIwIiBjeT0iMCIgcng9IjYwIiByeT0iMjgiIGZpbGw9IiNmMWY1ZjkiIHN0cm9rZT0iIzBmMTcyYSIgc3Ryb2tlLXdpZHRoPSIyLjQiLz4KICAgIDx0ZXh0IHg9IjAiIHk9IjgiIGZvbnQtZmFtaWx5PSInTm90byBTYW5zIERldmFuYWdhcmknLCAnTWFuZ2FsJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPuCkrOCkvuCklzwvdGV4dD4KICA8L2c+CgogIDwhLS0gQmxhbmsgQm94ZXMgZm9yIHN0dWRlbnRzIHRvIGZpbGwgKDYgYm94ZXMpIC0tPgogIDxyZWN0IHg9IjQ1IiB5PSIyOCIgd2lkdGg9IjE0NSIgaGVpZ2h0PSI0NiIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iIzFlMjkzYiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHJlY3QgeD0iMzUiIHk9IjEwNSIgd2lkdGg9IjE0NSIgaGVpZ2h0PSI0NiIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iIzFlMjkzYiIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHJlY3QgeD0iNDUiIHk9IjE4MiIgd2lkdGg9IjE0NSIgaGVpZ2h0PSI0NiIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iIzFlMjkzYiIgc3Ryb2tlLXdpZHRoPSIyIi8+CgogIDxyZWN0IHg9IjQ2MCIgeT0iMjgiIHdpZHRoPSIxNDUiIGhlaWdodD0iNDYiIHJ4PSI4IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxyZWN0IHg9IjQ3MCIgeT0iMTA1IiB3aWR0aD0iMTQ1IiBoZWlnaHQ9IjQ2IiByeD0iOCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjMWUyOTNiIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8cmVjdCB4PSI0NjAiIHk9IjE4MiIgd2lkdGg9IjE0NSIgaGVpZ2h0PSI0NiIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iIzFlMjkzYiIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjwvc3ZnPg=="
+      ],
+      "imageColumns": 1,
+      "imageAlign": "center",
+      "imageMaxHeight": 200,
+      "imageNumbers": false,
+      "items": [],
+      "answerNote": "बाग या शब्दाशी संबंधित शब्द: फुले, झाडे, पक्षी, फुलपाखरे, खेळ, सुवास / हिरवळ"
+    },
+    {
+      "id": "q3_a_vakya",
+      "type": "short-answer",
+      "title": "प्र. ३ (अ) खालील वाक्प्रचारांचा अर्थ सांगून वाक्यात उपयोग करा :",
+      "marks": 2,
+      "columnsPerRow": 1,
+      "items": [
+        {
+          "id": "q3_a_1",
+          "lines": 2,
+          "content": "भान हरपून जाणे -",
+          "answer": "अर्थ: मग्न होणे. वाक्य: गाणे ऐकताना मुलांचे भान हरपून गेले."
+        },
+        {
+          "id": "q3_a_2",
+          "lines": 2,
+          "content": "हेवा वाटणे -",
+          "answer": "अर्थ: मत्सर वाटणे. वाक्य: समीरच्या यशाचा सर्वांना हेवा वाटला."
+        },
+        {
+          "id": "q3_a_3",
+          "lines": 2,
+          "content": "हाताची ढाल करणे -",
+          "answer": "अर्थ: स्वतःचे रक्षण करणे. वाक्य: चेंडू लागू नये म्हणून रोहनने हाताची ढाल केली."
+        },
+        {
+          "id": "q3_a_4",
+          "lines": 2,
+          "content": "आश्चर्याचा धक्का बसणे -",
+          "answer": "अर्थ: खूप नवल वाटणे. वाक्य: अचानक समोर वाघ पाहून सर्वांना आश्चर्याचा धक्का बसला."
+        },
+        {
+          "id": "q3_a_5",
+          "lines": 2,
+          "content": "मन मोकळे करणे -",
+          "answer": "अर्थ: मनातले बोलून दाखवणे. वाक्य: आईजवळ बसून मी माझे मन मोकळे केले."
+        }
+      ]
+    },
+    {
+      "id": "q3_b_samanarthi",
+      "type": "short-answer",
+      "title": "ब) खालील शब्दांचे समानार्थी शब्द लिहा :",
+      "marks": 2,
+      "columnsPerRow": 2,
+      "items": [
+        {
+          "id": "q3_b_1",
+          "lines": 0,
+          "content": "आकाश  =  ____________________",
+          "answer": "आभाळ / गगन"
+        },
+        {
+          "id": "q3_b_2",
+          "lines": 0,
+          "content": "नदी  =  ____________________",
+          "answer": "सरिता"
+        },
+        {
+          "id": "q3_b_3",
+          "lines": 0,
+          "content": "आश्चर्य  =  ____________________",
+          "answer": "नवल"
+        },
+        {
+          "id": "q3_b_4",
+          "lines": 0,
+          "content": "गोष्ट  =  ____________________",
+          "answer": "कथा / कहाणी"
+        }
+      ]
+    },
+    {
+      "id": "q3_c_viruddharthi",
+      "type": "short-answer",
+      "title": "क) खालील शब्दांचे विरुद्धार्थी शब्द लिहा :",
+      "marks": 2,
+      "columnsPerRow": 2,
+      "items": [
+        {
+          "id": "q3_c_1",
+          "lines": 0,
+          "content": "भेद   ×   ____________________",
+          "answer": "साम्य / एकता"
+        },
+        {
+          "id": "q3_c_2",
+          "lines": 0,
+          "content": "यश   ×   ____________________",
+          "answer": "अपयश"
+        },
+        {
+          "id": "q3_c_3",
+          "lines": 0,
+          "content": "सुंदर   ×   ____________________",
+          "answer": "कुरूप"
+        },
+        {
+          "id": "q3_c_4",
+          "lines": 0,
+          "content": "आनंद   ×   ____________________",
+          "answer": "दुःख"
+        }
+      ]
+    },
+    {
+      "id": "q3_d_viramchinhe_vakyet",
+      "type": "short-answer",
+      "title": "ड) विरामचिन्हांचा वापर करून वाक्ये पुन्हा लिहा :",
+      "marks": 2,
+      "columnsPerRow": 1,
+      "items": [
+        {
+          "id": "q3_d_1",
+          "lines": 1,
+          "content": "अहाहा किती छान शर्ट आहे",
+          "answer": "अहाहा! किती छान शर्ट आहे!"
+        },
+        {
+          "id": "q3_d_2",
+          "lines": 1,
+          "content": "तुला गुलाबजाम आवडतो का",
+          "answer": "तुला गुलाबजाम आवडतो का?"
+        }
+      ]
+    },
+    {
+      "id": "q3_e_table",
+      "type": "table",
+      "title": "इ) खालील शब्दांचे नाम, सर्वनाम, विशेषण व क्रियापद यामध्ये वर्गीकरण करून तक्ता तयार करा :",
+      "marks": 2,
+      "hints": "[ चालतो,  वागतो,  माझा,  मला,  हिमालय,  सुंदर,  रंगीबेरंगी,  पळतो,  आंबट,  चविष्ट ]",
+      "tableRows": [
+        [
+          "नाम",
+          ""
+        ],
+        [
+          "सर्वनाम",
+          ""
+        ],
+        [
+          "विशेषण",
+          ""
+        ],
+        [
+          "क्रियापद",
+          ""
+        ]
+      ],
+      "tableHeaderCol": true,
+      "tableHeaderRow": false,
+      "tableCellMinHeight": 32,
+      "answerNote": "नाम: हिमालय\nसर्वनाम: माझा, मला\nविशेषण: सुंदर, रंगीबेरंगी, आंबट, चविष्ट\nक्रियापद: चालतो, वागतो, पळतो",
+      "items": []
+    },
+    {
+      "id": "q4_patra",
+      "type": "composition",
+      "title": "प्र. ४ था तुमच्या मित्राला / मैत्रिणीला निबंध स्पर्धेत प्रथम पारितोषिक मिळाल्याबद्दल अभिनंदन करणारे पत्र लिहा.",
+      "marks": 5,
+      "writingLines": 8,
+      "compositionSentences": [],
+      "answerNote": "पत्र लेखन: दिनांक, प्रिय मित्र/मैत्रीण, अभिनंदन... तुझा मित्र.",
+      "items": []
+    },
+    {
+      "id": "q5_nibandh",
+      "type": "composition",
+      "title": "प्र. ५ वा खालीलपैकी कोणत्याही एका विषयावर निबंध लिहा :",
+      "marks": 5,
+      "writingLines": 10,
+      "compositionNumbered": true,
+      "compositionSentences": [
+        "मी पाहिलेले पर्यटन स्थळ",
+        "आत्मवृत्त - मी पुस्तक बोलतोय",
+        "माझी मायबोली",
+        "अभ्यासाचे महत्त्व (किंवा \"माझा रेल्वेचा पहिला प्रवास\")"
+      ],
+      "items": []
+    }
+  ]
+}

@@ -1,23 +1,22 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# production
-/build
-
-# misc
+node_modules
+.next
+out
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+*.tsbuildinfo
+next-env.d.ts
+.env
+.env*.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# dev/build logs
+*.log
+.vercel
+
+# Copyright filing artefacts — generated, not source
+papergen-copyright-*
+papergen-source-code.pdf
+~$*
+
+# Generated prompt files and their pasted replies. The bank is the store.
+prompts/
+supabase/.temp/
+

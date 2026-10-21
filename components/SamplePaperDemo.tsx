@@ -1,0 +1,828 @@
+"use client";
+
+import { useState, useMemo, useEffect } from "react";
+import { ArrowRight, Sparkles, Pencil, CheckCircle2, RotateCcw, FileCheck2 } from "lucide-react";
+import Link from "next/link";
+
+interface SampleQuestion {
+  id: string;
+  section: "Section A" | "Section B" | "Section C";
+  sectionTitle: string;
+  type: string;
+  text: string;
+  marks: number;
+  options?: string[];
+}
+
+interface SubjectPreset {
+  schoolName: string;
+  junior: {
+    unit: string;
+    questions: SampleQuestion[];
+  };
+  senior: {
+    unit: string;
+    questions: SampleQuestion[];
+  };
+}
+
+const SAMPLE_DATA: Record<string, SubjectPreset> = {
+  Science: {
+    schoolName: "Kendriya Vidyalaya No. 1",
+    junior: {
+      unit: "Materials, Food & Changes Around Us",
+      questions: [
+        {
+          id: "sci-j-1",
+          section: "Section A",
+          sectionTitle: "Objective & One Word (1 Mark each)",
+          type: "MCQ",
+          text: "Which of the following is a reversible physical change?",
+          marks: 1,
+          options: ["Burning of paper", "Melting of ice", "Cooking of food", "Rusting of iron"],
+        },
+        {
+          id: "sci-j-2",
+          section: "Section A",
+          sectionTitle: "Objective & One Word (1 Mark each)",
+          type: "Fill in the blank",
+          text: "Materials through which light cannot pass at all are called ______ objects.",
+          marks: 1,
+        },
+        {
+          id: "sci-j-3",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Short Answer",
+          text: "Differentiate between transparent and translucent materials with one everyday example of each.",
+          marks: 2,
+        },
+        {
+          id: "sci-j-4",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Application",
+          text: "Why does an electric cell have two terminals (+ and -)? What happens if both terminals connect directly without a bulb?",
+          marks: 3,
+        },
+        {
+          id: "sci-j-5",
+          section: "Section C",
+          sectionTitle: "Long Answer & Experiments (5 Marks each)",
+          type: "Descriptive",
+          text: "Describe an activity with a neat labeled diagram to prove that sunlight and chlorophyll are necessary for photosynthesis.",
+          marks: 5,
+        },
+      ],
+    },
+    senior: {
+      unit: "Chemical Reactions, Light & Life Processes",
+      questions: [
+        {
+          id: "sci-s-1",
+          section: "Section A",
+          sectionTitle: "Multiple Choice & Assertion (1 Mark each)",
+          type: "MCQ",
+          text: "What gas is released when zinc granules react with dilute sulphuric acid?",
+          marks: 1,
+          options: ["Hydrogen (H₂)", "Oxygen (O₂)", "Carbon dioxide (CO₂)", "Sulphur dioxide (SO₂)"],
+        },
+        {
+          id: "sci-s-2",
+          section: "Section A",
+          sectionTitle: "Multiple Choice & Assertion (1 Mark each)",
+          type: "One Word",
+          text: "Name the cell organelle known as the 'powerhouse of the cell' responsible for ATP synthesis.",
+          marks: 1,
+        },
+        {
+          id: "sci-s-3",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Short Answer",
+          text: "State Ohm's Law. Write its mathematical formula and sketch the V-I graph for an ohmic conductor.",
+          marks: 3,
+        },
+        {
+          id: "sci-s-4",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Reasoning",
+          text: "Why does the color of copper sulphate solution fade when an iron nail is dipped into it? Write the balanced chemical equation.",
+          marks: 3,
+        },
+        {
+          id: "sci-s-5",
+          section: "Section C",
+          sectionTitle: "Descriptive & Ray Diagrams (5 Marks each)",
+          type: "Long Answer",
+          text: "Draw a ray diagram showing image formation by a concave mirror when an object is placed between the Center of Curvature (C) and Focus (F). State three characteristics of the image formed.",
+          marks: 5,
+        },
+      ],
+    },
+  },
+  Mathematics: {
+    schoolName: "Delhi Public School, R.K. Puram",
+    junior: {
+      unit: "Fractions, Decimals & Practical Geometry",
+      questions: [
+        {
+          id: "mth-j-1",
+          section: "Section A",
+          sectionTitle: "Mental Maths & MCQs (1 Mark each)",
+          type: "MCQ",
+          text: "The smallest four-digit number formed using digits 4, 0, 9, 2 without repetition is:",
+          marks: 1,
+          options: ["2049", "0249", "2409", "2094"],
+        },
+        {
+          id: "mth-j-2",
+          section: "Section A",
+          sectionTitle: "Mental Maths & MCQs (1 Mark each)",
+          type: "Fill in the blank",
+          text: "The perimeter of a square with side length 14 cm is equal to ______ cm.",
+          marks: 1,
+        },
+        {
+          id: "mth-j-3",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Computation",
+          text: "Simplify using BODMAS rule: 72 ÷ 8 × 3 + (15 - 7).",
+          marks: 2,
+        },
+        {
+          id: "mth-j-4",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Word Problem",
+          text: "A shopkeeper bought 30 pens for ₹450 and sold them at ₹18 each. Did he make a profit or a loss, and by how much?",
+          marks: 3,
+        },
+        {
+          id: "mth-j-5",
+          section: "Section C",
+          sectionTitle: "Long Answer & Word Problems (5 Marks each)",
+          type: "Word Problem",
+          text: "A rectangular playground is 65 m long and 40 m wide. A 2.5 m wide walking path runs all around the inside. Find the area of the walking path and the cost of gravelling it at ₹15 per sq. metre.",
+          marks: 5,
+        },
+      ],
+    },
+    senior: {
+      unit: "Linear Equations, Triangles & Coordinate Geometry",
+      questions: [
+        {
+          id: "mth-s-1",
+          section: "Section A",
+          sectionTitle: "Objective & MCQs (1 Mark each)",
+          type: "MCQ",
+          text: "The discriminant of the quadratic equation 2x² - 4x + 3 = 0 is:",
+          marks: 1,
+          options: ["-8", "8", "-16", "16"],
+        },
+        {
+          id: "mth-s-2",
+          section: "Section A",
+          sectionTitle: "Objective & MCQs (1 Mark each)",
+          type: "Short Question",
+          text: "Find the distance between the points A(3, 4) and B(7, 1) on the Cartesian plane.",
+          marks: 1,
+        },
+        {
+          id: "mth-s-3",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Algebra",
+          text: "Solve the pair of linear equations by elimination method: 3x + 4y = 10 and 2x - 2y = 2.",
+          marks: 3,
+        },
+        {
+          id: "mth-s-4",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Geometry",
+          text: "Prove that the lengths of tangents drawn from an external point to a circle are equal.",
+          marks: 3,
+        },
+        {
+          id: "mth-s-5",
+          section: "Section C",
+          sectionTitle: "Long Answer & Application (5 Marks each)",
+          type: "Application Problem",
+          text: "A motor boat whose speed is 18 km/h in still water takes 1 hour more to go 24 km upstream than to return downstream to the same spot. Find the speed of the stream.",
+          marks: 5,
+        },
+      ],
+    },
+  },
+  English: {
+    schoolName: "St. Xavier's Senior Secondary School",
+    junior: {
+      unit: "Reading Comprehension & Grammar Foundations",
+      questions: [
+        {
+          id: "eng-j-1",
+          section: "Section A",
+          sectionTitle: "Reading & Grammar (1 Mark each)",
+          type: "MCQ",
+          text: "Identify the correct conjunction: We stayed indoors ______ it was raining heavily.",
+          marks: 1,
+          options: ["because", "although", "unless", "but"],
+        },
+        {
+          id: "eng-j-2",
+          section: "Section A",
+          sectionTitle: "Reading & Grammar (1 Mark each)",
+          type: "Editing",
+          text: "Underline the adjective: The adventurous children explored the ancient castle ruins.",
+          marks: 1,
+        },
+        {
+          id: "eng-j-3",
+          section: "Section B",
+          sectionTitle: "Writing & Applied Grammar (2–3 Marks each)",
+          type: "Grammar",
+          text: "Change the following sentence into passive voice: 'Ravi repaired the broken bicycle yesterday.'",
+          marks: 2,
+        },
+        {
+          id: "eng-j-4",
+          section: "Section B",
+          sectionTitle: "Writing & Applied Grammar (2–3 Marks each)",
+          type: "Short Writing",
+          text: "Write a diary entry (in 60-80 words) describing your feelings after winning an inter-school quiz competition.",
+          marks: 3,
+        },
+        {
+          id: "eng-j-5",
+          section: "Section C",
+          sectionTitle: "Formal Writing & Composition (5 Marks each)",
+          type: "Letter Writing",
+          text: "You are Ananya/Aarav of Class VII. Write a formal letter to your school Principal requesting permission to organize a science exhibition in your school auditorium.",
+          marks: 5,
+        },
+      ],
+    },
+    senior: {
+      unit: "Analytical Writing, Modals & Literature Skills",
+      questions: [
+        {
+          id: "eng-s-1",
+          section: "Section A",
+          sectionTitle: "Applied Grammar & Syntax (1 Mark each)",
+          type: "MCQ",
+          text: "Select the correct modal auxiliary: You ______ submit the assignment before 5 PM to receive full credit.",
+          marks: 1,
+          options: ["must", "might", "may", "can"],
+        },
+        {
+          id: "eng-s-2",
+          section: "Section A",
+          sectionTitle: "Applied Grammar & Syntax (1 Mark each)",
+          type: "Indirect Speech",
+          text: "Report the dialogue: Teacher: 'Why did you miss the practical exam?' Student: 'I was down with viral fever, ma'am.'",
+          marks: 1,
+        },
+        {
+          id: "eng-s-3",
+          section: "Section B",
+          sectionTitle: "Notice & Short Writing (2–3 Marks each)",
+          type: "Notice",
+          text: "As the Sports Secretary of your school, draft a notice in about 50 words inviting students of Classes IX-X to audition for the Annual Athletic Meet.",
+          marks: 3,
+        },
+        {
+          id: "eng-s-4",
+          section: "Section B",
+          sectionTitle: "Notice & Short Writing (2–3 Marks each)",
+          type: "Poetry Analysis",
+          text: "Identify and explain the poetic device used in: 'The wind yelled in anger as the storm battered the coast.'",
+          marks: 2,
+        },
+        {
+          id: "eng-s-5",
+          section: "Section C",
+          sectionTitle: "Analytical Paragraph / Letter to Editor (5 Marks each)",
+          type: "Analytical Writing",
+          text: "Write an analytical paragraph in 100–120 words analyzing the rising importance of mental health and stress management programs in high schools.",
+          marks: 5,
+        },
+      ],
+    },
+  },
+  "Social Science": {
+    schoolName: "Adarsh Vidya Mandir Higher Secondary",
+    junior: {
+      unit: "Our Past, Earth & Democratic Governance",
+      questions: [
+        {
+          id: "sst-j-1",
+          section: "Section A",
+          sectionTitle: "Multiple Choice & Facts (1 Mark each)",
+          type: "MCQ",
+          text: "Which imaginary line divides the Earth into the Northern and Southern hemispheres?",
+          marks: 1,
+          options: ["Equator (0°)", "Tropic of Cancer", "Prime Meridian", "Arctic Circle"],
+        },
+        {
+          id: "sst-j-2",
+          section: "Section A",
+          sectionTitle: "Multiple Choice & Facts (1 Mark each)",
+          type: "One Word",
+          text: "Name the ancient Indian emperor who embraced Buddhism after witnessing the devastation of the Kalinga War.",
+          marks: 1,
+        },
+        {
+          id: "sst-j-3",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Civics",
+          text: "What is Universal Adult Franchise? Why is it fundamental to a democracy?",
+          marks: 3,
+        },
+        {
+          id: "sst-j-4",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Geography",
+          text: "Distinguish between weather and climate. Give one suitable example of each.",
+          marks: 2,
+        },
+        {
+          id: "sst-j-5",
+          section: "Section C",
+          sectionTitle: "Long Answer & Case Study (5 Marks each)",
+          type: "History",
+          text: "Describe the administrative innovations and revenue reforms introduced during the Mughal empire under Emperor Akbar.",
+          marks: 5,
+        },
+      ],
+    },
+    senior: {
+      unit: "Nationalism, Resources, Federalism & Economics",
+      questions: [
+        {
+          id: "sst-s-1",
+          section: "Section A",
+          sectionTitle: "Objective & Statement-based (1 Mark each)",
+          type: "MCQ",
+          text: "In which year did Mahatma Gandhi launch the historic Dandi Salt March from Sabarmati Ashram?",
+          marks: 1,
+          options: ["1930", "1920", "1942", "1919"],
+        },
+        {
+          id: "sst-s-2",
+          section: "Section A",
+          sectionTitle: "Objective & Statement-based (1 Mark each)",
+          type: "One Word",
+          text: "Name any two major non-conventional sources of energy in India.",
+          marks: 1,
+        },
+        {
+          id: "sst-s-3",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Economics",
+          text: "Why is the Tertiary sector becoming increasingly prominent in the Indian economy? State two reasons.",
+          marks: 3,
+        },
+        {
+          id: "sst-s-4",
+          section: "Section B",
+          sectionTitle: "Short Answer Questions (2–3 Marks each)",
+          type: "Political Science",
+          text: "Explain the key difference between a 'Coming Together' federation and a 'Holding Together' federation with country examples.",
+          marks: 3,
+        },
+        {
+          id: "sst-s-5",
+          section: "Section C",
+          sectionTitle: "Long Answer & Critical Analysis (5 Marks each)",
+          type: "Political Science",
+          text: "Examine the five major functions performed by political parties in a representative democracy like India.",
+          marks: 5,
+        },
+      ],
+    },
+  },
+  Hindi: {
+    schoolName: "सरस्वती बाल मंदिर सीनियर सेकेंडरी",
+    junior: {
+      unit: "व्याकरण, अपठित गद्यांश एवं रचनात्मक लेखन",
+      questions: [
+        {
+          id: "hin-j-1",
+          section: "Section A",
+          sectionTitle: "वस्तुनिष्ठ एवं व्याकरण (1 अंक प्रत्येक)",
+          type: "MCQ",
+          text: "'सूर्य' शब्द का सही पर्यायवाची शब्द कौन सा है?",
+          marks: 1,
+          options: ["दिनकर", "शशि", "नीरद", "पवन"],
+        },
+        {
+          id: "hin-j-2",
+          section: "Section A",
+          sectionTitle: "वस्तुनिष्ठ एवं व्याकरण (1 अंक प्रत्येक)",
+          type: "रिक्त स्थान",
+          text: "मुहावरा पूरा कीजिए: अपने पैरों पर ______ होना।",
+          marks: 1,
+        },
+        {
+          id: "hin-j-3",
+          section: "Section B",
+          sectionTitle: "लघु उत्तरीय प्रश्न (2–3 अंक प्रत्येक)",
+          type: "व्याकरण",
+          text: "संज्ञा किसे कहते हैं? इसके किन्हीं दो भेदों के नाम उदाहरण सहित लिखिए।",
+          marks: 2,
+        },
+        {
+          id: "hin-j-4",
+          section: "Section B",
+          sectionTitle: "लघु उत्तरीय प्रश्न (2–3 अंक प्रत्येक)",
+          type: "पत्र लेखन",
+          text: "विद्यालय में दो दिन के अवकाश हेतु प्रधानाचार्य को एक संक्षिप्त प्रार्थना पत्र लिखिए।",
+          marks: 3,
+        },
+        {
+          id: "hin-j-5",
+          section: "Section C",
+          sectionTitle: "दीर्घ उत्तरीय एवं निबंध (5 अंक प्रत्येक)",
+          type: "अनुच्छेद",
+          text: "'वृक्षारोपण का महत्त्व' विषय पर लगभग 100 शब्दों में एक प्रभावशाली अनुच्छेद लिखिए।",
+          marks: 5,
+        },
+      ],
+    },
+    senior: {
+      unit: "व्यावहारिक व्याकरण, पद-परिचय एवं अभिव्यक्ति",
+      questions: [
+        {
+          id: "hin-s-1",
+          section: "Section A",
+          sectionTitle: "वस्तुनिष्ठ एवं व्याकरण (1 अंक प्रत्येक)",
+          type: "MCQ",
+          text: "'सूर्योदय' शब्द का सही संधि-विच्छेद क्या होगा?",
+          marks: 1,
+          options: ["सूर्य + उदय", "सूर्यो + दय", "सूर्य + दय", "सूर + उदय"],
+        },
+        {
+          id: "hin-s-2",
+          section: "Section A",
+          sectionTitle: "वस्तुनिष्ठ एवं व्याकरण (1 अंक प्रत्येक)",
+          type: "मुहावरा",
+          text: "मुहावरे 'दाँतों तले उँगली दबाना' का सही अर्थ लिखकर एक सार्थक वाक्य बनाइए।",
+          marks: 1,
+        },
+        {
+          id: "hin-s-3",
+          section: "Section B",
+          sectionTitle: "लघु उत्तरीय प्रश्न (2–3 अंक प्रत्येक)",
+          type: "रचना",
+          text: "रचना के आधार पर वाक्य के कितने भेद होते हैं? प्रत्येक का एक-एक उदाहरण दीजिए।",
+          marks: 3,
+        },
+        {
+          id: "hin-s-4",
+          section: "Section B",
+          sectionTitle: "लघु उत्तरीय प्रश्न (2–3 अंक प्रत्येक)",
+          type: "संवाद लेखन",
+          text: "इंटरनेट के सदुपयोग पर दो मित्रों के मध्य लगभग 50 शब्दों में रोचक संवाद लिखिए।",
+          marks: 3,
+        },
+        {
+          id: "hin-s-5",
+          section: "Section C",
+          sectionTitle: "दीर्घ उत्तरीय एवं पत्र/अनुच्छेद (5 अंक प्रत्येक)",
+          type: "विज्ञापन लेखन",
+          text: "अपने शहर में आयोजित होने वाले पुस्तक मेले के प्रचार-प्रसार हेतु लगभग 50 शब्दों में एक आकर्षक विज्ञापन तैयार कीजिए।",
+          marks: 5,
+        },
+      ],
+    },
+  },
+};
+
+export default function SamplePaperDemo() {
+  const [className, setClassName] = useState("8");
+  const [subject, setSubject] = useState("Science");
+  const [marks, setMarks] = useState("40");
+
+  // Editable paper state
+  const isSenior = Number(className) >= 8;
+  const preset = SAMPLE_DATA[subject] || SAMPLE_DATA["Science"];
+  const stage = isSenior ? preset.senior : preset.junior;
+
+  const [schoolTitle, setSchoolTitle] = useState(preset.schoolName);
+  const [customQuestions, setCustomQuestions] = useState<Record<string, string>>({});
+  const [activeEditId, setActiveEditId] = useState<string | null>(null);
+
+  // Update default school name and reset overrides when subject changes
+  useEffect(() => {
+    setSchoolTitle(preset.schoolName);
+    setCustomQuestions({});
+  }, [subject, className, preset.schoolName]);
+
+  const filteredQuestions = useMemo(() => {
+    const markNum = Number(marks);
+    if (markNum <= 20) {
+      // 20 marks: First 3 questions (Sections A and B)
+      return stage.questions.slice(0, 3);
+    } else if (markNum <= 40) {
+      // 40 marks: 4 questions
+      return stage.questions.slice(0, 4);
+    }
+    // 80 marks: All 5 questions
+    return stage.questions;
+  }, [stage, marks]);
+
+  const timeAllowed = useMemo(() => {
+    const markNum = Number(marks);
+    if (markNum <= 20) return "45 Minutes";
+    if (markNum <= 40) return "1.5 Hours";
+    return "3 Hours";
+  }, [marks]);
+
+  const examType = useMemo(() => {
+    const markNum = Number(marks);
+    if (markNum <= 20) return "Unit Test I (2026–27)";
+    if (markNum <= 40) return "Periodic Assessment II (2026–27)";
+    return "Annual Board Examination (2026–27)";
+  }, [marks]);
+
+  // Destination URL leading directly into the dashboard generator modal without touching manual builder
+  const generatorUrl = `/dashboard?generate=1&class=${encodeURIComponent(
+    className
+  )}&subject=${encodeURIComponent(subject)}&marks=${encodeURIComponent(marks)}`;
+
+  function handleQuestionEdit(id: string, newText: string) {
+    setCustomQuestions((prev) => ({ ...prev, [id]: newText }));
+  }
+
+  function handleReset() {
+    setSchoolTitle(preset.schoolName);
+    setCustomQuestions({});
+    setActiveEditId(null);
+  }
+
+  return (
+    <section id="demo" className="bg-ink text-paper border-y border-ink py-16 sm:py-24 relative overflow-hidden">
+      {/* Background paper texture & subtle grid */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid lg:grid-cols-[0.82fr_1.18fr] gap-10 lg:gap-12 items-start">
+          {/* Left panel: Interactive controls & value prop */}
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pen/20 border border-pen/40 text-paper font-mono text-xs tracking-wider uppercase">
+              <Sparkles size={13} className="text-paper" />
+              Try it before signing up
+            </div>
+
+            <h2 className="mt-4 font-display text-3xl sm:text-5xl tracking-tight leading-[1.08]">
+              See your paper take shape.
+            </h2>
+
+            <p className="mt-4 text-paper/75 leading-relaxed text-sm sm:text-base">
+              Select your class, subject, and marks to see an instant print-formatted
+              preview. Try clicking any question to edit it right on the sheet.
+            </p>
+
+            {/* Selection Form */}
+            <div className="mt-7 bg-white/5 border border-white/15 rounded-xl p-4 sm:p-5 backdrop-blur-sm space-y-4">
+              <div className="grid grid-cols-3 gap-3">
+                <label className="block text-xs font-mono tracking-wide text-paper/80 uppercase">
+                  Class
+                  <select
+                    value={className}
+                    onChange={(e) => setClassName(e.target.value)}
+                    className="mt-1.5 w-full bg-paper/10 border border-paper/20 rounded-lg px-3 py-2 text-sm text-paper outline-none focus:border-paper/60 transition-colors font-sans"
+                  >
+                    {["5", "6", "7", "8", "9", "10"].map((val) => (
+                      <option key={val} value={val} className="text-ink">
+                        Class {val}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block text-xs font-mono tracking-wide text-paper/80 uppercase">
+                  Subject
+                  <select
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className="mt-1.5 w-full bg-paper/10 border border-paper/20 rounded-lg px-3 py-2 text-sm text-paper outline-none focus:border-paper/60 transition-colors font-sans"
+                  >
+                    {Object.keys(SAMPLE_DATA).map((val) => (
+                      <option key={val} value={val} className="text-ink">
+                        {val}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block text-xs font-mono tracking-wide text-paper/80 uppercase">
+                  Marks
+                  <select
+                    value={marks}
+                    onChange={(e) => setMarks(e.target.value)}
+                    className="mt-1.5 w-full bg-paper/10 border border-paper/20 rounded-lg px-3 py-2 text-sm text-paper outline-none focus:border-paper/60 transition-colors font-sans"
+                  >
+                    <option value="20" className="text-ink">20 Marks</option>
+                    <option value="40" className="text-ink">40 Marks</option>
+                    <option value="80" className="text-ink">80 Marks</option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-paper/70 font-mono">
+                <span>Selected: Class {className} · {subject} · {marks}M</span>
+                {Object.keys(customQuestions).length > 0 && (
+                  <button
+                    onClick={handleReset}
+                    className="inline-flex items-center gap-1 text-paper/90 hover:text-white hover:underline transition-colors"
+                  >
+                    <RotateCcw size={12} /> Reset edits
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Generator CTA */}
+            <div className="mt-6 space-y-3">
+              <Link
+                href={generatorUrl}
+                className="group w-full inline-flex items-center justify-center gap-2 bg-pen text-paper px-6 py-3.5 rounded-lg font-semibold hover:bg-white hover:text-ink transition-all shadow-lg hover:shadow-xl"
+              >
+                <Sparkles size={18} />
+                Generate Class {className} {subject} Paper
+                <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between text-xs text-paper/60 gap-2 px-1">
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 size={13} className="text-green-400" />
+                  Opens AI generator with your details
+                </span>
+                <span>3 free papers · No card</span>
+              </div>
+            </div>
+
+            {/* Feature highlights */}
+            <div className="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 gap-3 text-xs text-paper/70">
+              <div className="flex items-start gap-2">
+                <FileCheck2 size={15} className="text-paper shrink-0 mt-0.5" />
+                <span>Add your exact textbook chapters & syllabus</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <FileCheck2 size={15} className="text-paper shrink-0 mt-0.5" />
+                <span>Auto-generates answer key & marking scheme</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right panel: Representative editable-style paper sheet */}
+          <div className="relative">
+            {/* Stamp label */}
+            <div className="hidden sm:flex items-center gap-1.5 absolute -top-3.5 right-6 z-20 bg-pen text-paper text-[11px] font-mono px-3 py-1 rounded-full shadow-md">
+              <Pencil size={11} /> Click text to edit inline
+            </div>
+
+            <div className="bg-[#fcfbf7] text-ink rounded-lg shadow-2xl border border-rule overflow-hidden relative">
+              {/* Exam margin red line */}
+              <div className="absolute top-0 bottom-0 left-9 sm:left-11 w-px bg-pen/25 pointer-events-none z-10" />
+
+              {/* Sheet content */}
+              <div className="pl-12 sm:pl-16 pr-5 sm:pr-8 py-7 sm:py-9 font-display text-ink">
+                {/* School Header */}
+                <div className="text-center border-b border-ink/20 pb-4 relative">
+                  <input
+                    type="text"
+                    value={schoolTitle}
+                    onChange={(e) => setSchoolTitle(e.target.value)}
+                    aria-label="School name"
+                    className="w-full text-center font-bold text-base sm:text-lg tracking-wide bg-transparent border-b border-dashed border-transparent hover:border-ink/30 focus:border-pen outline-none px-1 rounded transition-colors text-ink"
+                    title="Click to edit school name"
+                  />
+                  <p className="text-xs font-serif italic text-graphite mt-0.5">
+                    {examType}
+                  </p>
+
+                  <div className="mt-3 flex flex-wrap items-center justify-between text-xs font-mono text-graphite border-t border-ink/10 pt-2 gap-y-1">
+                    <span><b>Class:</b> {className}</span>
+                    <span><b>Subject:</b> {subject}</span>
+                    <span><b>Time:</b> {timeAllowed}</span>
+                    <span className="text-pen font-bold"><b>Max Marks:</b> {marks}</span>
+                  </div>
+                </div>
+
+                {/* Instructions */}
+                <div className="mt-3.5 pb-3 border-b border-ink/10 text-[11px] text-graphite font-serif italic space-y-0.5">
+                  <p className="font-sans font-bold not-italic text-[11px] uppercase tracking-wider text-ink">
+                    General Instructions:
+                  </p>
+                  <p>1. All questions are compulsory. Marks are indicated against each question.</p>
+                  <p>2. Questions 1 to {filteredQuestions.length} are divided across sections based on difficulty.</p>
+                </div>
+
+                {/* Section Header */}
+                <div className="mt-4 flex items-center justify-between">
+                  <p className="font-mono text-[11px] uppercase tracking-wider font-bold text-pen">
+                    Section A · {stage.unit}
+                  </p>
+                  <span className="text-[10px] font-mono text-graphite bg-ink/5 px-2 py-0.5 rounded">
+                    Interactive Preview
+                  </span>
+                </div>
+
+                {/* Question List */}
+                <div className="mt-4 space-y-5 text-sm leading-relaxed">
+                  {filteredQuestions.map((q, idx) => {
+                    const currentText = customQuestions[q.id] ?? q.text;
+                    const isEditing = activeEditId === q.id;
+
+                    return (
+                      <div
+                        key={q.id}
+                        className="group relative transition-all rounded p-1.5 -mx-1.5 hover:bg-amber-50/50"
+                      >
+                        <div className="flex items-baseline justify-between gap-3">
+                          <div className="flex items-baseline gap-2.5 flex-1 min-w-0">
+                            <span className="font-mono text-xs font-bold text-pen shrink-0">
+                              Q.{idx + 1})
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <span className="inline-block font-mono text-[10px] uppercase tracking-wider text-graphite/80 mr-2 bg-rule/50 px-1 rounded">
+                                {q.type}
+                              </span>
+                              {isEditing ? (
+                                <textarea
+                                  autoFocus
+                                  value={currentText}
+                                  onChange={(e) => handleQuestionEdit(q.id, e.target.value)}
+                                  onBlur={() => setActiveEditId(null)}
+                                  className="w-full text-sm font-display bg-white border border-pen rounded p-1.5 outline-none resize-y min-h-[50px] shadow-inner text-ink"
+                                />
+                              ) : (
+                                <span
+                                  onClick={() => setActiveEditId(q.id)}
+                                  className="cursor-text text-ink hover:underline decoration-dashed decoration-pen/40"
+                                  title="Click to edit question text"
+                                >
+                                  {currentText}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <span className="font-mono text-xs font-semibold text-pen shrink-0">
+                            [{q.marks}M]
+                          </span>
+                        </div>
+
+                        {/* MCQ Options if any */}
+                        {q.options && !isEditing && (
+                          <div className="mt-2 pl-7 grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-graphite font-serif">
+                            {q.options.map((opt, optIdx) => (
+                              <div key={opt} className="flex items-center gap-1.5">
+                                <span className="font-mono text-[11px] text-ink font-medium">
+                                  ({String.fromCharCode(97 + optIdx)})
+                                </span>
+                                <span>{opt}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Bottom paper action bridge */}
+                <div className="mt-8 pt-4 border-t border-ink/15 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div className="text-graphite flex items-center gap-1">
+                    <CheckCircle2 size={13} className="text-pen" />
+                    <span>Representative draft · Print-ready layout</span>
+                  </div>
+
+                  <Link
+                    href={generatorUrl}
+                    className="inline-flex items-center gap-1.5 font-bold text-pen hover:text-ink hover:underline transition-colors"
+                  >
+                    Open in PaperGen Generator <ArrowRight size={14} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile hint */}
+            <p className="sm:hidden mt-2 text-center text-xs text-paper/60 font-mono">
+              Tap any question to edit its text
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

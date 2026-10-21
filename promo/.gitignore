@@ -1,0 +1,6 @@
+node_modules
+out
+
+# Generated audio — rebuild with `npm run audio` (music + SFX) and
+# `npm run vo` (voiceover). Keeps ~4MB of binaries out of the repo.
+public/
