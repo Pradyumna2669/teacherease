@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Loader2,
   Plus,
-  ShieldAlert,
+  Layers,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { BankItem, BankSubject } from "@/lib/question-bank";
@@ -24,50 +24,133 @@ interface Props {
   onClose: () => void;
 }
 
-const DEFAULT_COLLEGE_BLUEPRINT = {
-  name: "End Sem 60 Marks (Autonomous Pattern)",
-  total_marks: 60,
-  blueprint: {
-    groups: [
-      {
-        q_no: 1,
-        title: "Solve the following questions (Unit 1 & 2)",
-        A: [
-          { unit_no: 1, marks: 2, count: 2 },
-          { unit_no: 2, marks: 2, count: 1 },
-        ],
-        B: [
-          { unit_no: 1, marks: 4, count: 3 },
-          { unit_no: 2, marks: 4, count: 3 },
-        ],
-      },
-      {
-        q_no: 2,
-        title: "Solve the following questions (Unit 3 & 4)",
-        A: [
-          { unit_no: 3, marks: 2, count: 2 },
-          { unit_no: 4, marks: 2, count: 1 },
-        ],
-        B: [
-          { unit_no: 3, marks: 4, count: 3 },
-          { unit_no: 4, marks: 4, count: 3 },
-        ],
-      },
-      {
-        q_no: 3,
-        title: "Solve the following questions (Unit 5 & 6)",
-        A: [
-          { unit_no: 5, marks: 2, count: 2 },
-          { unit_no: 6, marks: 2, count: 1 },
-        ],
-        B: [
-          { unit_no: 5, marks: 4, count: 3 },
-          { unit_no: 6, marks: 4, count: 3 },
-        ],
-      },
-    ],
+interface FormatItem {
+  id: string;
+  name: string;
+  total_marks: number;
+  blueprint: any;
+}
+
+const FALLBACK_BLUEPRINTS: FormatItem[] = [
+  {
+    id: "end-sem-60",
+    name: "Autonomous End Semester Examination (60 Marks)",
+    total_marks: 60,
+    blueprint: {
+      groups: [
+        {
+          q_no: 1,
+          title: "Solve the following questions (Unit 1 & Unit 2)",
+          A: [
+            { unit_no: 1, marks: 1, count: 2 },
+            { unit_no: 2, marks: 1, count: 2 },
+          ],
+          B: [
+            { unit_no: 1, marks: 4, count: 2 },
+            { unit_no: 2, marks: 4, count: 2 },
+          ],
+        },
+        {
+          q_no: 2,
+          title: "Solve the following questions (Unit 3 & Unit 4)",
+          A: [
+            { unit_no: 3, marks: 1, count: 2 },
+            { unit_no: 4, marks: 1, count: 2 },
+          ],
+          B: [
+            { unit_no: 3, marks: 4, count: 2 },
+            { unit_no: 4, marks: 4, count: 2 },
+          ],
+        },
+        {
+          q_no: 3,
+          title: "Solve the following questions (Unit 5 & Unit 6)",
+          A: [
+            { unit_no: 5, marks: 1, count: 2 },
+            { unit_no: 6, marks: 1, count: 2 },
+          ],
+          B: [
+            { unit_no: 5, marks: 4, count: 2 },
+            { unit_no: 6, marks: 4, count: 2 },
+          ],
+        },
+      ],
+    },
   },
-};
+  {
+    id: "mid-sem-30",
+    name: "Mid-Semester Examination / Continuous Assessment (30 Marks)",
+    total_marks: 30,
+    blueprint: {
+      groups: [
+        {
+          q_no: 1,
+          title: "Unit 1 & Unit 2 Concepts",
+          A: [
+            { unit_no: 1, marks: 1, count: 3 },
+            { unit_no: 2, marks: 1, count: 3 },
+          ],
+          B: [
+            { unit_no: 1, marks: 4, count: 3 },
+            { unit_no: 2, marks: 4, count: 3 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "unit-test-1",
+    name: "Unit Test I (Units 1 & 2 - 20 Marks)",
+    total_marks: 20,
+    blueprint: {
+      slots: [
+        { unit_no: 1, marks: 1, count: 4 },
+        { unit_no: 2, marks: 1, count: 4 },
+        { unit_no: 1, marks: 4, count: 1 },
+        { unit_no: 2, marks: 4, count: 2 },
+      ],
+    },
+  },
+  {
+    id: "unit-test-2",
+    name: "Unit Test II (Units 3 & 4 - 20 Marks)",
+    total_marks: 20,
+    blueprint: {
+      slots: [
+        { unit_no: 3, marks: 1, count: 4 },
+        { unit_no: 4, marks: 1, count: 4 },
+        { unit_no: 3, marks: 4, count: 1 },
+        { unit_no: 4, marks: 4, count: 2 },
+      ],
+    },
+  },
+  {
+    id: "unit-test-3",
+    name: "Unit Test III (Units 5 & 6 - 20 Marks)",
+    total_marks: 20,
+    blueprint: {
+      slots: [
+        { unit_no: 5, marks: 1, count: 4 },
+        { unit_no: 6, marks: 1, count: 4 },
+        { unit_no: 5, marks: 4, count: 1 },
+        { unit_no: 6, marks: 4, count: 2 },
+      ],
+    },
+  },
+  {
+    id: "class-test-ds",
+    name: "Class Test / Assessment (Data Structures Units 4 & 5 - 25 Marks)",
+    total_marks: 25,
+    blueprint: {
+      slots: [
+        { unit_no: 4, marks: 1, count: 5 },
+        { unit_no: 5, marks: 1, count: 4 },
+        { unit_no: 4, marks: 4, count: 2 },
+        { unit_no: 5, marks: 4, count: 2 },
+      ],
+    },
+  },
+];
 
 export default function CollegeBlueprintModal({
   subject,
@@ -77,6 +160,9 @@ export default function CollegeBlueprintModal({
   const router = useRouter();
   const supabase = createClient();
 
+  const [formats, setFormats] = useState<FormatItem[]>(FALLBACK_BLUEPRINTS);
+  const [selectedFormatId, setSelectedFormatId] = useState<string>(FALLBACK_BLUEPRINTS[0].id);
+
   const [cycles, setCycles] = useState<{ id: string; name: string }[]>([]);
   const [cycleId, setCycleId] = useState("");
   const [newCycleName, setNewCycleName] = useState("");
@@ -85,6 +171,30 @@ export default function CollegeBlueprintModal({
   const [issuedIds, setIssuedIds] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load formats from DB (or fallback to presets)
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("paper_formats")
+          .select("id, name, total_marks, blueprint")
+          .eq("is_active", true)
+          .order("total_marks", { ascending: false });
+
+        if (data && data.length > 0) {
+          setFormats(data as FormatItem[]);
+          setSelectedFormatId(data[0].id);
+        }
+      } catch {
+        // Use fallbacks
+      }
+    })();
+  }, [supabase]);
+
+  const activeFormat = useMemo(() => {
+    return formats.find((f) => f.id === selectedFormatId) || formats[0];
+  }, [formats, selectedFormatId]);
 
   // Load existing cycles for this subject
   useEffect(() => {
@@ -99,7 +209,6 @@ export default function CollegeBlueprintModal({
           setCycles(data);
           setCycleId(data[0].id);
         } else {
-          // Pre-populate Summer 2026 as default
           setNewCycleName("Summer 2026 Examination");
           setShowNewCycle(true);
         }
@@ -109,7 +218,7 @@ export default function CollegeBlueprintModal({
     })();
   }, [subject.id, supabase]);
 
-  // When cycleId changes, load question IDs already issued under this cycle (for backlog non-repetition)
+  // Load questions already issued under this cycle
   useEffect(() => {
     if (!cycleId) {
       setIssuedIds(new Set());
@@ -141,17 +250,21 @@ export default function CollegeBlueprintModal({
     })();
   }, [cycleId, supabase]);
 
-  // Compute live readiness analysis
+  // Compute live readiness analysis for the active format
   const readiness = useMemo(() => {
+    if (!activeFormat) {
+      return { isSufficient: false, totalActive: bankQuestions.length, slots: [] };
+    }
     return evaluateBlueprintReadiness(
-      DEFAULT_COLLEGE_BLUEPRINT.blueprint,
+      activeFormat.blueprint,
       bankQuestions,
       issuedIds,
       variant
     );
-  }, [bankQuestions, issuedIds, variant]);
+  }, [activeFormat, bankQuestions, issuedIds, variant]);
 
   async function handleGenerate() {
+    if (!activeFormat) return;
     setError(null);
     setBusy(true);
 
@@ -173,20 +286,20 @@ export default function CollegeBlueprintModal({
 
       // Synthesize questions using deterministic non-repetition algorithm
       const synthesizedQuestions = synthesizeCollegePaper(
-        DEFAULT_COLLEGE_BLUEPRINT.blueprint,
+        activeFormat.blueprint,
         bankQuestions,
         issuedIds,
         variant
       );
 
       const paperPayload = {
-        title: `${subject.code || subject.name} — ${DEFAULT_COLLEGE_BLUEPRINT.name} (${variant.toUpperCase()})`,
+        title: `${subject.code || subject.name} — ${activeFormat.name} (${variant.toUpperCase()})`,
         subject: subject.name,
         class_name: subject.class_name || (subject.semester ? `Semester ${subject.semester}` : ""),
         course_code: subject.code,
         semester: subject.semester,
         department: subject.department,
-        total_marks: DEFAULT_COLLEGE_BLUEPRINT.total_marks,
+        total_marks: activeFormat.total_marks,
         layout_mode: "college_table",
         variant,
         cycle_id: finalCycleId || null,
@@ -213,7 +326,7 @@ export default function CollegeBlueprintModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl max-w-xl w-full max-h-[90dvh] flex flex-col shadow-2xl border border-rule overflow-hidden">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90dvh] flex flex-col shadow-2xl border border-rule overflow-hidden">
         {/* Modal Header */}
         <div className="px-6 py-4 border-b border-rule flex items-center justify-between bg-paper/50">
           <div className="flex items-center gap-2">
@@ -244,10 +357,37 @@ export default function CollegeBlueprintModal({
             </div>
           )}
 
+          {/* Blueprint Template Selector */}
+          <div>
+            <label className="font-semibold text-ink text-xs block mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+              <Layers size={14} className="text-pen" /> 1. Examination Blueprint Template
+            </label>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {formats.map((fmt) => (
+                <label
+                  key={fmt.id}
+                  onClick={() => setSelectedFormatId(fmt.id)}
+                  className={`flex flex-col p-3 rounded-xl border cursor-pointer transition-all ${
+                    selectedFormatId === fmt.id
+                      ? "border-pen bg-pen/5 text-ink ring-1 ring-pen/20 shadow-sm"
+                      : "border-rule bg-white text-graphite hover:border-graphite"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs text-ink">{fmt.name}</span>
+                    <span className="font-mono text-xs font-semibold text-pen shrink-0 ml-1">
+                      {fmt.total_marks}M
+                    </span>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
           {/* Exam Cycle Selector */}
           <div>
             <label className="font-semibold text-ink text-xs block mb-1.5 uppercase tracking-wide">
-              1. Examination Cycle Sitting
+              2. Examination Cycle Sitting
             </label>
             {showNewCycle ? (
               <div className="flex items-center gap-2">
@@ -294,7 +434,7 @@ export default function CollegeBlueprintModal({
           {/* Paper Variant Selector */}
           <div>
             <label className="font-semibold text-ink text-xs block mb-1.5 uppercase tracking-wide">
-              2. Paper Variant
+              3. Paper Variant
             </label>
             <div className="grid grid-cols-2 gap-3">
               <label
@@ -310,12 +450,12 @@ export default function CollegeBlueprintModal({
                   value="normal"
                   checked={variant === "normal"}
                   onChange={() => setVariant("normal")}
-                  className="mt-0.5 accent-pen"
+                  className="mt-0.5 text-pen focus:ring-pen"
                 />
                 <div>
-                  <b className="block text-ink text-xs">Regular Exam Sitting</b>
-                  <span className="text-[11px] leading-tight block">
-                    Draws freshly from active question bank.
+                  <span className="font-semibold text-xs text-ink block">Regular Examination</span>
+                  <span className="text-[11px] text-graphite block mt-0.5">
+                    Draws from all enabled questions in bank.
                   </span>
                 </div>
               </label>
@@ -323,7 +463,7 @@ export default function CollegeBlueprintModal({
               <label
                 className={`flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all ${
                   variant === "backlog"
-                    ? "border-pen bg-pen/5 text-ink ring-1 ring-pen/20"
+                    ? "border-amber-600 bg-amber-50 text-amber-950 ring-1 ring-amber-300"
                     : "border-rule bg-white text-graphite hover:border-graphite"
                 }`}
               >
@@ -333,87 +473,91 @@ export default function CollegeBlueprintModal({
                   value="backlog"
                   checked={variant === "backlog"}
                   onChange={() => setVariant("backlog")}
-                  className="mt-0.5 accent-pen"
+                  className="mt-0.5 text-amber-600 focus:ring-amber-500"
                 />
                 <div>
-                  <b className="block text-ink text-xs">Backlog Examination</b>
-                  <span className="text-[11px] leading-tight block">
-                    Zero repetition: guarantees no question overlap with Regular paper.
+                  <span className="font-semibold text-xs text-ink block">Backlog Examination</span>
+                  <span className="text-[11px] text-graphite block mt-0.5">
+                    <b>Zero Question Repetition:</b> Excludes all questions used in regular cycle.
                   </span>
                 </div>
               </label>
             </div>
           </div>
 
-          {/* Blueprint Readiness Pre-Flight Check */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="font-semibold text-ink text-xs uppercase tracking-wide">
-                3. Blueprint Readiness Pre-Flight Check
-              </label>
-              <span
-                className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                  readiness.isSufficient
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "bg-amber-50 text-amber-700"
-                }`}
-              >
-                {readiness.isSufficient
-                  ? "✓ All Slots Satisfied"
-                  : "⚠ Insufficient Pool"}
-              </span>
+          {/* Pre-Flight Blueprint Readiness Analyzer */}
+          <div className="bg-paper/60 border border-rule rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-xs text-ink uppercase tracking-wide">
+                  Bank Sufficiency Pre-Check
+                </span>
+                <span className="font-mono text-xs text-graphite">
+                  ({readiness.totalActive} eligible questions)
+                </span>
+              </div>
+              {readiness.isSufficient ? (
+                <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                  <CheckCircle2 size={13} /> Blueprint Satisfied
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-100 px-2.5 py-0.5 rounded-full">
+                  <AlertTriangle size={13} /> Insufficient Slots
+                </span>
+              )}
             </div>
 
-            <div className="bg-paper border border-rule rounded-xl p-3 max-h-40 overflow-y-auto space-y-1.5 text-xs">
+            {/* Slots breakdown table */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {readiness.slots.map((s, idx) => (
-                <div key={idx} className="flex items-center justify-between py-0.5 border-b border-rule/50 last:border-0">
-                  <div className="flex items-center gap-1.5">
-                    {s.ok ? (
-                      <CheckCircle2 size={14} className="text-emerald-600 shrink-0" />
-                    ) : (
-                      <AlertTriangle size={14} className="text-amber-600 shrink-0" />
-                    )}
-                    <span>
-                      Unit {s.unit} ({s.marks} Marks): Needed <b>{s.needed}</b>
-                    </span>
-                  </div>
-                  <span className={s.ok ? "text-emerald-700 font-mono" : "text-amber-700 font-bold font-mono"}>
-                    {s.available} available
+                <div
+                  key={idx}
+                  className={`p-2 rounded-lg border flex items-center justify-between ${
+                    s.ok
+                      ? "border-emerald-200 bg-emerald-50/50 text-emerald-950"
+                      : "border-red-200 bg-red-50 text-red-950"
+                  }`}
+                >
+                  <span className="font-medium">
+                    Unit {s.unit} ({s.marks}M)
+                  </span>
+                  <span className="font-mono font-semibold">
+                    {s.available}/{s.needed} {s.ok ? "✓" : "✗"}
                   </span>
                 </div>
               ))}
             </div>
 
-            {variant === "backlog" && issuedIds.size > 0 && (
-              <p className="text-[11px] text-graphite mt-1.5 flex items-center gap-1">
-                <ShieldAlert size={12} className="text-pen" />
-                <span>
-                  {issuedIds.size} questions from regular sitting excluded to guarantee non-repetition.
-                </span>
+            {!readiness.isSufficient && (
+              <p className="mt-3 text-xs text-red-600 leading-relaxed">
+                Add more questions matching the red slots or switch to an alternate blueprint template.
               </p>
             )}
           </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-rule flex items-center justify-between bg-paper/30">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 text-sm text-graphite hover:text-ink transition-colors"
-          >
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={busy || !readiness.isSufficient}
-            className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-pen rounded-xl hover:bg-ink transition-colors disabled:opacity-40"
-          >
-            {busy ? <Loader2 size={16} className="animate-spin" /> : <FileCheck2 size={16} />}
-            Synthesize Paper ({DEFAULT_COLLEGE_BLUEPRINT.total_marks} Marks)
-          </button>
+        <div className="px-6 py-4 border-t border-rule bg-paper/50 flex items-center justify-between">
+          <p className="text-xs text-graphite">
+            Synthesizes publication-ready university layout table.
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onClose}
+              disabled={busy}
+              className="px-4 py-2 text-sm text-graphite hover:text-ink border border-rule rounded-lg bg-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleGenerate}
+              disabled={busy || !readiness.isSufficient}
+              className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-pen rounded-lg hover:bg-ink transition-colors disabled:opacity-40 shadow-sm"
+            >
+              {busy ? <Loader2 size={16} className="animate-spin" /> : <FileCheck2 size={16} />}
+              Generate Paper
+            </button>
+          </div>
         </div>
       </div>
     </div>
