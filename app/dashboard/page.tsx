@@ -91,7 +91,7 @@ function DashboardContent() {
 
   useEffect(() => {
     try {
-      if (localStorage.getItem("paperly_upgrade_banner_closed") === "true") {
+      if (localStorage.getItem("teacherease_upgrade_banner_closed") === "true") {
         setShowUpgradeBanner(false);
       }
     } catch {}
@@ -100,7 +100,7 @@ function DashboardContent() {
   const closeUpgradeBanner = () => {
     setShowUpgradeBanner(false);
     try {
-      localStorage.setItem("paperly_upgrade_banner_closed", "true");
+      localStorage.setItem("teacherease_upgrade_banner_closed", "true");
     } catch {}
   };
 

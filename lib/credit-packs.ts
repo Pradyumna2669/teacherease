@@ -1,4 +1,4 @@
-// Paperly Paper Packs & Pricing.
+// TeacherEase Paper Packs & Pricing.
 // Simplified "Paper Count" model:
 // 1 Paper = 20 credits under the hood.
 // Every paper includes unlimited handwriting page scans, AI questions, answer keys, and Word/PDF export.
@@ -47,7 +47,7 @@ export const TOPUP_PACKS: CreditPack[] = [
     originalPriceInr: 99,
     badge: "1st Purchase Special",
     oneTimeOnly: true,
-    description: "Try Paperly on real classroom exam papers.",
+    description: "Try TeacherEase on real classroom exam papers.",
     features: [
       "5 Full Papers",
       "Unlimited scan pages per paper",

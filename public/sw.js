@@ -1,4 +1,4 @@
-/* PaperGen service worker.
+/* TeacherEase service worker.
  *
  * Deliberately small. A teacher's paper lives in Supabase and every AI call
  * needs the network, so there is no useful "offline mode" to fake — caching
@@ -15,7 +15,7 @@
 // v2 drops the precached "/offline" Next route: only literal paths in PRECACHE
 // are served from the cache, so that page came back without its stylesheet.
 const VERSION = "v2";
-const SHELL = `papergen-shell-${VERSION}`;
+const SHELL = `teacherease-shell-${VERSION}`;
 const OFFLINE_URL = "/offline.html";
 
 const PRECACHE = [

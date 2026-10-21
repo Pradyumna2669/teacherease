@@ -53,7 +53,7 @@ export default function TopupPage() {
   useEffect(() => {
     setInApp(inAndroidApp());
     try {
-      if (localStorage.getItem("paperly_upgrade_banner_closed") === "true") {
+      if (localStorage.getItem("teacherease_upgrade_banner_closed") === "true") {
         setShowUpgradeBanner(false);
       }
     } catch {}
@@ -70,7 +70,7 @@ export default function TopupPage() {
   const closeBanner = () => {
     setShowUpgradeBanner(false);
     try {
-      localStorage.setItem("paperly_upgrade_banner_closed", "true");
+      localStorage.setItem("teacherease_upgrade_banner_closed", "true");
     } catch {}
   };
 
@@ -97,7 +97,7 @@ export default function TopupPage() {
         order_id: data.orderId,
         amount: data.amount,
         currency: "INR",
-        name: "Paperly",
+        name: "TeacherEase",
         description: `${pack.name} — ${pack.papers} Papers`,
         prefill: { email },
         theme: { color: "#4f46e5" },
@@ -143,7 +143,7 @@ export default function TopupPage() {
       const rzp = new window.Razorpay!({
         key: data.keyId,
         subscription_id: data.subscriptionId,
-        name: "Paperly",
+        name: "TeacherEase",
         description: `${planId} — Monthly Paper Plan`,
         prefill: { email },
         theme: { color: "#4f46e5" },
