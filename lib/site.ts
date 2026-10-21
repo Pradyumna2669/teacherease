@@ -5,14 +5,14 @@
 // Guard it against invalid values (for example local Windows path strings or
 // partial env values) so build-time metadata generation never throws.
 export const SITE_URL = (() => {
-  const raw = (process.env.NEXT_PUBLIC_SITE_URL || "https://papergen.online")
+  const raw = (process.env.NEXT_PUBLIC_SITE_URL || "https://teacherease.online")
     .trim()
     .replace(/\/+$/, "");
 
   try {
     return new URL(raw).origin;
   } catch {
-    return "https://papergen.online";
+    return "https://teacherease.online";
   }
 })();
 
