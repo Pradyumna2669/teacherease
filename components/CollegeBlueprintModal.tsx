@@ -10,6 +10,7 @@ import {
   Loader2,
   Plus,
   Layers,
+  BookOpen,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { BankItem, BankSubject } from "@/lib/question-bank";
@@ -19,8 +20,9 @@ import {
 } from "@/lib/college-blueprint";
 
 interface Props {
-  subject: BankSubject;
-  bankQuestions: BankItem[];
+  subject?: BankSubject;
+  bankQuestions?: BankItem[];
+  preselectedFormatId?: string;
   onClose: () => void;
 }
 
@@ -153,15 +155,23 @@ const FALLBACK_BLUEPRINTS: FormatItem[] = [
 ];
 
 export default function CollegeBlueprintModal({
-  subject,
-  bankQuestions,
+  subject: initialSubject,
+  bankQuestions: initialBankQuestions,
+  preselectedFormatId,
   onClose,
 }: Props) {
   const router = useRouter();
   const supabase = createClient();
 
+  const [subjects, setSubjects] = useState<BankSubject[]>([]);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubject?.id || "");
+  const [bankQuestions, setBankQuestions] = useState<BankItem[]>(initialBankQuestions || []);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+
   const [formats, setFormats] = useState<FormatItem[]>(FALLBACK_BLUEPRINTS);
-  const [selectedFormatId, setSelectedFormatId] = useState<string>(FALLBACK_BLUEPRINTS[0].id);
+  const [selectedFormatId, setSelectedFormatId] = useState<string>(
+    preselectedFormatId || FALLBACK_BLUEPRINTS[0].id
+  );
 
   const [cycles, setCycles] = useState<{ id: string; name: string }[]>([]);
   const [cycleId, setCycleId] = useState("");
@@ -171,6 +181,57 @@ export default function CollegeBlueprintModal({
   const [issuedIds, setIssuedIds] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // If no subject passed directly, load teacher's college subjects
+  useEffect(() => {
+    if (initialSubject) return;
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("bank_subjects")
+          .select("*")
+          .not("code", "is", null)
+          .order("name");
+        if (data && data.length > 0) {
+          setSubjects(data as BankSubject[]);
+          setSelectedSubjectId(data[0].id);
+        }
+      } catch {
+        /* ignore */
+      }
+    })();
+  }, [initialSubject, supabase]);
+
+  const activeSubject = useMemo(() => {
+    if (initialSubject) return initialSubject;
+    return subjects.find((s) => s.id === selectedSubjectId) || null;
+  }, [initialSubject, subjects, selectedSubjectId]);
+
+  // Load questions for the selected subject if not already supplied
+  useEffect(() => {
+    if (initialBankQuestions && initialSubject?.id === selectedSubjectId) {
+      setBankQuestions(initialBankQuestions);
+      return;
+    }
+    if (!selectedSubjectId) return;
+
+    (async () => {
+      setLoadingQuestions(true);
+      try {
+        const { data } = await supabase
+          .from("question_bank")
+          .select("*")
+          .eq("subject_id", selectedSubjectId)
+          .eq("enabled", true);
+
+        setBankQuestions(data || []);
+      } catch {
+        /* ignore */
+      } finally {
+        setLoadingQuestions(false);
+      }
+    })();
+  }, [selectedSubjectId, initialBankQuestions, initialSubject, supabase]);
 
   // Load formats from DB (or fallback to presets)
   useEffect(() => {
@@ -184,30 +245,34 @@ export default function CollegeBlueprintModal({
 
         if (data && data.length > 0) {
           setFormats(data as FormatItem[]);
-          setSelectedFormatId(data[0].id);
+          if (!preselectedFormatId) {
+            setSelectedFormatId(data[0].id);
+          }
         }
       } catch {
         // Use fallbacks
       }
     })();
-  }, [supabase]);
+  }, [supabase, preselectedFormatId]);
 
   const activeFormat = useMemo(() => {
     return formats.find((f) => f.id === selectedFormatId) || formats[0];
   }, [formats, selectedFormatId]);
 
-  // Load existing cycles for this subject
+  // Load existing cycles for active subject
   useEffect(() => {
+    if (!activeSubject?.id) return;
     (async () => {
       try {
         const { data } = await supabase
           .from("exam_cycles")
           .select("id, name")
-          .eq("subject_id", subject.id)
+          .eq("subject_id", activeSubject.id)
           .order("created_at", { ascending: false });
         if (data && data.length > 0) {
           setCycles(data);
           setCycleId(data[0].id);
+          setShowNewCycle(false);
         } else {
           setNewCycleName("Summer 2026 Examination");
           setShowNewCycle(true);
@@ -216,7 +281,7 @@ export default function CollegeBlueprintModal({
         setShowNewCycle(true);
       }
     })();
-  }, [subject.id, supabase]);
+  }, [activeSubject?.id, supabase]);
 
   // Load questions already issued under this cycle
   useEffect(() => {
@@ -250,7 +315,7 @@ export default function CollegeBlueprintModal({
     })();
   }, [cycleId, supabase]);
 
-  // Compute live readiness analysis for the active format
+  // Compute live readiness analysis for the active format and subject bank
   const readiness = useMemo(() => {
     if (!activeFormat) {
       return { isSufficient: false, totalActive: bankQuestions.length, slots: [] };
@@ -264,7 +329,7 @@ export default function CollegeBlueprintModal({
   }, [activeFormat, bankQuestions, issuedIds, variant]);
 
   async function handleGenerate() {
-    if (!activeFormat) return;
+    if (!activeFormat || !activeSubject) return;
     setError(null);
     setBusy(true);
 
@@ -275,7 +340,7 @@ export default function CollegeBlueprintModal({
         const { data: newCyc, error: cycErr } = await supabase
           .from("exam_cycles")
           .insert({
-            subject_id: subject.id,
+            subject_id: activeSubject.id,
             name: newCycleName.trim(),
           })
           .select("id")
@@ -284,7 +349,7 @@ export default function CollegeBlueprintModal({
         finalCycleId = newCyc.id;
       }
 
-      // Synthesize questions using deterministic non-repetition algorithm
+      // Synthesize questions using deterministic random picker with non-repetition
       const synthesizedQuestions = synthesizeCollegePaper(
         activeFormat.blueprint,
         bankQuestions,
@@ -293,12 +358,12 @@ export default function CollegeBlueprintModal({
       );
 
       const paperPayload = {
-        title: `${subject.code || subject.name} — ${activeFormat.name} (${variant.toUpperCase()})`,
-        subject: subject.name,
-        class_name: subject.class_name || (subject.semester ? `Semester ${subject.semester}` : ""),
-        course_code: subject.code,
-        semester: subject.semester,
-        department: subject.department,
+        title: `${activeSubject.code || activeSubject.name} — ${activeFormat.name} (${variant.toUpperCase()})`,
+        subject: activeSubject.name,
+        class_name: activeSubject.class_name || (activeSubject.semester ? `Semester ${activeSubject.semester}` : ""),
+        course_code: activeSubject.code,
+        semester: activeSubject.semester,
+        department: activeSubject.department,
         total_marks: activeFormat.total_marks,
         layout_mode: "college_table",
         variant,
@@ -315,6 +380,24 @@ export default function CollegeBlueprintModal({
       const data = await res.json();
       if (!res.ok || !data.id) {
         throw new Error(data.error || "Could not synthesize college question paper.");
+      }
+
+      // Record audit log
+      try {
+        await supabase.from("audit_logs").insert({
+          action: "paper.generate",
+          entity: "paper",
+          entity_id: data.id,
+          summary: `Synthesized paper: ${paperPayload.title}`,
+          details: {
+            subject: activeSubject.name,
+            code: activeSubject.code,
+            variant,
+            total_marks: activeFormat.total_marks,
+          },
+        });
+      } catch {
+        /* ignore audit err */
       }
 
       router.push(`/builder?id=${data.id}`);
@@ -336,7 +419,7 @@ export default function CollegeBlueprintModal({
                 Autonomous Paper Synthesis
               </h2>
               <p className="text-xs text-graphite">
-                {subject.code ? `${subject.code} · ` : ""}{subject.name}
+                Randomized question picking conforming to blueprint with zero repetition guarantee.
               </p>
             </div>
           </div>
@@ -357,10 +440,30 @@ export default function CollegeBlueprintModal({
             </div>
           )}
 
+          {/* Subject / Course Selector (If not pre-locked from Bank) */}
+          {!initialSubject && (
+            <div>
+              <label className="font-semibold text-ink text-xs block mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
+                <BookOpen size={14} className="text-pen" /> 1. Select Course / Subject
+              </label>
+              <select
+                value={selectedSubjectId}
+                onChange={(e) => setSelectedSubjectId(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-rule rounded-lg focus:ring-2 focus:ring-pen/20 focus:border-pen outline-none font-sans"
+              >
+                {subjects.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.code ? `${s.code} · ` : ""}{s.name} {s.semester ? `(Semester ${s.semester})` : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {/* Blueprint Template Selector */}
           <div>
             <label className="font-semibold text-ink text-xs block mb-1.5 uppercase tracking-wide flex items-center gap-1.5">
-              <Layers size={14} className="text-pen" /> 1. Examination Blueprint Template
+              <Layers size={14} className="text-pen" /> {initialSubject ? "1" : "2"}. Examination Blueprint Template
             </label>
             <div className="grid sm:grid-cols-2 gap-2">
               {formats.map((fmt) => (
@@ -387,7 +490,7 @@ export default function CollegeBlueprintModal({
           {/* Exam Cycle Selector */}
           <div>
             <label className="font-semibold text-ink text-xs block mb-1.5 uppercase tracking-wide">
-              2. Examination Cycle Sitting
+              {initialSubject ? "2" : "3"}. Examination Cycle Sitting
             </label>
             {showNewCycle ? (
               <div className="flex items-center gap-2">
@@ -434,7 +537,7 @@ export default function CollegeBlueprintModal({
           {/* Paper Variant Selector */}
           <div>
             <label className="font-semibold text-ink text-xs block mb-1.5 uppercase tracking-wide">
-              3. Paper Variant
+              {initialSubject ? "3" : "4"}. Paper Variant
             </label>
             <div className="grid grid-cols-2 gap-3">
               <label
@@ -455,7 +558,7 @@ export default function CollegeBlueprintModal({
                 <div>
                   <span className="font-semibold text-xs text-ink block">Regular Examination</span>
                   <span className="text-[11px] text-graphite block mt-0.5">
-                    Draws from all enabled questions in bank.
+                    Draws randomly from question bank according to blueprint.
                   </span>
                 </div>
               </label>
@@ -492,9 +595,13 @@ export default function CollegeBlueprintModal({
                 <span className="font-semibold text-xs text-ink uppercase tracking-wide">
                   Bank Sufficiency Pre-Check
                 </span>
-                <span className="font-mono text-xs text-graphite">
-                  ({readiness.totalActive} eligible questions)
-                </span>
+                {loadingQuestions ? (
+                  <Loader2 size={13} className="animate-spin text-graphite" />
+                ) : (
+                  <span className="font-mono text-xs text-graphite">
+                    ({readiness.totalActive} active questions in {activeSubject?.name || "course"})
+                  </span>
+                )}
               </div>
               {readiness.isSufficient ? (
                 <span className="flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
@@ -530,7 +637,7 @@ export default function CollegeBlueprintModal({
 
             {!readiness.isSufficient && (
               <p className="mt-3 text-xs text-red-600 leading-relaxed">
-                Add more questions matching the red slots or switch to an alternate blueprint template.
+                Add more questions matching the red slots in {activeSubject?.name} or switch to an alternate blueprint template.
               </p>
             )}
           </div>
@@ -539,7 +646,7 @@ export default function CollegeBlueprintModal({
         {/* Modal Footer */}
         <div className="px-6 py-4 border-t border-rule bg-paper/50 flex items-center justify-between">
           <p className="text-xs text-graphite">
-            Synthesizes publication-ready university layout table.
+            Randomly picks questions and formats into autonomous university table layout.
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -551,7 +658,7 @@ export default function CollegeBlueprintModal({
             </button>
             <button
               onClick={handleGenerate}
-              disabled={busy || !readiness.isSufficient}
+              disabled={busy || !readiness.isSufficient || !activeSubject}
               className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-pen rounded-lg hover:bg-ink transition-colors disabled:opacity-40 shadow-sm"
             >
               {busy ? <Loader2 size={16} className="animate-spin" /> : <FileCheck2 size={16} />}

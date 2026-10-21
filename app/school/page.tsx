@@ -33,6 +33,7 @@ import {
 } from "@/lib/credit-packs";
 import { inAndroidApp } from "@/lib/twa";
 import type { SchoolTemplate, SchoolReviewItem } from "@/lib/types";
+import CollegeBlueprintModal from "@/components/CollegeBlueprintModal";
 
 declare global {
   interface Window {
@@ -132,6 +133,7 @@ export default function SchoolPage() {
   const [reviews, setReviews] = useState<SchoolReviewItem[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [synthesisTemplate, setSynthesisTemplate] = useState<SchoolTemplate | null>(null);
 
   // Allotments
   const [allotments, setAllotments] = useState<AllotmentItem[]>([]);
@@ -369,30 +371,8 @@ export default function SchoolPage() {
   }
 
   async function useTemplate(tpl: SchoolTemplate) {
-    setUsingTemplateId(tpl.id);
-    try {
-      const res = await fetch("/api/papers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: `${tpl.title} (From Template)`,
-          subject: tpl.subject || "General",
-          class_name: tpl.class_name || "10",
-          settings: tpl.settings,
-          questions: tpl.sections,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok && data.id) {
-        router.push(`/builder?id=${data.id}`);
-      } else {
-        alert("Failed to spawn paper from template.");
-      }
-    } catch {
-      alert("Network error.");
-    } finally {
-      setUsingTemplateId(null);
-    }
+    // Open the Autonomous Synthesis dialog with course selection and random question picking
+    setSynthesisTemplate(tpl);
   }
 
   async function deleteTemplate(id: string) {
@@ -1006,6 +986,21 @@ export default function SchoolPage() {
           </div>
         )}
       </main>
+
+      {synthesisTemplate && (
+        <CollegeBlueprintModal
+          preselectedFormatId={
+            synthesisTemplate.title.includes("60")
+              ? "end-sem-60"
+              : synthesisTemplate.title.includes("30")
+              ? "mid-sem-30"
+              : synthesisTemplate.title.includes("25")
+              ? "class-test-ds"
+              : undefined
+          }
+          onClose={() => setSynthesisTemplate(null)}
+        />
+      )}
 
       {pendingRemove && (
         <ConfirmModal
