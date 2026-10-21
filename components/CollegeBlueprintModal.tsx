@@ -23,6 +23,7 @@ interface Props {
   subject?: BankSubject;
   bankQuestions?: BankItem[];
   preselectedFormatId?: string;
+  preselectedTemplateTitle?: string;
   onClose: () => void;
 }
 
@@ -158,6 +159,7 @@ export default function CollegeBlueprintModal({
   subject: initialSubject,
   bankQuestions: initialBankQuestions,
   preselectedFormatId,
+  preselectedTemplateTitle,
   onClose,
 }: Props) {
   const router = useRouter();
@@ -194,13 +196,32 @@ export default function CollegeBlueprintModal({
           .order("name");
         if (data && data.length > 0) {
           setSubjects(data as BankSubject[]);
-          setSelectedSubjectId(data[0].id);
+          const isDs =
+            preselectedFormatId?.includes("ds") ||
+            preselectedFormatId?.includes("25") ||
+            preselectedTemplateTitle?.includes("Data Structures");
+          const dsSubject = data.find(
+            (s) =>
+              s.name.toLowerCase().includes("data structure") ||
+              s.code?.toLowerCase().includes("302")
+          );
+          const mathSubject = data.find((s) =>
+            s.name.toLowerCase().includes("math")
+          );
+
+          if (isDs && dsSubject) {
+            setSelectedSubjectId(dsSubject.id);
+          } else if (mathSubject) {
+            setSelectedSubjectId(mathSubject.id);
+          } else {
+            setSelectedSubjectId(data[0].id);
+          }
         }
       } catch {
         /* ignore */
       }
     })();
-  }, [initialSubject, supabase]);
+  }, [initialSubject, preselectedFormatId, preselectedTemplateTitle, supabase]);
 
   const activeSubject = useMemo(() => {
     if (initialSubject) return initialSubject;
@@ -245,7 +266,21 @@ export default function CollegeBlueprintModal({
 
         if (data && data.length > 0) {
           setFormats(data as FormatItem[]);
-          if (!preselectedFormatId) {
+          if (preselectedFormatId) {
+            const match = data.find(
+              (f) =>
+                f.id === preselectedFormatId ||
+                (preselectedFormatId === "end-sem-60" && f.name.includes("60")) ||
+                (preselectedFormatId === "mid-sem-30" && f.name.includes("30")) ||
+                (preselectedFormatId === "class-test-ds" &&
+                  (f.name.includes("25") || f.name.includes("Data Structures"))) ||
+                (preselectedFormatId === "unit-test-1" && f.name.includes("Unit Test I (")) ||
+                (preselectedFormatId === "unit-test-2" && f.name.includes("Unit Test II (")) ||
+                (preselectedFormatId === "unit-test-3" && f.name.includes("Unit Test III (")) ||
+                f.name.toLowerCase().includes(preselectedFormatId.toLowerCase())
+            );
+            if (match) setSelectedFormatId(match.id);
+          } else {
             setSelectedFormatId(data[0].id);
           }
         }
@@ -256,8 +291,47 @@ export default function CollegeBlueprintModal({
   }, [supabase, preselectedFormatId]);
 
   const activeFormat = useMemo(() => {
-    return formats.find((f) => f.id === selectedFormatId) || formats[0];
+    if (!formats.length) return FALLBACK_BLUEPRINTS[0];
+    const match = formats.find(
+      (f) =>
+        f.id === selectedFormatId ||
+        (selectedFormatId === "end-sem-60" && f.name.includes("60")) ||
+        (selectedFormatId === "mid-sem-30" && f.name.includes("30")) ||
+        (selectedFormatId === "class-test-ds" &&
+          (f.name.includes("25") || f.name.includes("Data Structures"))) ||
+        (selectedFormatId === "unit-test-1" && f.name.includes("Unit Test I (")) ||
+        (selectedFormatId === "unit-test-2" && f.name.includes("Unit Test II (")) ||
+        (selectedFormatId === "unit-test-3" && f.name.includes("Unit Test III (")) ||
+        f.name.toLowerCase().includes(selectedFormatId.toLowerCase())
+    );
+    return match || formats[0];
   }, [formats, selectedFormatId]);
+
+  function handleSelectFormat(fmt: FormatItem) {
+    setSelectedFormatId(fmt.id);
+    if (!initialSubject && subjects.length > 0) {
+      if (
+        fmt.name.toLowerCase().includes("data structure") ||
+        fmt.name.includes("25")
+      ) {
+        const ds = subjects.find(
+          (s) =>
+            s.name.toLowerCase().includes("data structure") ||
+            s.code?.toLowerCase().includes("302")
+        );
+        if (ds) setSelectedSubjectId(ds.id);
+      } else if (
+        fmt.name.includes("60") ||
+        fmt.name.includes("30") ||
+        fmt.name.includes("Unit Test")
+      ) {
+        const math = subjects.find((s) =>
+          s.name.toLowerCase().includes("math")
+        );
+        if (math) setSelectedSubjectId(math.id);
+      }
+    }
+  }
 
   // Load existing cycles for active subject
   useEffect(() => {
@@ -337,11 +411,14 @@ export default function CollegeBlueprintModal({
       let finalCycleId = cycleId;
 
       if (showNewCycle && newCycleName.trim()) {
+        const { data: authData } = await supabase.auth.getUser();
         const { data: newCyc, error: cycErr } = await supabase
           .from("exam_cycles")
           .insert({
             subject_id: activeSubject.id,
             name: newCycleName.trim(),
+            user_id: authData?.user?.id || null,
+            school_id: activeSubject.school_id || null,
           })
           .select("id")
           .single();
@@ -469,9 +546,9 @@ export default function CollegeBlueprintModal({
               {formats.map((fmt) => (
                 <label
                   key={fmt.id}
-                  onClick={() => setSelectedFormatId(fmt.id)}
+                  onClick={() => handleSelectFormat(fmt)}
                   className={`flex flex-col p-3 rounded-xl border cursor-pointer transition-all ${
-                    selectedFormatId === fmt.id
+                    activeFormat?.id === fmt.id
                       ? "border-pen bg-pen/5 text-ink ring-1 ring-pen/20 shadow-sm"
                       : "border-rule bg-white text-graphite hover:border-graphite"
                   }`}

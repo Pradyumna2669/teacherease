@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { spendCredits } from "@/lib/credits";
 import { DEFAULT_SETTINGS, seedSettings } from "@/lib/types";
 import { recordFunnelEvent } from "@/lib/funnel-events";
@@ -26,6 +27,13 @@ export async function POST(req: NextRequest) {
     settings?: unknown;
     questions?: unknown;
     method?: string;
+    cycle_id?: string | null;
+    variant?: string | null;
+    layout_mode?: string | null;
+    course_code?: string | null;
+    semester?: number | string | null;
+    department?: string | null;
+    total_marks?: number | null;
   } = {};
   try {
     body = await req.json();
@@ -117,6 +125,27 @@ export async function POST(req: NextRequest) {
     ? (body.method as typeof VALID_METHODS[number])
     : "typed";
 
+  const layoutMode =
+    body.layout_mode ||
+    (body.settings as any)?.layoutMode ||
+    seeded.layoutMode ||
+    "standard";
+  const cycleId = body.cycle_id || null;
+  const variant = body.variant || "normal";
+
+  const mergedSettings = {
+    ...seeded,
+    subject,
+    className,
+    layoutMode,
+    variant,
+    ...(body.course_code ? { courseCode: body.course_code } : {}),
+    ...(body.semester ? { semester: body.semester } : {}),
+    ...(body.department ? { department: body.department } : {}),
+    ...(body.total_marks ? { totalMarks: body.total_marks } : {}),
+    ...((body.settings as Record<string, unknown>) || {}),
+  };
+
   const { data, error } = await supabase
     .from("papers")
     .insert({
@@ -126,11 +155,12 @@ export async function POST(req: NextRequest) {
       title: body.title ?? "Untitled Paper",
       subject,
       class_name: className,
-      // The bank passes a subject and class without any settings — keep the
-      // printed header and the listed row saying the same thing.
-      settings: { ...seeded, subject, className },
+      settings: mergedSettings,
       questions,
       method,
+      cycle_id: cycleId,
+      variant,
+      layout_mode: layoutMode,
     })
     .select("id")
     .single();
@@ -140,6 +170,32 @@ export async function POST(req: NextRequest) {
       { error: error?.message || "Could not create paper." },
       { status: 500 }
     );
+  }
+
+  // Record audit log for school papers
+  if (schoolId) {
+    try {
+      const adminClient = createAdminClient();
+      await adminClient.from("audit_logs").insert({
+        school_id: schoolId,
+        actor_id: user.id,
+        actor_email: user.email,
+        action: "paper.generate",
+        entity: "paper",
+        entity_id: data.id,
+        summary: `Synthesized paper: ${body.title || "Untitled Paper"}`,
+        details: {
+          subject,
+          class_name: className,
+          variant,
+          cycle_id: cycleId,
+          total_marks: body.total_marks,
+          questions_count: Array.isArray(questions) ? questions.length : 0,
+        },
+      });
+    } catch (auditErr) {
+      console.warn("Failed to write audit log:", auditErr);
+    }
   }
 
   // Charge credits now that the paper exists; ref the ledger to the paper id.

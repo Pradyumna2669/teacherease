@@ -14,6 +14,7 @@ export interface BankSubject {
   code?: string | null;
   semester?: number | null;
   department?: string | null;
+  school_id?: string | null;
   created_at: string;
 }
 

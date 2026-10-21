@@ -996,8 +996,15 @@ export default function SchoolPage() {
               ? "mid-sem-30"
               : synthesisTemplate.title.includes("25")
               ? "class-test-ds"
+              : synthesisTemplate.title.includes("Unit Test I (")
+              ? "unit-test-1"
+              : synthesisTemplate.title.includes("Unit Test II (")
+              ? "unit-test-2"
+              : synthesisTemplate.title.includes("Unit Test III (")
+              ? "unit-test-3"
               : undefined
           }
+          preselectedTemplateTitle={synthesisTemplate.title}
           onClose={() => setSynthesisTemplate(null)}
         />
       )}

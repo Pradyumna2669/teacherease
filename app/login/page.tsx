@@ -119,7 +119,7 @@ function AuthCard() {
         <div className="w-10 h-10 bg-pen rounded-xl flex items-center justify-center">
           <FileText size={20} className="text-white" />
         </div>
-        <span className="font-display text-2xl font-semibold tracking-tight text-ink">Teacher<span className="ink-blank">Ease</span></span>
+        <span className="font-display text-2xl font-semibold tracking-tight text-ink">Paper<span className="ink-blank">Gen</span></span>
       </Link>
 
       <div className="bg-white rounded-2xl shadow-xl shadow-rule/60 border border-rule p-5 sm:p-8">
