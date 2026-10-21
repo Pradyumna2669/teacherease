@@ -741,10 +741,15 @@ export default function BankPage() {
                 </div>
                 <button
                   onClick={() => setShowDisabled((v) => !v)}
-                  className="flex items-center gap-1.5 text-sm text-graphite hover:text-ink border border-rule rounded-lg px-3 py-2 bg-white"
+                  className={`flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-all border ${
+                    showDisabled
+                      ? "bg-pen/10 text-pen border-pen/40 font-semibold ring-2 ring-pen/15"
+                      : "text-graphite hover:text-ink border-rule bg-white"
+                  }`}
+                  title={showDisabled ? "Showing all questions including archived" : "Showing active questions only"}
                 >
                   {showDisabled ? <Eye size={15} /> : <EyeOff size={15} />}
-                  {showDisabled ? "All" : "Live only"}
+                  <span>{showDisabled ? "Showing All" : "Live only"}</span>
                 </button>
                 <button
                   onClick={() => setShowAdd(true)}

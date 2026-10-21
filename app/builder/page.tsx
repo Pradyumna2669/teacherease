@@ -488,7 +488,7 @@ function BuilderInner() {
   // yet, which is exactly the moment the full builder is overwhelming.
   const [wizardOpen, setWizardOpen] = useState(false);
   const [showBankModal, setShowBankModal] = useState(false);
-  const [showSettings, setShowSettings] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
   const [showSetBModal, setShowSetBModal] = useState(false);
   const [regeneratingId, setRegeneratingId] = useState<string | null>(null);
@@ -1548,10 +1548,28 @@ function BuilderInner() {
           )}
           <button
             onClick={() => setShowSettings((p) => !p)}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-2 text-sm text-graphite hover:text-ink hover:bg-rule rounded-lg transition-colors"
+            className={`hidden lg:flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-all border ${
+              showSettings
+                ? "bg-pen text-white border-pen shadow-sm ring-2 ring-pen/20 font-semibold"
+                : "text-graphite border-rule bg-white hover:text-ink hover:bg-rule/50"
+            }`}
+            title={showSettings ? "Close Settings panel" : "Open Settings panel"}
+            aria-expanded={showSettings}
           >
-            <Settings size={16} />
-            Settings
+            <Settings
+              size={15}
+              className={`transition-transform duration-300 ${
+                showSettings ? "rotate-90 text-white" : ""
+              }`}
+            />
+            <span>Settings</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider transition-colors ${
+                showSettings ? "bg-white/20 text-white" : "bg-rule text-graphite"
+              }`}
+            >
+              {showSettings ? "Open" : "Edit"}
+            </span>
           </button>
           <div className="h-6 w-px bg-rule hidden sm:block" />
           <button
@@ -1707,8 +1725,31 @@ function BuilderInner() {
 
       {/* Settings Panel - Desktop inline / Mobile as full tab */}
       {showSettings && (
-        <div className="bg-white border-b border-rule no-print shrink-0 hidden lg:block">
+        <div className="bg-white border-b border-rule no-print shrink-0 hidden lg:block shadow-inner">
           <div className="max-w-7xl mx-auto px-4 py-4">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-rule">
+              <div className="flex items-center gap-2">
+                <span className="p-1.5 bg-pen/10 text-pen rounded-lg">
+                  <Settings size={16} />
+                </span>
+                <div>
+                  <h3 className="font-semibold text-sm text-ink leading-tight">
+                    Exam Paper Settings & Header Configuration
+                  </h3>
+                  <p className="text-xs text-graphite">
+                    Customize institutional headers, subject details, time, layout mode, instructions, and marks.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSettings(false)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-graphite hover:text-ink hover:bg-rule border border-rule rounded-lg transition-colors bg-white shadow-2xs"
+                title="Close Settings panel"
+              >
+                <X size={14} />
+                <span>Close Settings</span>
+              </button>
+            </div>
             <div className="mb-4">
               <label className="block text-xs font-medium text-graphite mb-1">
                 Paper Language
