@@ -39,7 +39,7 @@ interface CollegeQuestion {
 
 const COLLEGE_SAMPLE_DATA: Record<string, { collegeName: string; department: string; courseCode: string; questions: CollegeQuestion[] }> = {
   "Applied Mathematics-II": {
-    collegeName: "Autonomous Institute of Engineering & Technology",
+    collegeName: "A.B.C. College of Engineering & Management (Autonomous)",
     department: "Department of First Year Engineering (FE)",
     courseCode: "FY201BS01",
     questions: [
@@ -50,7 +50,7 @@ const COLLEGE_SAMPLE_DATA: Record<string, { collegeName: string; department: str
     ],
   },
   "Data Structures": {
-    collegeName: "College of Engineering & Autonomous Technology",
+    collegeName: "A.B.C. College of Engineering & Management (Autonomous)",
     department: "Department of Computer Science & Engineering",
     courseCode: "CS204PCC02",
     questions: [
