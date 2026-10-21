@@ -2797,6 +2797,17 @@ function LayoutControls({
 }) {
   return (
     <div className="flex flex-col gap-4">
+            {/* Paper Layout Mode Toggle: Standard School vs Autonomous College Table */}
+      <Segmented<"standard" | "college_table">
+        label="Exam Paper Layout Mode"
+        value={settings.layoutMode || "standard"}
+        onChange={(v) => onChange({ layoutMode: v })}
+        options={[
+          { value: "standard", label: "School Layout (Numbered)" },
+          { value: "college_table", label: "Autonomous College Table (Q.No | Marks | BTL | CO)" },
+        ]}
+      />
+
       <Segmented<Density>
         label="Fit more on a page"
         value={settings.density}
