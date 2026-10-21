@@ -81,7 +81,7 @@ export default function GuideArticle({ params }: { params: { slug: string } }) {
       <nav className="border-b border-rule">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="font-display text-xl font-semibold tracking-tight">
-            Paper<span className="ink-blank">Gen</span>
+            Teacher<span className="ink-blank">Ease</span>
           </Link>
           <Link
             href="/guides"

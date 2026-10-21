@@ -60,8 +60,8 @@ export default function GenerationFeedbackModal({
 
       // Mark in storage so we don't prompt repeatedly in this session
       try {
-        sessionStorage.setItem("papergen_feedback_submitted", "true");
-        if (paperId) localStorage.setItem(`papergen_feedback_${paperId}`, "true");
+        sessionStorage.setItem("teacherease_feedback_submitted", "true");
+        if (paperId) localStorage.setItem(`teacherease_feedback_${paperId}`, "true");
       } catch {
         // ignore storage errors
       }

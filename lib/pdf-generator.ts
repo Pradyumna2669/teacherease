@@ -20,7 +20,7 @@ export function generatePaperPdfBuffer(options: GeneratePaperPdfOptions): Promis
         margins: { top: 36, bottom: 36, left: 40, right: 40 },
         info: {
           Title: options.title,
-          Author: "PaperGen (WhatsApp Bot)",
+          Author: "TeacherEase (WhatsApp Bot)",
         },
       });
 
@@ -165,7 +165,7 @@ export function generatePaperPdfBuffer(options: GeneratePaperPdfOptions): Promis
         .font("Helvetica-Oblique")
         .fontSize(8)
         .fillColor("#777777")
-        .text("Generated automatically via PaperGen AI Assistant on WhatsApp", {
+        .text("Generated automatically via TeacherEase AI Assistant on WhatsApp", {
           align: "center",
         });
 

@@ -245,8 +245,8 @@ export async function POST(req: NextRequest) {
       // Send follow-up with web link
       const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "https://papergen.app";
       const editMsg = paperId
-        ? `You can also view, edit or print Set A/B papers on PaperGen:\n${siteUrl}/papers/${paperId}`
-        : `Generated via PaperGen: ${siteUrl}`;
+        ? `You can also view, edit or print Set A/B papers on TeacherEase:\n${siteUrl}/papers/${paperId}`
+        : `Generated via TeacherEase: ${siteUrl}`;
 
       await sendWhatsAppMessage(from, editMsg);
 
@@ -262,7 +262,7 @@ export async function POST(req: NextRequest) {
       if (text.includes("hi") || text.includes("hello") || text.includes("help") || text === "start") {
         await sendWhatsAppMessage(
           from,
-          `Welcome to PaperGen AI! \n\nHere is how to create a paper for free:\n1️⃣ Send a photo of your handwritten questions.\n2️⃣ (Optional) Send a voice note with instructions (e.g. "Make a 20 mark physics test").\n\nI will instantly format them, create your paper, and send you the completed PDF!`
+          `Welcome to TeacherEase AI! \n\nHere is how to create a paper for free:\n1️⃣ Send a photo of your handwritten questions.\n2️⃣ (Optional) Send a voice note with instructions (e.g. "Make a 20 mark physics test").\n\nI will instantly format them, create your paper, and send you the completed PDF!`
         );
       } else {
         await sendWhatsAppMessage(

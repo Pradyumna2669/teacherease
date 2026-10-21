@@ -111,7 +111,7 @@ export default function LanguagePage({ params }: { params: { lang: string } }) {
     {
       icon: <Camera size={18} />,
       title: "Photograph a handwritten paper",
-      desc: `Already wrote it by hand? Take a photo and PaperGen reads your ${d.label} paper into an editable, print-ready one. Nothing to type.`,
+      desc: `Already wrote it by hand? Take a photo and TeacherEase reads your ${d.label} paper into an editable, print-ready one. Nothing to type.`,
     },
     {
       icon: <FileText size={18} />,
@@ -131,7 +131,7 @@ export default function LanguagePage({ params }: { params: { lang: string } }) {
       <nav className="border-b border-rule">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="font-display text-xl font-semibold tracking-tight">
-            Paper<span className="ink-blank">Gen</span>
+            Teacher<span className="ink-blank">Ease</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/languages" className="text-sm text-graphite hover:text-ink transition-colors">
@@ -181,7 +181,7 @@ export default function LanguagePage({ params }: { params: { lang: string } }) {
           <p className="mt-5 text-lg text-graphite max-w-2xl leading-relaxed">
             Make a print-ready {d.label} exam paper without fighting the keyboard.{" "}
             {d.hasTranslit
-              ? `Type in plain English letters and PaperGen writes it in ${d.label} for you`
+              ? `Type in plain English letters and TeacherEase writes it in ${d.label} for you`
               : `Type, paste, or scan ${d.label}`}
             {" "}— or just <span className="text-ink font-medium">photograph a handwritten paper</span>{" "}
             and it's typed up automatically. Built for Indian teachers.

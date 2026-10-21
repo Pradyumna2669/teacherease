@@ -1,8 +1,8 @@
 {
   "packageId": "online.papergen.app",
   "host": "papergen.online",
-  "name": "PaperGen — Question Paper Maker",
-  "launcherName": "PaperGen",
+  "name": "TeacherEase — Question Paper Maker",
+  "launcherName": "TeacherEase",
   "display": "standalone",
   "themeColor": "#16243b",
   "themeColorDark": "#16243b",

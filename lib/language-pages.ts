@@ -123,7 +123,7 @@ const LANG_DEPTH: Partial<Record<PaperLanguage, LangDepth>> = {
       "RBSE Rajasthan",
     ],
     context:
-      "Hindi-medium teachers set more papers than almost anyone else in the country, and usually on the least convenient hardware — a school desktop with no Devanagari keyboard mapping, or a phone between periods. The two things that eat the time are typing the script and rebuilding the layout: the header block, the section split, the marks column, the ruled answer space. PaperGen removes both. Type in ordinary English letters and the Devanagari appears as you press space, or photograph the paper you already wrote by hand and get it back typed and formatted. The result is an A4 PDF that prints and photocopies cleanly — the format a UP Board or CBSE half-yearly actually expects.",
+      "Hindi-medium teachers set more papers than almost anyone else in the country, and usually on the least convenient hardware — a school desktop with no Devanagari keyboard mapping, or a phone between periods. The two things that eat the time are typing the script and rebuilding the layout: the header block, the section split, the marks column, the ruled answer space. TeacherEase removes both. Type in ordinary English letters and the Devanagari appears as you press space, or photograph the paper you already wrote by hand and get it back typed and formatted. The result is an A4 PDF that prints and photocopies cleanly — the format a UP Board or CBSE half-yearly actually expects.",
     samples: [
       {
         label: "Fill in the blanks",
@@ -184,7 +184,7 @@ const LANG_DEPTH: Partial<Record<PaperLanguage, LangDepth>> = {
       "CBSE schools teaching Marathi as a subject",
     ],
     context:
-      "A Marathi-medium teacher setting a घटक चाचणी or a semester paper is usually working from the Balbharati textbook and a format the school has used for years. The formatting is the tedious part, not the questions. PaperGen keeps your format and takes the typing away: write in English letters and it becomes Marathi as you go, or photograph a handwritten paper — including the ones your school stores in a file from last year — and get an editable, print-ready version. Everything comes out on clean A4 with the marks column aligned, ready for the photocopier.",
+      "A Marathi-medium teacher setting a घटक चाचणी or a semester paper is usually working from the Balbharati textbook and a format the school has used for years. The formatting is the tedious part, not the questions. TeacherEase keeps your format and takes the typing away: write in English letters and it becomes Marathi as you go, or photograph a handwritten paper — including the ones your school stores in a file from last year — and get an editable, print-ready version. Everything comes out on clean A4 with the marks column aligned, ready for the photocopier.",
     samples: [
       {
         label: "Fill in the blanks",
@@ -245,7 +245,7 @@ const LANG_DEPTH: Partial<Record<PaperLanguage, LangDepth>> = {
       "CBSE schools teaching Tamil as a language subject",
     ],
     context:
-      "Samacheer Kalvi standardised the syllabus, but every teacher still rebuilds the paper by hand each term. Tamil typing is the specific obstacle: most staffroom machines have no Tamil keyboard, and phone keyboards make long comprehension passages painful. PaperGen lets you type in English letters and get Tamil script back as you press space, or photograph a paper you have already written out. The output is a properly typeset A4 PDF with the marks column aligned and ruled answer space under each question — a paper you can hand straight to the photocopier.",
+      "Samacheer Kalvi standardised the syllabus, but every teacher still rebuilds the paper by hand each term. Tamil typing is the specific obstacle: most staffroom machines have no Tamil keyboard, and phone keyboards make long comprehension passages painful. TeacherEase lets you type in English letters and get Tamil script back as you press space, or photograph a paper you have already written out. The output is a properly typeset A4 PDF with the marks column aligned and ruled answer space under each question — a paper you can hand straight to the photocopier.",
     samples: [
       {
         label: "Fill in the blanks",
@@ -307,7 +307,7 @@ const LANG_DEPTH: Partial<Record<PaperLanguage, LangDepth>> = {
       "CBSE schools teaching Telugu as a subject",
     ],
     context:
-      "Telugu-medium teachers across Telangana and Andhra Pradesh set formative and summative papers on the same SCERT syllabus, and almost all of them still format each one by hand. The script is the bottleneck — Telugu vattulu sit below the line and most editors handle them badly, so teachers fall back to handwriting and photocopying a smudged original. PaperGen takes either input: type in English letters and get Telugu as you go, or photograph the handwritten paper. Out comes a clean A4 PDF with proper Telugu type, aligned marks and ruled answer space.",
+      "Telugu-medium teachers across Telangana and Andhra Pradesh set formative and summative papers on the same SCERT syllabus, and almost all of them still format each one by hand. The script is the bottleneck — Telugu vattulu sit below the line and most editors handle them badly, so teachers fall back to handwriting and photocopying a smudged original. TeacherEase takes either input: type in English letters and get Telugu as you go, or photograph the handwritten paper. Out comes a clean A4 PDF with proper Telugu type, aligned marks and ruled answer space.",
     samples: [
       {
         label: "Fill in the blanks",
@@ -369,7 +369,7 @@ const LANG_DEPTH: Partial<Record<PaperLanguage, LangDepth>> = {
       "CBSE schools teaching Bengali as a subject",
     ],
     context:
-      "Bengali-medium teachers write a lot of long-form questions — রচনা, comprehension passages, ব্যাখ্যা করো prompts — and that is exactly the work that punishes bad typing tools. Juktakkhor break, the passage reflows wrongly across pages, and the paper ends up handwritten again. PaperGen handles both ends: type in English letters and get Bengali as you press space, or photograph a handwritten paper and get it back as editable text. The A4 preview is the printed page, so you see where a long passage breaks before you print, not after.",
+      "Bengali-medium teachers write a lot of long-form questions — রচনা, comprehension passages, ব্যাখ্যা করো prompts — and that is exactly the work that punishes bad typing tools. Juktakkhor break, the passage reflows wrongly across pages, and the paper ends up handwritten again. TeacherEase handles both ends: type in English letters and get Bengali as you press space, or photograph a handwritten paper and get it back as editable text. The A4 preview is the printed page, so you see where a long passage breaks before you print, not after.",
     samples: [
       {
         label: "Fill in the blanks",
@@ -454,8 +454,8 @@ function buildFaq(label: string, hasTranslit: boolean): FaqItem[] {
     {
       q: `Can I make a ${label} question paper without knowing how to type in ${label}?`,
       a: hasTranslit
-        ? `Yes. Type in plain English letters and PaperGen converts them to ${label} script as you go — just press space after each word, and pick from suggestions if needed. If you'd rather not type at all, photograph a handwritten ${label} paper and it's turned into an editable one.`
-        : `Yes. Photograph a handwritten ${label} paper and PaperGen reads it into an editable, print-ready paper — no typing needed. You can also type or paste ${label} text directly.`,
+        ? `Yes. Type in plain English letters and TeacherEase converts them to ${label} script as you go — just press space after each word, and pick from suggestions if needed. If you'd rather not type at all, photograph a handwritten ${label} paper and it's turned into an editable one.`
+        : `Yes. Photograph a handwritten ${label} paper and TeacherEase reads it into an editable, print-ready paper — no typing needed. You can also type or paste ${label} text directly.`,
     },
     {
       q: `Will the ${label} text print correctly?`,
@@ -467,7 +467,7 @@ function buildFaq(label: string, hasTranslit: boolean): FaqItem[] {
     },
     {
       q: `Can I photograph a handwritten ${label} paper?`,
-      a: `Yes — that's the fastest way. Take a photo of your handwritten paper and PaperGen digitises it into an editable ${label} paper you can tweak and print. Please proofread the scan, as a letter or matra can occasionally be misread.`,
+      a: `Yes — that's the fastest way. Take a photo of your handwritten paper and TeacherEase digitises it into an editable ${label} paper you can tweak and print. Please proofread the scan, as a letter or matra can occasionally be misread.`,
     },
     {
       q: `Is it free?`,

@@ -216,7 +216,7 @@ async function migrateSubject(
     if (qRes.rows.length > 0) inserted++;
   }
 
-  console.log(`Successfully migrated ${code}: ${inserted} new questions inserted into PaperGen bank.`);
+  console.log(`Successfully migrated ${code}: ${inserted} new questions inserted into TeacherEase bank.`);
 }
 
 async function main() {
@@ -264,7 +264,7 @@ async function main() {
       );
     }
 
-    console.log("\nAll TeacherEase question banks migrated into PaperGen!");
+    console.log("\nAll TeacherEase question banks migrated into TeacherEase!");
   } catch (err) {
     console.error("Migration error:", err);
   } finally {

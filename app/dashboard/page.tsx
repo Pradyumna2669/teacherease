@@ -813,7 +813,7 @@ function DashboardContent() {
                 Make your first question paper in 2 minutes
               </h3>
               <p className="mt-2 text-sm text-graphite leading-relaxed">
-                PaperGen formats layout, sections, and print geometry automatically.
+                TeacherEase formats layout, sections, and print geometry automatically.
                 Pick the path that matches what you already have:
               </p>
 

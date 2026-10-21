@@ -57,7 +57,7 @@ export async function buyStarterPack(options: BuyPackOptions = {}): Promise<void
     order_id: data.orderId,
     amount: data.amount,
     currency: "INR",
-    name: "PaperGen",
+    name: "TeacherEase",
     description: "10 paper generations (₹59)",
     prefill: { email: options.email },
     theme: { color: "#4f46e5" },

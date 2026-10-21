@@ -810,7 +810,7 @@ export default function SamplePaperDemo() {
                     href={generatorUrl}
                     className="inline-flex items-center gap-1.5 font-bold text-pen hover:text-ink hover:underline transition-colors"
                   >
-                    Open in PaperGen Generator <ArrowRight size={14} />
+                    Open in TeacherEase Generator <ArrowRight size={14} />
                   </Link>
                 </div>
               </div>

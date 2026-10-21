@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   });
   if (!targetId) {
     return NextResponse.json(
-      { error: "No PaperGen account with that email. Ask them to sign up first." },
+      { error: "No TeacherEase account with that email. Ask them to sign up first." },
       { status: 404 }
     );
   }

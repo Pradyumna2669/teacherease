@@ -21,7 +21,7 @@ import SamplePaperDemo from "@/components/SamplePaperDemo";
 const LANG_CHIPS = hubData().pages;
 
 const PAGE_TITLE =
-  "Create a Complete Question Paper in Minutes — PaperGen";
+  "Create a Complete Question Paper in Minutes — TeacherEase";
 
 export const metadata: Metadata = {
   title: PAGE_TITLE,
@@ -132,7 +132,7 @@ export default function Home() {
       <nav className="sticky top-0 z-50 border-b border-rule bg-paper/90 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="font-display text-2xl font-semibold tracking-tight">
-            Paper<span className="ink-blank">Gen</span>
+            Teacher<span className="ink-blank">Ease</span>
           </Link>
           <div className="flex items-center gap-1 sm:gap-2">
             <Link href="/languages" className="hidden sm:inline-block px-3 py-2 text-sm text-graphite hover:text-ink transition-colors">
@@ -172,7 +172,7 @@ export default function Home() {
               <span className="italic ink-blank"> in 2 minutes.</span>
             </h1>
             <p className="mt-6 text-lg text-graphite max-w-xl leading-relaxed">
-              Choose your class, subject, chapters, marks and difficulty. PaperGen
+              Choose your class, subject, chapters, marks and difficulty. TeacherEase
               creates the paper, formats it for print, and gives you a clean PDF.
               Need to digitise a handwritten one? Scan it and edit in seconds.
             </p>
@@ -387,7 +387,7 @@ export default function Home() {
             Your students read in Hindi, Marathi, Tamil, Bengali… so should your
             papers. Can&apos;t type the script?{" "}
             <span className="text-ink font-medium">
-              Type in English letters and PaperGen converts it as you go
+              Type in English letters and TeacherEase converts it as you go
             </span>{" "}
             — or photograph a handwritten paper. Proper regional fonts, clean PDF.
           </p>
@@ -554,7 +554,7 @@ export default function Home() {
       <footer className="border-t border-rule">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <Link href="/" className="font-display text-xl font-semibold">
-            Paper<span className="ink-blank">Gen</span>
+            Teacher<span className="ink-blank">Ease</span>
           </Link>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-graphite">
             <Link href="/languages" className="hover:text-ink">Languages</Link>

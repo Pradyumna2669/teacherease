@@ -28,7 +28,7 @@ const SCENES = [
 // Voiceover: one line per scene, starting a beat after the scene opens.
 const VO: Array<{ src: string; at: number }> = [
   { src: "vo1.mp3", at: 8 }, // 6.1s — every week, a new paper…
-  { src: "vo2.mp3", at: 213 }, // 2.4s — then I found PaperGen
+  { src: "vo2.mp3", at: 213 }, // 2.4s — then I found TeacherEase
   { src: "vo3.mp3", at: 325 }, // 6.5s — I photograph my handwritten paper…
   { src: "vo4.mp3", at: 553 }, // 7.0s — Hindi, Marathi, Tamil, Telugu…
   { src: "vo5.mp3", at: 788 }, // 6.8s — 15+ types, live preview, PDF
@@ -89,7 +89,7 @@ const Promo: React.FC = () => {
 
 export const Root: React.FC = () => (
   <Composition
-    id="PaperGenPromo"
+    id="TeacherEasePromo"
     component={Promo}
     durationInFrames={DUR}
     fps={FPS}

@@ -1,4 +1,4 @@
-# PaperGen promo video
+# TeacherEase promo video
 
 Programmatic 1080p promo built with [Remotion](https://remotion.dev). Everything
 — visuals, music, sound effects and voiceover — is generated from this folder,

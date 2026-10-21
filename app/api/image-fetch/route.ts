@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const UA = "PaperGen/1.0 (school exam paper generator)";
+const UA = "TeacherEase/1.0 (school exam paper generator)";
 const MAX_BYTES = 8_000_000; // 8 MB safety cap
 
 export async function GET(req: NextRequest) {

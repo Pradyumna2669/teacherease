@@ -4,7 +4,7 @@
 
 export const COMMUNITY_URL = "https://chat.whatsapp.com/DNn2sacQhs1Jthv8fJgdPx";
 
-export const COMMUNITY_NAME = "PaperGen Teachers";
+export const COMMUNITY_NAME = "TeacherEase Teachers";
 
 // Stored on the Supabase auth user's metadata (auth.users.raw_user_meta_data),
 // so the prompt follows the teacher across devices without needing a profiles

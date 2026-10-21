@@ -7,7 +7,7 @@ import { COMMUNITY_URL, COMMUNITY_NAME, COMMUNITY_SEEN_KEY } from "@/lib/communi
 import { Modal } from "@/components/Modal";
 
 // WhatsApp brand green — used only on the join controls so they read as "this
-// opens WhatsApp" rather than as another PaperGen action.
+// opens WhatsApp" rather than as another TeacherEase action.
 const WA = "#25D366";
 
 function WhatsAppGlyph({ size = 20 }: { size?: number }) {
@@ -90,7 +90,7 @@ export function CommunityPrompt() {
 
   return (
     <Modal
-      title="Join the PaperGen teachers community"
+      title="Join the TeacherEase teachers community"
       subtitle="Free WhatsApp group · you can leave any time"
       onClose={dismiss}
       footer={
@@ -118,7 +118,7 @@ export function CommunityPrompt() {
     >
       <div className="space-y-3">
         <p className="text-sm text-graphite leading-relaxed">
-          PaperGen is built from what teachers actually ask for. The group is where
+          TeacherEase is built from what teachers actually ask for. The group is where
           those requests land — and where you will hear first when they ship.
         </p>
         <ul className="space-y-2">

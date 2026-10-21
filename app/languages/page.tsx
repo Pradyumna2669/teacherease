@@ -81,7 +81,7 @@ export default function LanguagesHub() {
         </h1>
         <p className="mt-4 text-lg text-graphite max-w-2xl leading-relaxed">
           Most teachers can build a paper in English — but their students read in
-          Hindi, Marathi, Tamil, Bengali and more. PaperGen makes print-ready
+          Hindi, Marathi, Tamil, Bengali and more. TeacherEase makes print-ready
           papers in <span className="text-ink font-medium">{pages.length}+ Indian languages</span>.
           Can&apos;t type the script? Type in English letters and it converts as you
           go — or just photograph a handwritten paper.

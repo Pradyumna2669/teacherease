@@ -1,11 +1,11 @@
-# PaperGen Product Plan
+# TeacherEase Product Plan
 
 ## Objective
-Turn PaperGen from a paper-formatting + scan utility into the default way Indian teachers create exam papers quickly, with a clear path from first paper to paid repeat usage.
+Turn TeacherEase from a paper-formatting + scan utility into the default way Indian teachers create exam papers quickly, with a clear path from first paper to paid repeat usage.
 
 ## Diagnosis from current product and usage
 - The product already has real usage: multiple users are creating real papers and question records.
-- The current homepage and pricing position PaperGen as a formatting and scan tool, not as a complete exam-paper creation workflow.
+- The current homepage and pricing position TeacherEase as a formatting and scan tool, not as a complete exam-paper creation workflow.
 - The current credits model is easy to understand technically, but not from a teacher's perspective.
 - Teachers think in terms of “How many papers can I make?” rather than “How many credits do I have?”
 - The strongest opportunity is to anchor the product around AI-assisted paper generation, then layer scanning and manual editing around it.
@@ -19,15 +19,15 @@ Turn PaperGen from a paper-formatting + scan utility into the default way Indian
 
 ## Strategic direction
 ### Core positioning
-PaperGen should sell the outcome, not the formating mechanics.
+TeacherEase should sell the outcome, not the formating mechanics.
 
 Message to test:
 > Create a complete question paper in 2 minutes.
 >
-> Choose class, subject, chapters, marks, and difficulty. PaperGen builds the paper, formats it, and gives you a print-ready PDF.
+> Choose class, subject, chapters, marks, and difficulty. TeacherEase builds the paper, formats it, and gives you a print-ready PDF.
 
 ### Product archetype
-PaperGen should be positioned as:
+TeacherEase should be positioned as:
 - AI question paper generator
 - handwritten paper conversion workflow
 - print-ready paper authoring tool
@@ -128,4 +128,4 @@ Not only as a credit-based scan utility.
 - Most common usage mode: generate / scan / manual
 
 ## Acceptance of this plan
-This plan is considered successful when PaperGen clearly communicates a “question paper generator” story, users can complete a first paper without confusion, and the product is structured around repeat usage rather than per-scan credits alone.
+This plan is considered successful when TeacherEase clearly communicates a “question paper generator” story, users can complete a first paper without confusion, and the product is structured around repeat usage rather than per-scan credits alone.

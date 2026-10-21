@@ -489,7 +489,7 @@ export const S3Scan: React.FC = () => {
             style={{ position: "absolute", left: 0, right: 0, bottom: 74, textAlign: "center" }}
           >
             <span style={{ fontFamily: SERIF, fontSize: 48, color: C.ink }}>
-              Photograph it. <span style={{ color: C.pen }}>PaperGen types it.</span>
+              Photograph it. <span style={{ color: C.pen }}>TeacherEase types it.</span>
             </span>
           </Rise>
         </SceneIn>

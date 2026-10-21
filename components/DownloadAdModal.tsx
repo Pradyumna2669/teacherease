@@ -175,7 +175,7 @@ export default function DownloadAdModal({
             <p className="text-[11px] text-graphite">
               {completed
                 ? "Your document is ready and downloading now!"
-                : "Thank you for using PaperGen free edition. Preparing your high-resolution layout..."}
+                : "Thank you for using TeacherEase free edition. Preparing your high-resolution layout..."}
             </p>
           </div>
 

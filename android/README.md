@@ -1,4 +1,4 @@
-# PaperGen — Android app (Trusted Web Activity)
+# TeacherEase — Android app (Trusted Web Activity)
 
 A TWA is a real Play Store app that renders papergen.online full-screen, with no
 browser toolbar. There is no second codebase: the app **is** the website, so a

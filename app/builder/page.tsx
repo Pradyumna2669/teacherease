@@ -505,9 +505,9 @@ function BuilderInner() {
     (method: "ai_generated" | "scanned" | "ai_textbook") => {
       if (typeof window === "undefined") return;
       try {
-        if (sessionStorage.getItem("papergen_feedback_submitted") === "true") return;
-        if (sessionStorage.getItem("papergen_feedback_dismissed") === "true") return;
-        if (paperId && localStorage.getItem(`papergen_feedback_${paperId}`) === "true") return;
+        if (sessionStorage.getItem("teacherease_feedback_submitted") === "true") return;
+        if (sessionStorage.getItem("teacherease_feedback_dismissed") === "true") return;
+        if (paperId && localStorage.getItem(`teacherease_feedback_${paperId}`) === "true") return;
       } catch {
         // ignore storage errors
       }
@@ -805,7 +805,7 @@ function BuilderInner() {
 
   const printRef = useRef<HTMLDivElement>(null);
 
-  // Free users get a "PaperGen" watermark on print/PDF and see ad-supported downloads.
+  // Free users get a "TeacherEase" watermark on print/PDF and see ad-supported downloads.
   // Cleared once they buy any pack/plan. Default true (safe) until balance check confirms paid.
   const [watermark, setWatermark] = useState(true);
   const [isPaid, setIsPaid] = useState<boolean>(false);
@@ -2485,7 +2485,7 @@ function BuilderInner() {
           onClose={() => {
             setFeedbackPrompt((p) => ({ ...p, open: false }));
             try {
-              sessionStorage.setItem("papergen_feedback_dismissed", "true");
+              sessionStorage.setItem("teacherease_feedback_dismissed", "true");
             } catch {}
           }}
           method={feedbackPrompt.method}

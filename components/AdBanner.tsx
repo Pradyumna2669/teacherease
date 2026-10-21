@@ -81,7 +81,7 @@ export default function AdBanner({
         </span>
       </div>
       <div className="text-sm font-semibold text-ink">
-        PaperGen Pro for Teachers & Schools
+        TeacherEase Pro for Teachers & Schools
       </div>
       <p className="text-xs text-graphite mt-1 max-w-sm mx-auto leading-relaxed">
         Download instant papers with zero wait time, no watermarks, and monthly AI generation credits.

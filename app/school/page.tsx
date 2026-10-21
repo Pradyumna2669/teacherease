@@ -345,7 +345,7 @@ export default function SchoolPage() {
         order_id: data.orderId,
         amount: data.amount,
         currency: "INR",
-        name: "PaperGen — School",
+        name: "TeacherEase — School",
         description: data.description,
         prefill: { email },
         theme: { color: "#4f46e5" },

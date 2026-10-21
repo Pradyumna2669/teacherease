@@ -1,16 +1,16 @@
 # ==============================================================================
-# Google Play Console - Ready-to-Copy Store Listing Kit for PaperGen
+# Google Play Console - Ready-to-Copy Store Listing Kit for TeacherEase
 # ==============================================================================
 
 ## 1. App Details
-- **App name:** PaperGen — Question Paper Maker
+- **App name:** TeacherEase — Question Paper Maker
 - **Short description (80 chars max):**
   Make school exam papers in minutes. Scan a handwritten paper or type any language.
 
 - **Full description:**
 Set a question paper in minutes instead of an evening.
 
-Photograph a handwritten paper and PaperGen types it up for you — questions, marks, ruled answer space and all. Or build one from scratch with 23 question types: fill in the blanks, MCQ, match the following, vertical sums, reading comprehension, picture composition and more.
+Photograph a handwritten paper and TeacherEase types it up for you — questions, marks, ruled answer space and all. Or build one from scratch with 23 question types: fill in the blanks, MCQ, match the following, vertical sums, reading comprehension, picture composition and more.
 
 Works in 22 Indian languages. Type in ordinary English letters and the script appears as you go, so you do not need a Hindi, Marathi, Tamil, Bengali, or Telugu keyboard.
 

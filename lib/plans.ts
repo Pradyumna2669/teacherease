@@ -1,4 +1,4 @@
-// Subscription plans for PaperGen. Prices in INR. The Razorpay plan IDs are
+// Subscription plans for TeacherEase. Prices in INR. The Razorpay plan IDs are
 // created once in the Razorpay dashboard (Subscriptions -> Plans) and wired in
 // via env so code stays the same across test/live.
 

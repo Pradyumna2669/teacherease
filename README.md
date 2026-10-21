@@ -1,6 +1,6 @@
 # TeacherEase — Smart Question Paper Generator for Schools & Colleges
 
-PaperGen is a web app for creating print-ready school exam papers. Teachers can build a paper from scratch, scan a handwritten paper and turn it into editable questions, use question-bank content, save papers to their account, and export them as PDFs.
+TeacherEase is a web app for creating print-ready school exam papers. Teachers can build a paper from scratch, scan a handwritten paper and turn it into editable questions, use question-bank content, save papers to their account, and export them as PDFs.
 
 ## Features
 

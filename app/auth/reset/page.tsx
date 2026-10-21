@@ -77,7 +77,7 @@ function ResetInner() {
           <FileText size={20} className="text-white" />
         </div>
         <span className="font-display text-2xl font-semibold tracking-tight text-ink">
-          Paper<span className="ink-blank">Gen</span>
+          Teacher<span className="ink-blank">Ease</span>
         </span>
       </Link>
 

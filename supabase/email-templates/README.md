@@ -1,4 +1,4 @@
-# PaperGen — Supabase auth email templates
+# TeacherEase — Supabase auth email templates
 
 Branded HTML for the transactional emails Supabase sends. These are **not**
 applied by code — paste each into the Supabase dashboard.
@@ -10,11 +10,11 @@ the left, switch the body to the HTML view, and paste the matching file:
 
 | File | Supabase template | Suggested subject |
 |------|-------------------|-------------------|
-| `confirm-signup.html` | **Confirm signup** | Confirm your PaperGen email |
-| `reset-password.html` | **Reset password** (Recovery) | Reset your PaperGen password |
-| `magic-link.html` | **Magic Link** | Your PaperGen sign-in link |
+| `confirm-signup.html` | **Confirm signup** | Confirm your TeacherEase email |
+| `reset-password.html` | **Reset password** (Recovery) | Reset your TeacherEase password |
+| `magic-link.html` | **Magic Link** | Your TeacherEase sign-in link |
 | `change-email.html` | **Change Email Address** | Confirm your new email |
-| `invite.html` | **Invite user** | You're invited to PaperGen |
+| `invite.html` | **Invite user** | You're invited to TeacherEase |
 
 All templates use only the `{{ .ConfirmationURL }}` variable, so they work
 regardless of your confirm/OTP settings.
@@ -37,7 +37,7 @@ link.
 
 - Colours are inline (email clients strip `<style>`); the accent is `#4f46e5`.
 - If you use a custom SMTP sender (Auth → SMTP Settings), set a friendly
-  from-name like "PaperGen".
+  from-name like "TeacherEase".
 - The **admin dashboard** (`/admin`) is separate: set the `ADMIN_EMAILS`
   environment variable (comma-separated) to the owner email(s) that may view it.
 
@@ -66,7 +66,7 @@ mark the domain **Verified**.
 - Username: `resend`
 - Password: the Resend API key (`re_…`)
 - Sender email: `care@mail.papergen.online`
-- Sender name: `PaperGen`
+- Sender name: `TeacherEase`
 
 **5. Supabase → Authentication → Rate Limits** → raise the email rate limit
 (built-in caps at ~2–4/hr; with Resend you can lift it to e.g. 30–100/hr).

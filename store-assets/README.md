@@ -47,7 +47,7 @@ behind "read more":
 
 > Set a question paper in minutes instead of an evening.
 >
-> Photograph a handwritten paper and PaperGen types it up for you — questions,
+> Photograph a handwritten paper and TeacherEase types it up for you — questions,
 > marks, ruled answer space and all. Or build one from scratch with 23 question
 > types: fill in the blanks, MCQ, match the following, vertical sums, reading
 > comprehension, picture composition and more.

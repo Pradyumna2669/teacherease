@@ -37,19 +37,19 @@ const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
 interface Props {
   settings: PaperSettings;
   questions: Question[];
-  // When true (free/unpaid user) the paper carries a repeating "PaperGen"
+  // When true (free/unpaid user) the paper carries a repeating "TeacherEase"
   // watermark across every page plus a footer CTA. Cleared once the user pays.
   watermark?: boolean;
 }
 
-// Faint diagonal repeating "PaperGen" watermark, inlined as an SVG data URI so it
+// Faint diagonal repeating "TeacherEase" watermark, inlined as an SVG data URI so it
 // survives the innerHTML copy used for printing and is rasterized by html2pdf.
 const WATERMARK_SVG =
   "data:image/svg+xml," +
   encodeURIComponent(
     "<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'>" +
       "<text x='20' y='110' font-size='30' font-family='sans-serif' " +
-      "fill='rgba(0,0,0,0.06)' transform='rotate(-30 150 100)'>PaperGen</text></svg>"
+      "fill='rgba(0,0,0,0.06)' transform='rotate(-30 150 100)'>TeacherEase</text></svg>"
   );
 
 function formatBoldText(str: string): React.ReactNode {

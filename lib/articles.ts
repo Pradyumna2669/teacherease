@@ -187,7 +187,7 @@ export const ARTICLES: Article[] = [
         p: "The real time saving is not in setting one good paper. It is in never setting the format again. Build the header, instructions and section skeleton once per subject, save it, and each term you replace only the questions. Over a year that is the difference between forty minutes a paper and five.",
       },
       {
-        p: "That is the workflow PaperGen is built around. Pick a header style, add questions of any of the types above, set the marks, and the live A4 preview is exactly what prints — including the ruled answer space and the right-aligned marks column. If you already write your papers by hand, photograph them instead of retyping: the handwritten paper comes back as an editable, formatted one you can adjust and export as a PDF.",
+        p: "That is the workflow TeacherEase is built around. Pick a header style, add questions of any of the types above, set the marks, and the live A4 preview is exactly what prints — including the ruled answer space and the right-aligned marks column. If you already write your papers by hand, photograph them instead of retyping: the handwritten paper comes back as an editable, formatted one you can adjust and export as a PDF.",
       },
     ],
   },
@@ -325,7 +325,7 @@ export const ARTICLES: Article[] = [
         p: "The efficient approach is a saved template per subject, not a fresh document per test. Set the header, instructions and section skeleton in August and spend the rest of the year swapping questions in and out.",
       },
       {
-        p: "PaperGen is built for exactly that loop: reusable headers, the question types above ready to drop in, marks aligned automatically, a live A4 preview that is the printed page, and one-click PDF export. Saved papers stay editable, so next term's test starts from last term's rather than from a blank page — and editing a saved paper costs nothing.",
+        p: "TeacherEase is built for exactly that loop: reusable headers, the question types above ready to drop in, marks aligned automatically, a live A4 preview that is the printed page, and one-click PDF export. Saved papers stay editable, so next term's test starts from last term's rather than from a blank page — and editing a saved paper costs nothing.",
       },
     ],
   },
@@ -465,7 +465,7 @@ export const ARTICLES: Article[] = [
         p: "Word is fine for text and poor for maths layout. Aligning a vertical sum means fighting tab stops or building a borderless table per question; keeping the marks column straight means another table; adding a question in the middle re-flows everything below it. Teachers end up drawing answer lines with underscores, which shift the moment anything above changes.",
       },
       {
-        p: "A purpose-built paper maker treats a vertical sum as a question type rather than as formatting. PaperGen has vertical maths, word problems and data questions as first-class types — the digit alignment, the working space and the marks column are handled, and the live A4 preview is exactly what prints. Add a question in the middle and nothing below it breaks. If you already have last year's maths paper on paper, photograph it and get it back editable rather than retyping every sum.",
+        p: "A purpose-built paper maker treats a vertical sum as a question type rather than as formatting. TeacherEase has vertical maths, word problems and data questions as first-class types — the digit alignment, the working space and the marks column are handled, and the live A4 preview is exactly what prints. Add a question in the middle and nothing below it breaks. If you already have last year's maths paper on paper, photograph it and get it back editable rather than retyping every sum.",
       },
     ],
   },
@@ -516,7 +516,7 @@ export const ARTICLES: Article[] = [
 
       { h: "Scan instead of retype" },
       {
-        p: "With PaperGen you photograph each page of your handwritten paper. The questions are read — fill in the blanks, MCQs, match the following, short and long answers, vertical maths sums — and rebuilt as an editable, formatted paper. You review it, fix anything that came through wrong, and download a print-ready A4 PDF.",
+        p: "With TeacherEase you photograph each page of your handwritten paper. The questions are read — fill in the blanks, MCQs, match the following, short and long answers, vertical maths sums — and rebuilt as an editable, formatted paper. You review it, fix anything that came through wrong, and download a print-ready A4 PDF.",
       },
       {
         p: "It handles regional scripts as well as English. A handwritten Hindi, Marathi, Tamil, Telugu or Bengali paper comes back as editable text in the same language, set in a proper font, which is the part a typist charges most for and gets wrong most often.",
@@ -649,7 +649,7 @@ export const ARTICLES: Article[] = [
       },
       { h: "The efficient setup" },
       {
-        p: "The best workflow is not handwriting or software alone. It is handwriting for drafting plus structured software for final formatting. That is exactly the gap PaperGen closes.",
+        p: "The best workflow is not handwriting or software alone. It is handwriting for drafting plus structured software for final formatting. That is exactly the gap TeacherEase closes.",
       },
     ],
   },
@@ -884,7 +884,7 @@ export const ARTICLES: Article[] = [
       },
       { h: "Build this template in minutes" },
       {
-        p: "PaperGen has every type above — including textbook-style vertical maths and word-problem working boxes that are awkward to make in Word.",
+        p: "TeacherEase has every type above — including textbook-style vertical maths and word-problem working boxes that are awkward to make in Word.",
       },
     ],
   },
