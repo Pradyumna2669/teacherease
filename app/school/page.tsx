@@ -21,6 +21,9 @@ import {
   Eye,
   Check,
   Send,
+  BookOpen,
+  History,
+  GraduationCap,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ConfirmModal } from "@/components/Modal";
@@ -69,7 +72,28 @@ interface SchoolCtx {
   members?: Member[];
 }
 
-type SchoolTab = "pool" | "branding" | "templates" | "reviews";
+interface AllotmentItem {
+  id: string;
+  subject_id: string;
+  user_id: string;
+  teacher_email: string;
+  subject_name: string;
+  subject_code: string;
+  created_at: string;
+}
+
+interface AuditLogItem {
+  id: string;
+  at: string;
+  actor_email: string;
+  actor_role: string;
+  action: string;
+  entity: string;
+  summary: string;
+  details?: any;
+}
+
+type SchoolTab = "pool" | "branding" | "allotments" | "templates" | "reviews" | "audit";
 
 export default function SchoolPage() {
   const router = useRouter();
@@ -108,6 +132,17 @@ export default function SchoolPage() {
   const [reviews, setReviews] = useState<SchoolReviewItem[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [reviewingId, setReviewingId] = useState<string | null>(null);
+
+  // Allotments
+  const [allotments, setAllotments] = useState<AllotmentItem[]>([]);
+  const [subjectsList, setSubjectsList] = useState<{ id: string; name: string; code?: string }[]>([]);
+  const [selectedSubjectId, setSelectedSubjectId] = useState("");
+  const [selectedTeacherId, setSelectedTeacherId] = useState("");
+  const [loadingAllotments, setLoadingAllotments] = useState(false);
+
+  // Audit Logs
+  const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -157,6 +192,38 @@ export default function SchoolPage() {
     }
   }, []);
 
+  const loadAllotments = useCallback(async () => {
+    setLoadingAllotments(true);
+    try {
+      const res = await fetch("/api/school/allotments");
+      const data = await res.json();
+      if (data.allotments) setAllotments(data.allotments);
+      if (data.subjects) {
+        setSubjectsList(data.subjects);
+        if (data.subjects.length > 0 && !selectedSubjectId) {
+          setSelectedSubjectId(data.subjects[0].id);
+        }
+      }
+    } catch {
+      /* ignore */
+    } finally {
+      setLoadingAllotments(false);
+    }
+  }, [selectedSubjectId]);
+
+  const loadAuditLogs = useCallback(async () => {
+    setLoadingAudit(true);
+    try {
+      const res = await fetch("/api/school/audit");
+      const data = await res.json();
+      if (data.logs) setAuditLogs(data.logs);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoadingAudit(false);
+    }
+  }, []);
+
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
@@ -167,7 +234,9 @@ export default function SchoolPage() {
   useEffect(() => {
     if (activeTab === "templates") loadTemplates();
     if (activeTab === "reviews") loadReviews();
-  }, [activeTab, loadTemplates, loadReviews]);
+    if (activeTab === "allotments") loadAllotments();
+    if (activeTab === "audit") loadAuditLogs();
+  }, [activeTab, loadTemplates, loadReviews, loadAllotments, loadAuditLogs]);
 
   async function createSchool() {
     setError(null);
@@ -189,6 +258,7 @@ export default function SchoolPage() {
   }
 
   async function addMember() {
+    if (!memberEmail.includes("@")) return;
     setError(null);
     setBusy(true);
     try {
@@ -201,6 +271,7 @@ export default function SchoolPage() {
       if (!res.ok) throw new Error(data.error || "Could not add teacher.");
       setMemberEmail("");
       await load();
+      if (activeTab === "allotments") await loadAllotments();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -209,17 +280,17 @@ export default function SchoolPage() {
   }
 
   async function removeMember(userId: string) {
-    setPendingRemove(null);
+    setError(null);
     setBusy(true);
     try {
-      const res = await fetch("/api/school/members", {
+      const res = await fetch(`/api/school/members?userId=${userId}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not remove.");
+      if (!res.ok) throw new Error(data.error || "Could not remove teacher.");
+      setPendingRemove(null);
       await load();
+      if (activeTab === "allotments") await loadAllotments();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -227,11 +298,54 @@ export default function SchoolPage() {
     }
   }
 
+  async function handleGrantAllotment(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedSubjectId || !selectedTeacherId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/school/allotments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject_id: selectedSubjectId,
+          user_id: selectedTeacherId,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not allot subject.");
+      setSuccess("Subject allotted successfully to faculty.");
+      setTimeout(() => setSuccess(null), 4000);
+      await loadAllotments();
+    } catch (err: any) {
+      setError(err.message || "Could not allot subject.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleRevokeAllotment(allotmentId: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/school/allotments?id=${allotmentId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not revoke allotment.");
+      await loadAllotments();
+    } catch (err: any) {
+      setError(err.message || "Could not revoke allotment.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleSaveBranding(e: React.FormEvent) {
     e.preventDefault();
+    setSavingBranding(true);
     setError(null);
     setSuccess(null);
-    setSavingBranding(true);
     try {
       const res = await fetch("/api/school/branding", {
         method: "PATCH",
@@ -244,246 +358,231 @@ export default function SchoolPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to update branding.");
+      if (!res.ok) throw new Error(data.error || "Could not save branding.");
       setSuccess("School branding updated successfully.");
       await load();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to update branding.");
+      setError(err instanceof Error ? err.message : "Failed to save branding.");
     } finally {
       setSavingBranding(false);
     }
   }
 
-  async function useTemplate(t: SchoolTemplate) {
-    setUsingTemplateId(t.id);
-    setError(null);
+  async function useTemplate(tpl: SchoolTemplate) {
+    setUsingTemplateId(tpl.id);
     try {
       const res = await fetch("/api/papers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: `${t.title} — New Exam`,
-          subject: t.subject || undefined,
-          class_name: t.class_name || undefined,
-          settings: t.settings,
-          questions: t.sections,
+          title: `${tpl.title} (From Template)`,
+          subject: tpl.subject || "General",
+          class_name: tpl.class_name || "10",
+          settings: tpl.settings,
+          questions: tpl.sections,
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.id) throw new Error(data.error || "Could not instantiate template.");
-      router.push(`/builder?id=${data.id}`);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to use template.");
+      if (res.ok && data.id) {
+        router.push(`/builder?id=${data.id}`);
+      } else {
+        alert("Failed to spawn paper from template.");
+      }
+    } catch {
+      alert("Network error.");
     } finally {
       setUsingTemplateId(null);
     }
   }
 
   async function deleteTemplate(id: string) {
+    if (!confirm("Are you sure you want to delete this shared template?")) return;
     try {
       const res = await fetch(`/api/school/templates?id=${id}`, { method: "DELETE" });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Could not delete template.");
-      }
-      setTemplates((p) => p.filter((x) => x.id !== id));
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to delete template.");
+      if (res.ok) loadTemplates();
+    } catch {
+      /* ignore */
     }
   }
 
   async function reviewVerdictAction(paperId: string, verdict: "approved" | "changes_requested") {
+    let feedback = "";
+    if (verdict === "changes_requested") {
+      feedback = prompt("Provide feedback or reason for requesting changes:") || "";
+      if (!feedback) return;
+    }
     setReviewingId(paperId);
     try {
-      const feedback = verdict === "changes_requested"
-        ? window.prompt("Enter required changes or feedback note for the teacher:")
-        : undefined;
-      if (verdict === "changes_requested" && feedback === null) {
-        setReviewingId(null);
-        return;
-      }
       const res = await fetch("/api/school/reviews", {
-        method: "POST",
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paperId, verdict, feedback }),
+        body: JSON.stringify({ paperId, status: verdict, feedback }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Review update failed.");
-      setReviews((p) =>
-        p.map((r) =>
-          r.id === paperId ? { ...r, status: verdict, review_feedback: feedback || null } : r
-        )
-      );
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to update review.");
+      if (res.ok) loadReviews();
+    } catch {
+      /* ignore */
     } finally {
       setReviewingId(null);
     }
   }
 
-  async function buyPool() {
-    setError(null);
-    if (inAndroidApp()) return;
-    if (!ctx?.school) return;
-    if (buyCredits < 1000) {
-      setError("Minimum bulk purchase is 1000 credits.");
-      return;
-    }
-    setBusy(true);
-    try {
-      const ok = await loadCheckout();
-      if (!ok) throw new Error("Could not load the payment window.");
-      const res = await fetch("/api/razorpay/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schoolId: ctx.school.id, credits: buyCredits }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Could not start checkout.");
-      const rzp = new window.Razorpay!({
-        key: data.keyId,
-        order_id: data.orderId,
-        amount: data.amount,
-        currency: "INR",
-        name: "TeacherEase — School",
-        description: data.description,
-        prefill: { email },
-        theme: { color: "#4f46e5" },
-        handler: () => setTimeout(load, 1500),
-        modal: { ondismiss: () => setBusy(false) },
-      });
-      rzp.open();
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-      setBusy(false);
-    }
+  if (loading) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center bg-paper text-ink">
+        <Loader2 size={24} className="animate-spin text-graphite" />
+      </div>
+    );
   }
 
-  const cost = schoolCreditCostInr(buyCredits);
   const pendingReviewsCount = reviews.filter((r) => r.status === "in_review").length;
 
   return (
-    <div className="min-h-[100dvh] bg-paper">
-      <header className="bg-white border-b border-rule">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 bg-pen rounded-lg flex items-center justify-center">
-              <FileText size={18} className="text-white" />
-            </div>
-            <span className="font-display text-xl font-semibold tracking-tight text-ink">
-              Teacher<span className="ink-blank">Ease</span>
-            </span>
+    <div className="min-h-dvh bg-paper text-ink pb-20">
+      <header className="border-b border-rule bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="font-display text-2xl font-semibold tracking-tight">
+            Teacher<span className="ink-blank">Ease</span>
           </Link>
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-1.5 text-sm text-graphite hover:text-ink px-3 py-2 min-h-[44px] lg:min-h-0 hover:bg-rule rounded-lg transition-colors"
-          >
-            <ArrowLeft size={16} /> My Papers
-          </Link>
+          <div className="flex items-center gap-3 text-sm">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 text-graphite hover:text-ink transition-colors"
+            >
+              <ArrowLeft size={16} /> My Papers
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2.5">
-            <Building2 size={24} className="text-pen" />
-            <div>
-              <h1 className="font-display text-2xl font-semibold tracking-tight text-ink">
-                {ctx?.school ? ctx.school.name : "School"}
-              </h1>
-              {ctx?.school && (
-                <p className="text-xs text-graphite">Team collaboration, official branding & approvals</p>
-              )}
-            </div>
-          </div>
-          {ctx?.isAdmin && (
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-pen bg-pen/5 border border-pen/20 px-2.5 py-1 rounded-full">
-              <ShieldCheck size={14} /> School Admin
-            </span>
-          )}
-        </div>
-
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-10">
         {error && (
-          <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-4 py-3 mb-4">
-            {error}
-          </div>
-        )}
-        {success && (
-          <div className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-4 py-3 mb-4">
-            {success}
+          <div className="mb-6 p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm flex items-center justify-between">
+            <span>{error}</span>
+            <button onClick={() => setError(null)} className="text-xs font-bold hover:underline">
+              Dismiss
+            </button>
           </div>
         )}
 
-        {loading ? (
-          <div className="flex justify-center py-20 text-graphite">
-            <Loader2 size={28} className="animate-spin" />
+        {success && (
+          <div className="mb-6 p-4 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 size={16} /> {success}
+            </span>
+            <button onClick={() => setSuccess(null)} className="text-xs font-bold hover:underline">
+              Dismiss
+            </button>
           </div>
-        ) : !ctx?.school ? (
-          // ---- No school: create one ----
-          <div className="bg-white rounded-2xl border border-rule p-6 max-w-lg">
-            <h2 className="font-bold text-ink">Create your school organization</h2>
-            <p className="text-sm text-graphite mt-1">
-              Share one credit pool across all your teachers, publish official school templates, and approve exams before printing.
+        )}
+
+        {/* If no school context: onboarding form */}
+        {!ctx?.school ? (
+          <div className="max-w-xl mx-auto py-12 text-center">
+            <Building2 size={48} className="mx-auto text-pen mb-4" />
+            <h1 className="font-display text-3xl font-bold text-ink mb-2">
+              Create an Institutional Pool
+            </h1>
+            <p className="text-sm text-graphite mb-8 leading-relaxed">
+              Share one credit pool across all your teachers, publish official school templates,
+              allot subjects to faculty, and inspect examination activity logs.
             </p>
-            <div className="mt-4 flex gap-2">
+
+            <div className="bg-white rounded-2xl border border-rule p-6 text-left shadow-sm">
+              <label className="block text-xs font-semibold text-ink uppercase tracking-wider mb-2">
+                Institution Name
+              </label>
               <input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                placeholder="e.g. Delhi Public School"
-                className="flex-1 border border-rule rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-pen/20 focus:border-pen outline-none"
+                placeholder="e.g. A.B.C. College of Engineering & Management (Autonomous)"
+                className="w-full border border-rule rounded-xl px-4 py-3 text-sm focus:border-pen outline-none mb-4"
               />
               <button
                 onClick={createSchool}
                 disabled={busy || newName.trim().length < 2}
-                className="bg-pen text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-ink transition-colors disabled:opacity-60 flex items-center gap-2"
+                className="w-full bg-pen text-white py-3 rounded-xl font-semibold text-sm hover:bg-ink transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {busy ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-                Create School
+                Establish Institutional Account
               </button>
             </div>
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Tab Navigation */}
-            <div className="flex border-b border-rule gap-6 text-sm font-medium">
+          <div>
+            {/* School Header Banner */}
+            <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-rule pb-6">
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <Building2 size={24} className="text-pen shrink-0" />
+                  <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink">
+                    {ctx.school.name}
+                  </h1>
+                </div>
+                <p className="text-xs text-graphite mt-1">
+                  Team collaboration, course allotments, official blueprints &amp; examination audit trail
+                </p>
+              </div>
+            </div>
+
+            {/* TAB NAVIGATION */}
+            <div className="flex border-b border-rule mb-6 gap-6 text-sm font-medium overflow-x-auto">
               <button
                 onClick={() => setActiveTab("pool")}
-                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors ${
+                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
                   activeTab === "pool"
                     ? "border-pen text-pen font-semibold"
                     : "border-transparent text-graphite hover:text-ink"
                 }`}
               >
-                <Coins size={16} /> Pool & Teachers
+                <Coins size={16} /> Pool &amp; Teachers
               </button>
+
               <button
-                onClick={() => setActiveTab("branding")}
-                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors ${
-                  activeTab === "branding"
+                onClick={() => setActiveTab("allotments")}
+                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                  activeTab === "allotments"
                     ? "border-pen text-pen font-semibold"
                     : "border-transparent text-graphite hover:text-ink"
                 }`}
               >
-                <Palette size={16} /> School Branding
+                <BookOpen size={16} /> Subject Allotments
+                {allotments.length > 0 && (
+                  <span className="ml-1 text-[11px] bg-rule px-1.5 py-0.5 rounded-full text-graphite">
+                    {allotments.length}
+                  </span>
+                )}
               </button>
+
               <button
                 onClick={() => setActiveTab("templates")}
-                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors ${
+                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
                   activeTab === "templates"
                     ? "border-pen text-pen font-semibold"
                     : "border-transparent text-graphite hover:text-ink"
                 }`}
               >
-                <BookmarkPlus size={16} /> Shared Templates
+                <BookmarkPlus size={16} /> Shared Blueprints
                 {templates.length > 0 && (
                   <span className="ml-1 text-[11px] bg-rule px-1.5 py-0.5 rounded-full text-graphite">
                     {templates.length}
                   </span>
                 )}
               </button>
+
+              <button
+                onClick={() => setActiveTab("branding")}
+                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                  activeTab === "branding"
+                    ? "border-pen text-pen font-semibold"
+                    : "border-transparent text-graphite hover:text-ink"
+                }`}
+              >
+                <Palette size={16} /> Institutional Identity
+              </button>
+
               <button
                 onClick={() => setActiveTab("reviews")}
-                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors ${
+                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
                   activeTab === "reviews"
                     ? "border-pen text-pen font-semibold"
                     : "border-transparent text-graphite hover:text-ink"
@@ -496,72 +595,47 @@ export default function SchoolPage() {
                   </span>
                 )}
               </button>
+
+              <button
+                onClick={() => setActiveTab("audit")}
+                className={`pb-3 border-b-2 flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                  activeTab === "audit"
+                    ? "border-pen text-pen font-semibold"
+                    : "border-transparent text-graphite hover:text-ink"
+                }`}
+              >
+                <History size={16} /> Activity &amp; Audit Logs
+              </button>
             </div>
 
             {/* TAB 1: POOL & TEACHERS */}
             {activeTab === "pool" && (
-              <div className="space-y-6">
-                {/* Pool balance banner */}
-                <div className="bg-white rounded-2xl border border-rule p-6 flex items-center justify-between">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Balance & Topup Card */}
+                <div className="bg-white rounded-2xl border border-rule p-6 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="font-bold text-ink text-lg">{ctx.school.name}</h2>
+                    <h3 className="font-bold text-ink text-base mb-1">Institutional Credit Pool</h3>
+                    <p className="text-xs text-graphite mb-4">
+                      All added faculty members generate papers directly against this pool.
+                    </p>
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="font-mono text-4xl font-bold text-ink">
+                        {ctx.school.creditsBalance.toLocaleString()}
+                      </span>
+                      <span className="text-xs text-graphite">credits available</span>
                     </div>
-                    <p className="text-sm text-graphite mt-0.5">Shared teacher credit pool</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-1.5 text-3xl font-bold text-ink">
-                      <Coins size={24} className="text-pen" />
-                      {ctx.school.creditsBalance}
-                    </div>
-                    <p className="text-xs text-graphite">credits remaining</p>
                   </div>
                 </div>
 
-                {ctx.isAdmin && inApp === false && (
-                  <div className="bg-white rounded-2xl border border-rule p-6">
-                    <h3 className="font-bold text-ink">Top up the pool</h3>
-                    <p className="text-sm text-graphite mt-1">
-                      {SCHOOL_DISCOUNT_BPS / 100}% school discount applied on bulk orders.
-                    </p>
-                    <div className="mt-4 flex flex-wrap items-end gap-3">
-                      <div>
-                        <label className="block text-xs text-graphite mb-1">
-                          Credits (min 1000)
-                        </label>
-                        <input
-                          type="number"
-                          min={1000}
-                          step={500}
-                          value={buyCredits}
-                          onChange={(e) => setBuyCredits(Number(e.target.value))}
-                          className="w-40 border border-rule rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-pen/20 focus:border-pen outline-none"
-                        />
-                      </div>
-                      <div className="text-sm text-graphite">
-                        = <b className="text-ink">₹{cost}</b>
-                      </div>
-                      <button
-                        onClick={buyPool}
-                        disabled={busy || buyCredits < 1000}
-                        className="bg-pen text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-ink transition-colors disabled:opacity-60 flex items-center gap-2"
-                      >
-                        {busy ? <Loader2 size={16} className="animate-spin" /> : <Coins size={16} />}
-                        Buy credits
-                      </button>
-                    </div>
-                  </div>
-                )}
-
                 {/* Teacher Roster */}
                 <div className="bg-white rounded-2xl border border-rule p-6">
-                  <h3 className="font-bold text-ink">Teachers & Staff</h3>
+                  <h3 className="font-bold text-ink">Teachers &amp; Staff Pool</h3>
                   {ctx.isAdmin && (
                     <div className="mt-3 flex gap-2">
                       <input
                         value={memberEmail}
                         onChange={(e) => setMemberEmail(e.target.value)}
-                        placeholder="teacher@school.edu"
+                        placeholder="faculty@college.edu"
                         className="flex-1 border border-rule rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-pen/20 focus:border-pen outline-none"
                       />
                       <button
@@ -569,7 +643,7 @@ export default function SchoolPage() {
                         disabled={busy || !memberEmail.includes("@")}
                         className="bg-ink text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-pen transition-colors disabled:opacity-60 flex items-center gap-2"
                       >
-                        <UserPlus size={16} /> Add Teacher
+                        <UserPlus size={16} /> Add Faculty
                       </button>
                     </div>
                   )}
@@ -597,7 +671,7 @@ export default function SchoolPage() {
                           <button
                             onClick={() => setPendingRemove(m.user_id)}
                             disabled={busy}
-                            className="min-h-[44px] min-w-[44px] lg:min-h-0 lg:min-w-0 inline-flex items-center justify-center p-2 text-graphite hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                            className="p-2 text-graphite hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                             title="Remove"
                           >
                             <Trash2 size={16} />
@@ -610,145 +684,113 @@ export default function SchoolPage() {
               </div>
             )}
 
-            {/* TAB 2: SCHOOL BRANDING */}
-            {activeTab === "branding" && (
-              <div className="grid md:grid-cols-2 gap-6">
+            {/* TAB: SUBJECT ALLOTMENTS */}
+            {activeTab === "allotments" && (
+              <div className="space-y-6">
                 <div className="bg-white rounded-2xl border border-rule p-6">
-                  <h3 className="font-bold text-ink text-base mb-1">Official School Identity</h3>
-                  <p className="text-xs text-graphite mb-4">
-                    Exam papers created by your teachers automatically inherit this header branding.
+                  <h3 className="font-bold text-ink text-base mb-1">Course &amp; Subject Allotment</h3>
+                  <p className="text-xs text-graphite mb-4 leading-relaxed">
+                    Admin can allot the same course to multiple teachers or assign individual faculty to specific courses. Teachers only see and author question banks for their allotted courses.
                   </p>
 
-                  <form onSubmit={handleSaveBranding} className="space-y-4">
-                    <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">
-                        School Name
-                      </label>
-                      <input
-                        value={brandName}
-                        onChange={(e) => setBrandName(e.target.value)}
-                        disabled={!ctx.isAdmin}
-                        required
-                        className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none disabled:bg-rule/30"
-                      />
-                    </div>
+                  {ctx.isAdmin && (
+                    <form onSubmit={handleGrantAllotment} className="flex flex-col sm:flex-row gap-3 items-end pt-2 border-t border-rule">
+                      <div className="flex-1 w-full">
+                        <label className="block text-xs font-semibold text-ink mb-1">Select Course / Subject</label>
+                        <select
+                          value={selectedSubjectId}
+                          onChange={(e) => setSelectedSubjectId(e.target.value)}
+                          className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                        >
+                          {subjectsList.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.code ? `${s.code} · ` : ""}{s.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">
-                        Affiliation / Motto / Branch
-                      </label>
-                      <input
-                        value={brandAffiliation}
-                        onChange={(e) => setBrandAffiliation(e.target.value)}
-                        disabled={!ctx.isAdmin}
-                        placeholder="e.g. Affiliated to CBSE · School Code: 12345"
-                        className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none disabled:bg-rule/30"
-                      />
-                    </div>
+                      <div className="flex-1 w-full">
+                        <label className="block text-xs font-semibold text-ink mb-1">Select Faculty Member</label>
+                        <select
+                          value={selectedTeacherId}
+                          onChange={(e) => setSelectedTeacherId(e.target.value)}
+                          className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                        >
+                          <option value="">Choose teacher...</option>
+                          {(ctx.members || []).map((m) => (
+                            <option key={m.user_id} value={m.user_id}>
+                              {m.email} ({m.role})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">
-                        Campus Address
-                      </label>
-                      <input
-                        value={brandAddress}
-                        onChange={(e) => setBrandAddress(e.target.value)}
-                        disabled={!ctx.isAdmin}
-                        placeholder="e.g. Sector 4, Bokaro Steel City, Jharkhand"
-                        className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none disabled:bg-rule/30"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-ink mb-1">
-                        School Crest / Logo URL
-                      </label>
-                      <input
-                        value={brandLogoUrl}
-                        onChange={(e) => setBrandLogoUrl(e.target.value)}
-                        disabled={!ctx.isAdmin}
-                        placeholder="https://example.com/logo.png"
-                        className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none disabled:bg-rule/30"
-                      />
-                    </div>
-
-                    {ctx.isAdmin ? (
                       <button
                         type="submit"
-                        disabled={savingBranding || brandName.trim().length < 2}
-                        className="inline-flex items-center gap-2 bg-pen text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-ink transition-colors disabled:opacity-50"
+                        disabled={busy || !selectedSubjectId || !selectedTeacherId}
+                        className="bg-pen text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-ink transition-colors disabled:opacity-50 shrink-0"
                       >
-                        {savingBranding ? (
-                          <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                          <Check size={16} />
-                        )}
-                        Save Branding Settings
+                        Allot Subject
                       </button>
-                    ) : (
-                      <p className="text-xs text-graphite italic">
-                        Only school administrators can edit official branding.
-                      </p>
-                    )}
-                  </form>
+                    </form>
+                  )}
                 </div>
 
-                {/* Live Preview Box */}
-                <div className="bg-white rounded-2xl border border-rule p-6 flex flex-col justify-between">
-                  <div>
-                    <h3 className="font-bold text-ink text-base mb-1">Exam Header Preview</h3>
-                    <p className="text-xs text-graphite mb-4">
-                      How papers printed by teachers will appear:
-                    </p>
+                {/* Allotment Ledger */}
+                <div className="bg-white rounded-2xl border border-rule overflow-hidden">
+                  <div className="px-6 py-4 border-b border-rule bg-paper/40 flex items-center justify-between">
+                    <h4 className="font-bold text-sm text-ink">Active Course Allotments</h4>
+                    <span className="font-mono text-xs text-graphite">{allotments.length} total assignments</span>
+                  </div>
 
-                    <div className="border-2 border-black p-4 rounded bg-paper/20">
-                      <div className="flex items-center justify-center gap-3 text-center">
-                        {brandLogoUrl && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={brandLogoUrl}
-                            alt="Logo"
-                            className="w-10 h-10 object-contain shrink-0"
-                          />
-                        )}
-                        <div>
-                          <div className="font-bold text-base tracking-wide text-ink">
-                            {brandName || "School Name"}
-                          </div>
-                          {(brandAffiliation || brandAddress) && (
-                            <div className="text-[11px] text-graphite font-medium">
-                              {brandAffiliation || brandAddress}
-                            </div>
-                          )}
-                          <div className="font-semibold text-xs mt-1 text-ink">
-                            Term 1 Summative Assessment (2025–26)
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex justify-between text-xs mt-3 pt-2 border-t border-dashed border-rule text-graphite">
-                        <span>Class: <b>Class 5</b></span>
-                        <span>Subject: <b>Mathematics</b></span>
-                        <span>Marks: <b>50</b></span>
-                      </div>
+                  {loadingAllotments ? (
+                    <div className="flex justify-center py-10 text-graphite">
+                      <Loader2 size={24} className="animate-spin" />
                     </div>
-                  </div>
+                  ) : allotments.length === 0 ? (
+                    <div className="text-center py-12 text-graphite text-xs">
+                      No course allotments configured yet.
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-rule">
+                      {allotments.map((alt) => (
+                        <div key={alt.id} className="px-6 py-3.5 flex items-center justify-between gap-4 hover:bg-paper/30 transition-colors">
+                          <div>
+                            <p className="text-sm font-semibold text-ink">
+                              {alt.subject_code ? <span className="font-mono text-xs font-bold text-pen mr-2">[{alt.subject_code}]</span> : null}
+                              {alt.subject_name}
+                            </p>
+                            <p className="text-xs text-graphite mt-0.5">
+                              Allotted to: <b className="text-ink">{alt.teacher_email}</b>
+                            </p>
+                          </div>
 
-                  <div className="mt-4 p-3 bg-pen/5 border border-pen/10 rounded-xl text-xs text-pen font-medium">
-                    Tip: Any new paper generated by teachers in {ctx.school.name} will automatically apply this header.
-                  </div>
+                          {ctx.isAdmin && (
+                            <button
+                              onClick={() => handleRevokeAllotment(alt.id)}
+                              className="text-xs text-red-600 hover:text-red-800 hover:underline px-2 py-1"
+                              title="Revoke allotment"
+                            >
+                              Revoke
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* TAB 3: SHARED TEMPLATES */}
+            {/* TAB: TEMPLATES */}
             {activeTab === "templates" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-bold text-ink text-base">School Blueprint Library</h3>
+                    <h3 className="font-bold text-ink text-base">Institutional Blueprint Library</h3>
                     <p className="text-xs text-graphite">
-                      Official exam formats, blueprints, and section distributions shared across all teachers.
+                      Official autonomous exam blueprints, formats, and section distributions shared across all faculty.
                     </p>
                   </div>
                 </div>
@@ -760,10 +802,7 @@ export default function SchoolPage() {
                 ) : templates.length === 0 ? (
                   <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-rule p-6">
                     <BookmarkPlus size={36} className="mx-auto text-rule mb-2" />
-                    <h4 className="font-semibold text-ink text-sm">No shared templates yet</h4>
-                    <p className="text-xs text-graphite mt-1 max-w-sm mx-auto">
-                      Teachers can save any exam paper as a school template straight from the paper builder with the &quot;Template&quot; button.
-                    </p>
+                    <h4 className="font-semibold text-ink text-sm">No shared blueprints yet</h4>
                   </div>
                 ) : (
                   <div className="grid md:grid-cols-2 gap-4">
@@ -776,27 +815,12 @@ export default function SchoolPage() {
                           <div className="flex items-start justify-between gap-2 mb-2">
                             <h4 className="font-bold text-ink text-sm">{t.title}</h4>
                             <span className="text-[11px] bg-pen/5 text-pen font-semibold px-2 py-0.5 rounded-full shrink-0">
-                              {(t.settings?.totalMarks as number) || 40} Marks
+                              {(t.settings?.totalMarks as number) || 60} Marks
                             </span>
                           </div>
                           {t.description && (
                             <p className="text-xs text-graphite mb-3">{t.description}</p>
                           )}
-                          <div className="flex flex-wrap gap-2 text-xs text-graphite mb-4">
-                            {t.subject && (
-                              <span className="bg-rule px-2 py-0.5 rounded">
-                                {t.subject}
-                              </span>
-                            )}
-                            {t.class_name && (
-                              <span className="bg-rule px-2 py-0.5 rounded">
-                                {t.class_name}
-                              </span>
-                            )}
-                            <span className="bg-rule px-2 py-0.5 rounded">
-                              {t.sections?.length || 0} questions
-                            </span>
-                          </div>
                         </div>
 
                         <div className="pt-3 border-t border-rule flex items-center justify-between">
@@ -810,17 +834,8 @@ export default function SchoolPage() {
                             ) : (
                               <Plus size={12} />
                             )}
-                            Use Template
+                            Synthesize From Blueprint
                           </button>
-                          {ctx.isAdmin && (
-                            <button
-                              onClick={() => deleteTemplate(t.id)}
-                              className="text-graphite hover:text-red-600 p-1.5 rounded-lg"
-                              title="Delete template"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          )}
                         </div>
                       </div>
                     ))}
@@ -829,113 +844,163 @@ export default function SchoolPage() {
               </div>
             )}
 
-            {/* TAB 4: EXAM REVIEWS */}
+            {/* TAB: BRANDING */}
+            {activeTab === "branding" && (
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-2xl border border-rule p-6">
+                  <h3 className="font-bold text-ink text-base mb-1">Official Institutional Identity</h3>
+                  <p className="text-xs text-graphite mb-4">
+                    Exam papers created by your faculty automatically inherit this header branding.
+                  </p>
+
+                  <form onSubmit={handleSaveBranding} className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-ink mb-1">
+                        Institution Name
+                      </label>
+                      <input
+                        value={brandName}
+                        onChange={(e) => setBrandName(e.target.value)}
+                        disabled={!ctx.isAdmin}
+                        required
+                        className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none disabled:bg-rule/30"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-ink mb-1">
+                        Affiliation / Autonomous Status
+                      </label>
+                      <input
+                        value={brandAffiliation}
+                        onChange={(e) => setBrandAffiliation(e.target.value)}
+                        disabled={!ctx.isAdmin}
+                        className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none disabled:bg-rule/30"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-ink mb-1">
+                        Campus Address
+                      </label>
+                      <input
+                        value={brandAddress}
+                        onChange={(e) => setBrandAddress(e.target.value)}
+                        disabled={!ctx.isAdmin}
+                        className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none disabled:bg-rule/30"
+                      />
+                    </div>
+
+                    {ctx.isAdmin && (
+                      <button
+                        type="submit"
+                        disabled={savingBranding}
+                        className="bg-ink text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-pen transition-colors disabled:opacity-50 flex items-center gap-2"
+                      >
+                        {savingBranding ? (
+                          <Loader2 size={14} className="animate-spin" />
+                        ) : (
+                          <Check size={14} />
+                        )}
+                        Save Identity
+                      </button>
+                    )}
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: REVIEWS */}
             {activeTab === "reviews" && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-bold text-ink text-base">Exam Moderation & Approvals</h3>
-                    <p className="text-xs text-graphite">
-                      Review question papers submitted by teachers before final printing and distribution.
-                    </p>
-                  </div>
-                </div>
+                <div className="bg-white rounded-2xl border border-rule p-6">
+                  <h3 className="font-bold text-ink text-base mb-1">Exam Approval &amp; Review Workflow</h3>
+                  <p className="text-xs text-graphite mb-4">
+                    Review and approve synthesized question papers before printing.
+                  </p>
 
-                {loadingReviews ? (
-                  <div className="flex justify-center py-12 text-graphite">
-                    <Loader2 size={24} className="animate-spin" />
-                  </div>
-                ) : reviews.length === 0 ? (
-                  <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-rule p-6">
-                    <CheckCircle2 size={36} className="mx-auto text-rule mb-2" />
-                    <h4 className="font-semibold text-ink text-sm">No exam papers in review</h4>
-                    <p className="text-xs text-graphite mt-1 max-w-sm mx-auto">
-                      When teachers click &quot;Submit for Review&quot; in the paper builder, their exam papers will appear here for school approval.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="bg-white rounded-2xl border border-rule overflow-hidden">
+                  {loadingReviews ? (
+                    <div className="flex justify-center py-10">
+                      <Loader2 size={24} className="animate-spin text-graphite" />
+                    </div>
+                  ) : reviews.length === 0 ? (
+                    <div className="text-center py-10 text-xs text-graphite">
+                      No examination papers currently submitted for review.
+                    </div>
+                  ) : (
                     <div className="divide-y divide-rule">
                       {reviews.map((r) => (
-                        <div
-                          key={r.id}
-                          className="p-4 flex flex-wrap items-center justify-between gap-4 hover:bg-rule/10 transition-colors"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-bold text-ink text-sm">{r.title}</h4>
-                              <span
-                                className={`text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                                  r.status === "approved"
-                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                    : r.status === "in_review"
-                                    ? "bg-amber-50 text-amber-700 border border-amber-200"
-                                    : "bg-rose-50 text-rose-700 border border-rose-200"
-                                }`}
-                              >
-                                {r.status === "approved" && <CheckCircle2 size={10} />}
-                                {r.status === "in_review" && <Clock size={10} />}
-                                {r.status === "changes_requested" && <AlertCircle size={10} />}
-                                {r.status === "approved"
-                                  ? "Approved"
-                                  : r.status === "in_review"
-                                  ? "Pending Review"
-                                  : "Changes Requested"}
-                              </span>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-3 text-xs text-graphite">
-                              <span>By: <b>{r.author_email}</b></span>
-                              <span>•</span>
-                              <span>{r.subject || "General"}</span>
-                              <span>•</span>
-                              <span>{r.class_name || "All classes"}</span>
-                              <span>•</span>
-                              <span>{r.question_count} questions ({r.total_marks}M)</span>
-                            </div>
-                            {r.review_feedback && (
-                              <p className="mt-2 text-xs text-rose-800 bg-rose-50 border border-rose-100 p-2 rounded-lg">
-                                <b>Feedback:</b> {r.review_feedback}
-                              </p>
-                            )}
+                        <div key={r.id} className="py-4 flex items-center justify-between gap-4">
+                          <div>
+                            <p className="text-sm font-semibold text-ink">{r.title}</p>
+                            <p className="text-xs text-graphite">Author: {r.author_email} · Status: {r.status}</p>
                           </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <Link
-                              href={`/builder?id=${r.id}`}
-                              className="inline-flex items-center gap-1 text-xs font-semibold bg-white border border-rule px-3 py-1.5 rounded-lg text-ink hover:border-pen transition-colors"
-                            >
-                              <Eye size={12} /> Inspect
+                          <div className="flex items-center gap-2">
+                            <Link href={`/builder?id=${r.id}`} className="text-xs border border-rule px-3 py-1.5 rounded-lg hover:border-pen">
+                              Inspect
                             </Link>
-
-                            {ctx.isAdmin && r.status === "in_review" && (
-                              <>
-                                <button
-                                  onClick={() => reviewVerdictAction(r.id, "approved")}
-                                  disabled={reviewingId === r.id}
-                                  className="inline-flex items-center gap-1 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-                                >
-                                  {reviewingId === r.id ? (
-                                    <Loader2 size={12} className="animate-spin" />
-                                  ) : (
-                                    <CheckCircle2 size={12} />
-                                  )}
-                                  Approve
-                                </button>
-                                <button
-                                  onClick={() => reviewVerdictAction(r.id, "changes_requested")}
-                                  disabled={reviewingId === r.id}
-                                  className="inline-flex items-center gap-1 text-xs font-semibold bg-white border border-rose-200 text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50"
-                                >
-                                  <AlertCircle size={12} /> Request Changes
-                                </button>
-                              </>
-                            )}
                           </div>
                         </div>
                       ))}
                     </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* TAB: AUDIT LOGS */}
+            {activeTab === "audit" && (
+              <div className="space-y-4">
+                <div className="bg-white rounded-2xl border border-rule p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <h3 className="font-bold text-ink text-base">Examination Activity &amp; Audit Trail</h3>
+                      <p className="text-xs text-graphite">
+                        Immutable institutional activity trail recording which teacher performed what action across courses, allotments, and generated papers.
+                      </p>
+                    </div>
+                    <span className="font-mono text-xs bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-full font-semibold">
+                      Append-Only Log
+                    </span>
                   </div>
-                )}
+
+                  {loadingAudit ? (
+                    <div className="flex justify-center py-12 text-graphite">
+                      <Loader2 size={24} className="animate-spin" />
+                    </div>
+                  ) : auditLogs.length === 0 ? (
+                    <div className="text-center py-12 text-xs text-graphite">
+                      No activity logs recorded yet.
+                    </div>
+                  ) : (
+                    <div className="mt-4 border border-rule rounded-xl overflow-hidden divide-y divide-rule">
+                      {auditLogs.map((log) => (
+                        <div key={log.id} className="p-4 hover:bg-paper/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-rule text-ink">
+                                {log.action}
+                              </span>
+                              <span className="font-semibold text-ink">{log.summary}</span>
+                            </div>
+                            <p className="text-graphite">
+                              Triggered by: <b className="text-ink">{log.actor_email || "System"}</b> ({log.actor_role || "admin"})
+                            </p>
+                          </div>
+                          <div className="text-graphite font-mono text-[11px] shrink-0">
+                            {new Date(log.at).toLocaleString("en-IN", {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
