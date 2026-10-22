@@ -1244,7 +1244,7 @@ function BuilderInner() {
           margin: MARGIN_VALUES[settings.margin].pdf,
           filename: pdfFilename,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true },
+          html2canvas: { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
           // NOT "avoid-all". That mode marks every element in the document as
           // unbreakable, and html2pdf pushes an element to the next page by

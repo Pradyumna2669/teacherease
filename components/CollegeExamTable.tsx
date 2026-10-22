@@ -25,8 +25,13 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
   const variant = settings.variant === "backlog" ? "Backlog Examination" : "Regular Examination";
   const courseName = settings.subject || "Subject Course";
   const courseCode = settings.courseCode || "CS201BSC03";
-  const time = settings.timeAllowed || "3 Hours";
   const maxMarks = settings.totalMarks || 60;
+  const time =
+    settings.timeAllowed && settings.timeAllowed !== "1 hr"
+      ? settings.timeAllowed
+      : maxMarks === 60
+      ? "1.5 hrs"
+      : settings.timeAllowed || "3 Hours";
 
   const defaultInstructions = [
     "All questions are compulsory unless specified otherwise.",
@@ -47,61 +52,165 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
         fontFamily: '"Times New Roman", Times, serif',
         fontSize: "12pt",
         color: "#000",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       {/* College / University Header */}
-      <div className="text-center space-y-1 mb-4 pb-3 border-b-2 border-black">
+      <div
+        className="text-center space-y-1 mb-4 pb-3"
+        style={{ borderBottom: "2px solid #000" }}
+      >
         <h1 className="text-xl font-bold uppercase tracking-tight">{collegeName}</h1>
         <p className="text-xs italic text-gray-800">{affiliation}</p>
         <div className="text-sm font-semibold pt-1">
           <span>{program}</span>
-          <span className="mx-2">·</span>
+          <span className="mx-2">—</span>
           <span className="font-bold underline">{variant}</span>
         </div>
         <p className="text-xs font-medium text-gray-700">{session}</p>
       </div>
 
       {/* Course & Exam Meta Table */}
-      <table className="w-full text-xs font-semibold mb-3 border-b border-black pb-2">
+      <table
+        className="w-full text-xs font-semibold"
+        style={{
+          borderCollapse: "separate",
+          borderSpacing: 0,
+          width: "100%",
+          marginBottom: "4px",
+        }}
+      >
         <tbody>
           <tr>
-            <td className="py-0.5 text-left">Course Name: <span className="font-normal">{courseName}</span></td>
-            <td className="py-0.5 text-right">Course Code: <span className="font-normal font-mono">{courseCode}</span></td>
+            <td style={{ padding: "3px 0", textAlign: "left", verticalAlign: "middle" }}>
+              Course Name: <span className="font-normal">{courseName}</span>
+            </td>
+            <td style={{ padding: "3px 0", textAlign: "right", verticalAlign: "middle" }}>
+              Course Code: <span className="font-normal font-mono">{courseCode}</span>
+            </td>
           </tr>
           <tr>
-            <td className="py-0.5 text-left">Time Allowed: <span className="font-normal">{time}</span></td>
-            <td className="py-0.5 text-right">Maximum Marks: <span className="font-normal">{maxMarks}</span></td>
+            <td style={{ padding: "3px 0", textAlign: "left", verticalAlign: "middle" }}>
+              Time Allowed: <span className="font-normal">{time}</span>
+            </td>
+            <td style={{ padding: "3px 0", textAlign: "right", verticalAlign: "middle" }}>
+              Maximum Marks: <span className="font-normal">{maxMarks}</span>
+            </td>
           </tr>
         </tbody>
       </table>
 
-      {/* Instructions to Candidate */}
-      <div className="mb-4 text-xs">
+      {/* Dedicated Divider Line below Meta Table — isolated from table rows to eliminate overlap */}
+      <div
+        style={{
+          borderBottom: "1px solid #000",
+          width: "100%",
+          marginTop: "4px",
+          marginBottom: "12px",
+        }}
+      />
+
+      {/* Instructions to Candidates */}
+      <div className="mb-4 text-xs" style={{ marginBottom: "14px" }}>
         <span className="font-bold block mb-1">Instructions to Candidates:</span>
         <ol className="list-decimal list-inside space-y-0.5 text-gray-900 pl-1">
           {instructions.map((line, idx) => (
-            <li key={idx}>{line}</li>
+            <li key={idx} style={{ lineHeight: "1.45" }}>{line}</li>
           ))}
         </ol>
       </div>
 
-      {/* Examination Table — NO horizontal lines between rows, only header border */}
-      <table className="w-full text-xs font-serif" style={{ borderCollapse: "collapse" }}>
+      {/* Examination Table — NO horizontal lines between rows, clean separated header border */}
+      <table
+        className="w-full text-xs font-serif"
+        style={{
+          width: "100%",
+          borderCollapse: "separate",
+          borderSpacing: 0,
+          tableLayout: "fixed",
+        }}
+      >
         <thead>
           <tr>
-            <th className="py-1.5 px-2 text-left font-bold text-black" style={{ width: "9%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+            <th
+              style={{
+                width: "9%",
+                borderTop: "2px solid #000",
+                borderBottom: "2px solid #000",
+                padding: "6px 8px",
+                textAlign: "left",
+                fontWeight: "bold",
+                color: "#000",
+                lineHeight: "1.4",
+                verticalAlign: "middle",
+                boxSizing: "border-box",
+              }}
+            >
               Q. No
             </th>
-            <th className="py-1.5 px-2 text-left font-bold text-black" style={{ width: "67%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+            <th
+              style={{
+                width: "67%",
+                borderTop: "2px solid #000",
+                borderBottom: "2px solid #000",
+                padding: "6px 8px",
+                textAlign: "left",
+                fontWeight: "bold",
+                color: "#000",
+                lineHeight: "1.4",
+                verticalAlign: "middle",
+                boxSizing: "border-box",
+              }}
+            >
               Question Statement &amp; Diagram
             </th>
-            <th className="py-1.5 px-2 text-center font-bold text-black" style={{ width: "8%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+            <th
+              style={{
+                width: "8%",
+                borderTop: "2px solid #000",
+                borderBottom: "2px solid #000",
+                padding: "6px 8px",
+                textAlign: "center",
+                fontWeight: "bold",
+                color: "#000",
+                lineHeight: "1.4",
+                verticalAlign: "middle",
+                boxSizing: "border-box",
+              }}
+            >
               Marks
             </th>
-            <th className="py-1.5 px-2 text-center font-bold text-black" style={{ width: "8%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+            <th
+              style={{
+                width: "8%",
+                borderTop: "2px solid #000",
+                borderBottom: "2px solid #000",
+                padding: "6px 8px",
+                textAlign: "center",
+                fontWeight: "bold",
+                color: "#000",
+                lineHeight: "1.4",
+                verticalAlign: "middle",
+                boxSizing: "border-box",
+              }}
+            >
               BTL
             </th>
-            <th className="py-1.5 px-2 text-center font-bold text-black" style={{ width: "8%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+            <th
+              style={{
+                width: "8%",
+                borderTop: "2px solid #000",
+                borderBottom: "2px solid #000",
+                padding: "6px 8px",
+                textAlign: "center",
+                fontWeight: "bold",
+                color: "#000",
+                lineHeight: "1.4",
+                verticalAlign: "middle",
+                boxSizing: "border-box",
+              }}
+            >
               CO
             </th>
           </tr>
@@ -116,10 +225,33 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
                 {/* Group Heading Row (Q1 A), Q1 B), etc.) — no horizontal border */}
                 {isGroup ? (
                   <tr className="pp-row">
-                    <td className="pt-3 pb-1 px-2 align-top whitespace-nowrap font-bold text-left text-black">
+                    <td
+                      style={{
+                        paddingTop: "10px",
+                        paddingBottom: "4px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        verticalAlign: "top",
+                        whiteSpace: "nowrap",
+                        fontWeight: "bold",
+                        textAlign: "left",
+                        color: "#000",
+                      }}
+                    >
                       Q{q.q_no ?? qIdx + 1} {q.part ? `${q.part})` : ""}
                     </td>
-                    <td className="pt-3 pb-1 px-2 align-top font-bold text-black" colSpan={4}>
+                    <td
+                      colSpan={4}
+                      style={{
+                        paddingTop: "10px",
+                        paddingBottom: "4px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        verticalAlign: "top",
+                        fontWeight: "bold",
+                        color: "#000",
+                      }}
+                    >
                       {q.title}
                     </td>
                   </tr>
@@ -135,29 +267,92 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
 
                     return (
                       <tr key={sub.id || sIdx} className="pp-row">
-                        <td className="py-0.5 px-2 align-top text-center font-serif text-black">
+                        <td
+                          style={{
+                            paddingTop: "4px",
+                            paddingBottom: "4px",
+                            paddingLeft: "8px",
+                            paddingRight: "8px",
+                            verticalAlign: "top",
+                            textAlign: "center",
+                            color: "#000",
+                          }}
+                        >
                           {isGroup ? `${ROMAN[sIdx] || sIdx + 1})` : `Q${qIdx + 1}`}
                         </td>
-                        <td className="py-0.5 px-2 align-top font-serif text-black leading-relaxed">
+                        <td
+                          style={{
+                            paddingTop: "4px",
+                            paddingBottom: "4px",
+                            paddingLeft: "8px",
+                            paddingRight: "8px",
+                            verticalAlign: "top",
+                            color: "#000",
+                            lineHeight: "1.5",
+                            wordBreak: "break-word",
+                          }}
+                        >
                           <div>{sub.content || q.title}</div>
                           {imgUrl && (
-                            <div className="mt-2 mb-1">
+                            <div style={{ marginTop: "6px", marginBottom: "4px" }}>
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={imgUrl}
                                 alt="Question Diagram"
-                                className="max-w-[360px] h-auto border border-gray-300 rounded p-1 bg-white"
+                                style={{
+                                  maxWidth: "360px",
+                                  height: "auto",
+                                  border: "1px solid #d1d5db",
+                                  borderRadius: "4px",
+                                  padding: "4px",
+                                  backgroundColor: "#fff",
+                                  display: "block",
+                                }}
                               />
                             </div>
                           )}
                         </td>
-                        <td className="py-0.5 px-2 align-top text-center font-serif font-medium text-black">
+                        <td
+                          style={{
+                            paddingTop: "4px",
+                            paddingBottom: "4px",
+                            paddingLeft: "8px",
+                            paddingRight: "8px",
+                            verticalAlign: "top",
+                            textAlign: "center",
+                            fontWeight: 500,
+                            color: "#000",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
                           {pad2(itemMarks)}
                         </td>
-                        <td className="py-0.5 px-2 align-top text-center font-serif text-black">
+                        <td
+                          style={{
+                            paddingTop: "4px",
+                            paddingBottom: "4px",
+                            paddingLeft: "8px",
+                            paddingRight: "8px",
+                            verticalAlign: "top",
+                            textAlign: "center",
+                            color: "#000",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
                           {pad2(itemBt)}
                         </td>
-                        <td className="py-0.5 px-2 align-top text-center font-serif text-black">
+                        <td
+                          style={{
+                            paddingTop: "4px",
+                            paddingBottom: "4px",
+                            paddingLeft: "8px",
+                            paddingRight: "8px",
+                            verticalAlign: "top",
+                            textAlign: "center",
+                            color: "#000",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
                           {pad2(itemCo)}
                         </td>
                       </tr>
@@ -165,25 +360,95 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
                   })
                 ) : (
                   <tr className="pp-row">
-                    <td className="py-0.5 px-2 align-top font-bold text-left text-black">
+                    <td
+                      style={{
+                        paddingTop: "4px",
+                        paddingBottom: "4px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        verticalAlign: "top",
+                        fontWeight: "bold",
+                        textAlign: "left",
+                        color: "#000",
+                      }}
+                    >
                       Q{q.q_no ?? qIdx + 1}
                     </td>
-                    <td className="py-0.5 px-2 align-top font-serif text-black leading-relaxed">
+                    <td
+                      style={{
+                        paddingTop: "4px",
+                        paddingBottom: "4px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        verticalAlign: "top",
+                        color: "#000",
+                        lineHeight: "1.5",
+                        wordBreak: "break-word",
+                      }}
+                    >
                       <div>{q.title}</div>
                       {q.image_url && (
-                        <div className="mt-2 mb-1">
+                        <div style={{ marginTop: "6px", marginBottom: "4px" }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={q.image_url}
                             alt="Question Diagram"
-                            className="max-w-[360px] h-auto border border-gray-300 rounded p-1 bg-white"
+                            style={{
+                              maxWidth: "360px",
+                              height: "auto",
+                              border: "1px solid #d1d5db",
+                              borderRadius: "4px",
+                              padding: "4px",
+                              backgroundColor: "#fff",
+                              display: "block",
+                            }}
                           />
                         </div>
                       )}
                     </td>
-                    <td className="py-0.5 px-2 align-top text-center font-serif font-medium text-black">{pad2(q.marks)}</td>
-                    <td className="py-0.5 px-2 align-top text-center font-serif text-black">{pad2(q.bt_level)}</td>
-                    <td className="py-0.5 px-2 align-top text-center font-serif text-black">{pad2(q.co_no)}</td>
+                    <td
+                      style={{
+                        paddingTop: "4px",
+                        paddingBottom: "4px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        verticalAlign: "top",
+                        textAlign: "center",
+                        fontWeight: 500,
+                        color: "#000",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {pad2(q.marks)}
+                    </td>
+                    <td
+                      style={{
+                        paddingTop: "4px",
+                        paddingBottom: "4px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        verticalAlign: "top",
+                        textAlign: "center",
+                        color: "#000",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {pad2(q.bt_level)}
+                    </td>
+                    <td
+                      style={{
+                        paddingTop: "4px",
+                        paddingBottom: "4px",
+                        paddingLeft: "8px",
+                        paddingRight: "8px",
+                        verticalAlign: "top",
+                        textAlign: "center",
+                        color: "#000",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {pad2(q.co_no)}
+                    </td>
                   </tr>
                 )}
               </React.Fragment>
@@ -193,7 +458,10 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
       </table>
 
       {/* End of Question Paper Signoff */}
-      <div className="text-center font-serif text-xs font-semibold mt-8 pt-4 border-t border-black">
+      <div
+        className="text-center font-serif text-xs font-semibold mt-8 pt-4"
+        style={{ borderTop: "1px solid #000" }}
+      >
         *** END OF QUESTION PAPER ***
       </div>
     </div>
