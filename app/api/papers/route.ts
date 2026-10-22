@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     school_id?: string | null;
     school_name?: string | null;
     school_subtitle?: string | null;
+    time_allowed?: string | null;
   } = {};
   try {
     body = await req.json();
@@ -175,6 +176,7 @@ export async function POST(req: NextRequest) {
     ...(body.semester ? { semester: body.semester } : {}),
     ...(body.department ? { department: body.department } : {}),
     ...(body.total_marks ? { totalMarks: body.total_marks } : {}),
+    ...(body.time_allowed ? { timeAllowed: body.time_allowed } : body.total_marks === 60 ? { timeAllowed: "1.5 hrs" } : {}),
     ...((body.settings as Record<string, unknown>) || {}),
   };
 

@@ -31,6 +31,7 @@ interface FormatItem {
   id: string;
   name: string;
   total_marks: number;
+  time_allowed?: string;
   blueprint: any;
 }
 
@@ -39,6 +40,7 @@ const FALLBACK_BLUEPRINTS: FormatItem[] = [
     id: "end-sem-60",
     name: "Autonomous End Semester Examination (60 Marks)",
     total_marks: 60,
+    time_allowed: "1.5 hrs",
     blueprint: {
       groups: [
         { q_no: 1, title: "Unit 1", A: [{ unit_no: 1, marks: 1, count: 2 }], B: [{ unit_no: 1, marks: 4, count: 4 }] },
@@ -415,6 +417,10 @@ export default function CollegeBlueprintModal({
         semester: activeSubject.semester,
         department: activeSubject.department,
         total_marks: activeFormat.total_marks,
+        time_allowed: (activeFormat as any).time_allowed || (activeFormat.total_marks === 60 ? "1.5 hrs" : "1 hr"),
+        settings: {
+          timeAllowed: (activeFormat as any).time_allowed || (activeFormat.total_marks === 60 ? "1.5 hrs" : "1 hr"),
+        },
         layout_mode: "college_table",
         school_id: activeSubject.school_id || schoolInfo?.id || null,
         school_name: schoolInfo?.name,
