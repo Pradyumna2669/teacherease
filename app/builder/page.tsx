@@ -673,6 +673,23 @@ function BuilderInner() {
                 isAdmin: !!sc.isAdmin,
                 isMember: true,
               });
+              // Auto-correct stale or default placeholder institution name for college table papers:
+              setSettings((prev) => {
+                const curName = prev.schoolName || "";
+                const isStale =
+                  !curName ||
+                  curName.toLowerCase().includes("adarsh") ||
+                  curName.toLowerCase().includes("autonomous institute of engineering") ||
+                  curName === "School Name";
+                if (prev.layoutMode === "college_table" && isStale) {
+                  return {
+                    ...prev,
+                    schoolName: sc.school.name,
+                    schoolSubtitle: sc.school.affiliation || sc.school.address || prev.schoolSubtitle,
+                  };
+                }
+                return prev;
+              });
             }
           })
           .catch(() => {});

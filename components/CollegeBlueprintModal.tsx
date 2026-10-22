@@ -144,6 +144,18 @@ export default function CollegeBlueprintModal({
   const [issuedIds, setIssuedIds] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [schoolInfo, setSchoolInfo] = useState<{ id: string; name: string; affiliation?: string; address?: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/school")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.school) {
+          setSchoolInfo(d.school);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // If no subject passed directly, load teacher's college subjects
   useEffect(() => {
@@ -404,6 +416,9 @@ export default function CollegeBlueprintModal({
         department: activeSubject.department,
         total_marks: activeFormat.total_marks,
         layout_mode: "college_table",
+        school_id: activeSubject.school_id || schoolInfo?.id || null,
+        school_name: schoolInfo?.name,
+        school_subtitle: schoolInfo?.affiliation || schoolInfo?.address,
         variant,
         cycle_id: finalCycleId || null,
         questions: synthesizedQuestions,

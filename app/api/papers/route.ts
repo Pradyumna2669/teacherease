@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
     semester?: number | string | null;
     department?: string | null;
     total_marks?: number | null;
+    school_id?: string | null;
+    school_name?: string | null;
+    school_subtitle?: string | null;
   } = {};
   try {
     body = await req.json();
@@ -48,7 +51,7 @@ export async function POST(req: NextRequest) {
   const chargeable = false;
 
   // Check if teacher belongs to a school
-  let schoolId: string | null = null;
+  let schoolId: string | null = body.school_id || null;
   let schoolBranding: {
     name?: string;
     logo_url?: string | null;
@@ -57,14 +60,19 @@ export async function POST(req: NextRequest) {
     default_header?: Record<string, unknown> | null;
   } | null = null;
   try {
-    const { data: mem } = await supabase
-      .from("school_members")
-      .select("school_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    if (mem?.school_id) {
-      schoolId = mem.school_id;
-      const { data: sc } = await supabase
+    const admin = createAdminClient();
+    if (!schoolId) {
+      const { data: mem } = await admin
+        .from("school_members")
+        .select("school_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (mem?.school_id) {
+        schoolId = mem.school_id;
+      }
+    }
+    if (schoolId) {
+      const { data: sc } = await admin
         .from("schools")
         .select("name, logo_url, address, affiliation, default_header")
         .eq("id", schoolId)
@@ -91,20 +99,44 @@ export async function POST(req: NextRequest) {
 
   let seeded = seedSettings(previous?.settings, body.settings);
 
+  const isCollege =
+    body.layout_mode === "college_table" ||
+    (body.settings as any)?.layoutMode === "college_table";
+
   // If teacher has a school, pre-seed school name and branding if not already customized
   if (schoolBranding) {
-    if (!seeded.schoolName && schoolBranding.name) {
-      seeded = { ...seeded, schoolName: schoolBranding.name };
+    const explicitSchoolName = body.school_name || (body.settings as any)?.schoolName;
+    const isStaleName =
+      !seeded.schoolName ||
+      seeded.schoolName.toLowerCase().includes("adarsh") ||
+      seeded.schoolName === "School Name" ||
+      seeded.schoolName.toLowerCase().includes("autonomous institute of engineering");
+
+    if (explicitSchoolName) {
+      seeded.schoolName = explicitSchoolName;
+    } else if (schoolBranding.name && (isCollege || isStaleName)) {
+      seeded.schoolName = schoolBranding.name;
     }
-    if (!seeded.logoUrl && schoolBranding.logo_url) {
-      seeded = { ...seeded, logoUrl: schoolBranding.logo_url };
+
+    const explicitSubtitle = body.school_subtitle || (body.settings as any)?.schoolSubtitle;
+    const isStaleSubtitle =
+      !seeded.schoolSubtitle ||
+      seeded.schoolSubtitle.toLowerCase().includes("autonomous institute affiliated");
+
+    if (explicitSubtitle) {
+      seeded.schoolSubtitle = explicitSubtitle;
+    } else if (schoolBranding.affiliation || schoolBranding.address) {
+      if (isCollege || isStaleSubtitle) {
+        seeded.schoolSubtitle = schoolBranding.affiliation || schoolBranding.address || "";
+      }
     }
-    if (!seeded.schoolSubtitle && (schoolBranding.affiliation || schoolBranding.address)) {
-      seeded = {
-        ...seeded,
-        schoolSubtitle: schoolBranding.affiliation || schoolBranding.address || "",
-      };
+
+    if (schoolBranding.logo_url && !seeded.logoUrl) {
+      seeded.logoUrl = schoolBranding.logo_url;
     }
+  } else if (body.school_name) {
+    seeded.schoolName = body.school_name;
+    if (body.school_subtitle) seeded.schoolSubtitle = body.school_subtitle;
   }
 
   // These two columns only feed the dashboard list. A caller echoing the
