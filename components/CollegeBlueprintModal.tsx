@@ -41,42 +41,12 @@ const FALLBACK_BLUEPRINTS: FormatItem[] = [
     total_marks: 60,
     blueprint: {
       groups: [
-        {
-          q_no: 1,
-          title: "Solve the following questions (Unit 1 & Unit 2)",
-          A: [
-            { unit_no: 1, marks: 1, count: 2 },
-            { unit_no: 2, marks: 1, count: 2 },
-          ],
-          B: [
-            { unit_no: 1, marks: 4, count: 2 },
-            { unit_no: 2, marks: 4, count: 2 },
-          ],
-        },
-        {
-          q_no: 2,
-          title: "Solve the following questions (Unit 3 & Unit 4)",
-          A: [
-            { unit_no: 3, marks: 1, count: 2 },
-            { unit_no: 4, marks: 1, count: 2 },
-          ],
-          B: [
-            { unit_no: 3, marks: 4, count: 2 },
-            { unit_no: 4, marks: 4, count: 2 },
-          ],
-        },
-        {
-          q_no: 3,
-          title: "Solve the following questions (Unit 5 & Unit 6)",
-          A: [
-            { unit_no: 5, marks: 1, count: 2 },
-            { unit_no: 6, marks: 1, count: 2 },
-          ],
-          B: [
-            { unit_no: 5, marks: 4, count: 2 },
-            { unit_no: 6, marks: 4, count: 2 },
-          ],
-        },
+        { q_no: 1, title: "Unit 1", A: [{ unit_no: 1, marks: 1, count: 2 }], B: [{ unit_no: 1, marks: 4, count: 4 }] },
+        { q_no: 2, title: "Unit 2", A: [{ unit_no: 2, marks: 1, count: 2 }], B: [{ unit_no: 2, marks: 4, count: 4 }] },
+        { q_no: 3, title: "Unit 3", A: [{ unit_no: 3, marks: 1, count: 2 }], B: [{ unit_no: 3, marks: 4, count: 4 }] },
+        { q_no: 4, title: "Unit 4", A: [{ unit_no: 4, marks: 1, count: 2 }], B: [{ unit_no: 4, marks: 4, count: 4 }] },
+        { q_no: 5, title: "Unit 5", A: [{ unit_no: 5, marks: 1, count: 2 }], B: [{ unit_no: 5, marks: 4, count: 4 }] },
+        { q_no: 6, title: "Unit 6", A: [{ unit_no: 6, marks: 1, count: 2 }], B: [{ unit_no: 6, marks: 4, count: 4 }] },
       ],
     },
   },
@@ -86,18 +56,9 @@ const FALLBACK_BLUEPRINTS: FormatItem[] = [
     total_marks: 30,
     blueprint: {
       groups: [
-        {
-          q_no: 1,
-          title: "Unit 1 & Unit 2 Concepts",
-          A: [
-            { unit_no: 1, marks: 1, count: 3 },
-            { unit_no: 2, marks: 1, count: 3 },
-          ],
-          B: [
-            { unit_no: 1, marks: 4, count: 3 },
-            { unit_no: 2, marks: 4, count: 3 },
-          ],
-        },
+        { q_no: 1, title: "Unit 1", A: [{ unit_no: 1, marks: 1, count: 2 }], B: [{ unit_no: 1, marks: 4, count: 4 }] },
+        { q_no: 2, title: "Unit 2", A: [{ unit_no: 2, marks: 1, count: 2 }], B: [{ unit_no: 2, marks: 4, count: 4 }] },
+        { q_no: 3, title: "Unit 3", A: [{ unit_no: 3, marks: 1, count: 2 }], B: [{ unit_no: 3, marks: 4, count: 4 }] },
       ],
     },
   },
