@@ -125,10 +125,628 @@ function getFontFamily(settings: PaperSettings): string {
   return family === "sans" ? "Arial" : "Times New Roman";
 }
 
+const ROMAN = ["i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x", "xi", "xii"];
+
+const pad2 = (v: unknown) => {
+  if (v == null || v === "") return "";
+  const num = Number(v);
+  return Number.isFinite(num) ? String(num).padStart(2, "0") : String(v);
+};
+
+async function resolveImageForDocx(url?: string): Promise<ParsedImage | null> {
+  if (!url) return null;
+  if (url.startsWith("data:")) {
+    return parseBase64Image(url, 360, 140);
+  }
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    const isPng = blob.type.includes("png");
+    const isSvg = blob.type.includes("svg");
+    const ab = await blob.arrayBuffer();
+    const buf = Buffer.from(ab);
+    return {
+      type: isSvg ? "svg" : isPng ? "png" : "jpg",
+      data: buf,
+      fallback: { type: "png", data: FALLBACK_PNG },
+      transformation: { width: 360, height: 140 },
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function exportCollegePaperToDocx(
+  settings: PaperSettings,
+  questions: Question[]
+): Promise<Blob> {
+  const docFont = "Times New Roman";
+
+  const textRun = (text: string, opts: Record<string, unknown> = {}) =>
+    new TextRun({ font: docFont, ...opts, text });
+
+  // Page margins
+  const marginPreset = settings.margin || "normal";
+  let topMarginPt = 36;
+  let bottomMarginPt = 36;
+  let sideMarginPt = 36;
+  if (marginPreset === "narrow") {
+    topMarginPt = 24;
+    bottomMarginPt = 24;
+    sideMarginPt = 28;
+  } else if (marginPreset === "wide") {
+    topMarginPt = 54;
+    bottomMarginPt = 54;
+    sideMarginPt = 54;
+  }
+
+  const collegeName = settings.schoolName || "Autonomous Institute of Engineering & Technology";
+  const affiliation = settings.schoolSubtitle || "(An Autonomous Institute Affiliated to State University)";
+  const program = settings.program || settings.className || "B. Tech. Computer Science & Engineering";
+  const session = settings.academicYear || "Academic Session 2025-2026";
+  const variant = settings.variant === "backlog" ? "Backlog Examination" : "Regular Examination";
+  const courseName = settings.subject || "Subject Course";
+  const courseCode = settings.courseCode || "CS201BSC03";
+  const time = settings.timeAllowed || "3 Hours";
+  const maxMarks = settings.totalMarks || 60;
+
+  const defaultInstructions = [
+    "All questions are compulsory unless specified otherwise.",
+    "Assume suitable data wherever necessary and clearly state the assumptions made.",
+    "Diagrams/sketches should be given wherever necessary.",
+    "Use of programmable calculator is not permitted.",
+  ];
+  const instructions =
+    settings.instructions && settings.instructions.length > 0
+      ? settings.instructions.filter((i) => i.trim())
+      : defaultInstructions;
+
+  const children: (Paragraph | Table)[] = [];
+
+  // 1. College Header
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: pt(2), after: pt(1) },
+      children: [
+        textRun(collegeName.toUpperCase(), {
+          bold: true,
+          size: fs(14),
+        }),
+      ],
+    })
+  );
+
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: pt(1), after: pt(2) },
+      children: [
+        textRun(affiliation, {
+          italics: true,
+          size: fs(9.5),
+        }),
+      ],
+    })
+  );
+
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: pt(1), after: pt(1) },
+      children: [
+        textRun(`${program}  —  `, { bold: true, size: fs(10.5) }),
+        textRun(variant, { bold: true, underline: {}, size: fs(10.5) }),
+      ],
+    })
+  );
+
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: pt(1), after: pt(4) },
+      children: [
+        textRun(session, { size: fs(9.5) }),
+      ],
+    })
+  );
+
+  // Divider line
+  children.push(
+    new Paragraph({
+      border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: "000000" } },
+      spacing: { before: pt(1), after: pt(4) },
+      children: [new TextRun({ text: " " })],
+    })
+  );
+
+  // 2. Course & Exam Meta Table
+  const metaRows: TableRow[] = [
+    new TableRow({
+      children: [
+        new TableCell({
+          borders: BORDER_NONE,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 55, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              spacing: { before: pt(1), after: pt(1) },
+              children: [
+                textRun("Course Name: ", { bold: true, size: fs(9.5) }),
+                textRun(courseName, { size: fs(9.5) }),
+              ],
+            }),
+          ],
+        }),
+        new TableCell({
+          borders: BORDER_NONE,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 45, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.RIGHT,
+              spacing: { before: pt(1), after: pt(1) },
+              children: [
+                textRun("Course Code: ", { bold: true, size: fs(9.5) }),
+                textRun(courseCode, { size: fs(9.5) }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+    new TableRow({
+      children: [
+        new TableCell({
+          borders: BORDER_NONE,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 55, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              spacing: { before: pt(1), after: pt(1) },
+              children: [
+                textRun("Time Allowed: ", { bold: true, size: fs(9.5) }),
+                textRun(time, { size: fs(9.5) }),
+              ],
+            }),
+          ],
+        }),
+        new TableCell({
+          borders: BORDER_NONE,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 45, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.RIGHT,
+              spacing: { before: pt(1), after: pt(1) },
+              children: [
+                textRun("Maximum Marks: ", { bold: true, size: fs(9.5) }),
+                textRun(String(maxMarks), { size: fs(9.5) }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    }),
+  ];
+
+  children.push(
+    new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: BORDER_NONE,
+      rows: metaRows,
+    })
+  );
+
+  // Divider line
+  children.push(
+    new Paragraph({
+      border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: "000000" } },
+      spacing: { before: pt(2), after: pt(4) },
+      children: [new TextRun({ text: " " })],
+    })
+  );
+
+  // 3. Instructions to Candidates
+  children.push(
+    new Paragraph({
+      spacing: { before: pt(2), after: pt(2) },
+      children: [
+        textRun("Instructions to Candidates:", { bold: true, size: fs(9.5) }),
+      ],
+    })
+  );
+
+  instructions.forEach((ins, idx) => {
+    children.push(
+      new Paragraph({
+        indent: { left: pt(12) },
+        spacing: { before: pt(0.5), after: pt(0.5) },
+        children: [
+          textRun(`${idx + 1}. `, { bold: true, size: fs(8.5) }),
+          textRun(ins, { size: fs(8.5) }),
+        ],
+      })
+    );
+  });
+
+  children.push(new Paragraph({ spacing: { after: pt(4) } }));
+
+  // 4. College Examination Table
+  const tableRows: TableRow[] = [];
+
+  const BORDER_HEADER = {
+    top: { style: BorderStyle.SINGLE, size: 12, color: "000000" },
+    bottom: { style: BorderStyle.SINGLE, size: 12, color: "000000" },
+    left: { style: BorderStyle.NONE, size: 0, color: "auto" },
+    right: { style: BorderStyle.NONE, size: 0, color: "auto" },
+  };
+
+  // Header Row
+  tableRows.push(
+    new TableRow({
+      tableHeader: true,
+      children: [
+        new TableCell({
+          borders: BORDER_HEADER,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 9, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.LEFT,
+              children: [textRun("Q. No", { bold: true, size: fs(9) })],
+            }),
+          ],
+        }),
+        new TableCell({
+          borders: BORDER_HEADER,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 67, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.LEFT,
+              children: [textRun("Question Statement & Diagram", { bold: true, size: fs(9) })],
+            }),
+          ],
+        }),
+        new TableCell({
+          borders: BORDER_HEADER,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 8, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [textRun("Marks", { bold: true, size: fs(9) })],
+            }),
+          ],
+        }),
+        new TableCell({
+          borders: BORDER_HEADER,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 8, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [textRun("BTL", { bold: true, size: fs(9) })],
+            }),
+          ],
+        }),
+        new TableCell({
+          borders: BORDER_HEADER,
+          margins: CELL_MARGIN_COMPACT,
+          width: { size: 8, type: WidthType.PERCENTAGE },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [textRun("CO", { bold: true, size: fs(9) })],
+            }),
+          ],
+        }),
+      ],
+    })
+  );
+
+  // Question Rows
+  for (let qIdx = 0; qIdx < questions.length; qIdx++) {
+    const q = questions[qIdx];
+    const hasSubItems = q.items && q.items.length > 0;
+    const isGroup = q.part || (q.title && q.title.toLowerCase().includes("solve"));
+
+    if (isGroup) {
+      tableRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              borders: BORDER_NONE,
+              margins: CELL_MARGIN_COMPACT,
+              width: { size: 9, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  spacing: { before: pt(5), after: pt(1) },
+                  children: [
+                    textRun(`Q${q.q_no ?? qIdx + 1} ${q.part ? `${q.part})` : ""}`, {
+                      bold: true,
+                      size: fs(9),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            new TableCell({
+              borders: BORDER_NONE,
+              margins: CELL_MARGIN_COMPACT,
+              width: { size: 91, type: WidthType.PERCENTAGE },
+              columnSpan: 4,
+              children: [
+                new Paragraph({
+                  spacing: { before: pt(5), after: pt(1) },
+                  children: [
+                    textRun(q.title, {
+                      bold: true,
+                      size: fs(9),
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        })
+      );
+    }
+
+    if (hasSubItems) {
+      for (let sIdx = 0; sIdx < q.items.length; sIdx++) {
+        const sub = q.items[sIdx];
+        const itemBt = (sub as any).bt_level ?? q.bt_level;
+        const itemCo = (sub as any).co_no ?? q.co_no;
+        const itemMarks = sub.marks ?? q.marks;
+        const imgUrl = (sub as any).image_url || q.image_url;
+
+        const statementParas: Paragraph[] = [
+          new Paragraph({
+            spacing: { before: pt(1), after: pt(1) },
+            children: [
+              textRun(sub.content || q.title, { size: fs(9) }),
+            ],
+          }),
+        ];
+
+        if (imgUrl) {
+          const parsed = await resolveImageForDocx(imgUrl);
+          if (parsed) {
+            statementParas.push(
+              new Paragraph({
+                spacing: { before: pt(2), after: pt(2) },
+                children: [
+                  new ImageRun({
+                    type: parsed.type,
+                    data: parsed.data,
+                    transformation: parsed.transformation,
+                    fallback: parsed.fallback,
+                  } as any),
+                ],
+              })
+            );
+          }
+        }
+
+        tableRows.push(
+          new TableRow({
+            children: [
+              new TableCell({
+                borders: BORDER_NONE,
+                margins: CELL_MARGIN_COMPACT,
+                width: { size: 9, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: pt(1), after: pt(1) },
+                    children: [
+                      textRun(isGroup ? `${ROMAN[sIdx] || sIdx + 1})` : `Q${qIdx + 1}`, {
+                        size: fs(9),
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableCell({
+                borders: BORDER_NONE,
+                margins: CELL_MARGIN_COMPACT,
+                width: { size: 67, type: WidthType.PERCENTAGE },
+                children: statementParas,
+              }),
+              new TableCell({
+                borders: BORDER_NONE,
+                margins: CELL_MARGIN_COMPACT,
+                width: { size: 8, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: pt(1), after: pt(1) },
+                    children: [textRun(pad2(itemMarks), { size: fs(9) })],
+                  }),
+                ],
+              }),
+              new TableCell({
+                borders: BORDER_NONE,
+                margins: CELL_MARGIN_COMPACT,
+                width: { size: 8, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: pt(1), after: pt(1) },
+                    children: [textRun(pad2(itemBt), { size: fs(9) })],
+                  }),
+                ],
+              }),
+              new TableCell({
+                borders: BORDER_NONE,
+                margins: CELL_MARGIN_COMPACT,
+                width: { size: 8, type: WidthType.PERCENTAGE },
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    spacing: { before: pt(1), after: pt(1) },
+                    children: [textRun(pad2(itemCo), { size: fs(9) })],
+                  }),
+                ],
+              }),
+            ],
+          })
+        );
+      }
+    } else {
+      // Flat question
+      const statementParas: Paragraph[] = [
+        new Paragraph({
+          spacing: { before: pt(1), after: pt(1) },
+          children: [textRun(q.title, { size: fs(9) })],
+        }),
+      ];
+      if (q.image_url) {
+        const parsed = await resolveImageForDocx(q.image_url);
+        if (parsed) {
+          statementParas.push(
+            new Paragraph({
+              spacing: { before: pt(2), after: pt(2) },
+              children: [
+                new ImageRun({
+                  type: parsed.type,
+                  data: parsed.data,
+                  transformation: parsed.transformation,
+                  fallback: parsed.fallback,
+                } as any),
+              ],
+            })
+          );
+        }
+      }
+
+      tableRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              borders: BORDER_NONE,
+              margins: CELL_MARGIN_COMPACT,
+              width: { size: 9, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.LEFT,
+                  spacing: { before: pt(1), after: pt(1) },
+                  children: [
+                    textRun(`Q${q.q_no ?? qIdx + 1}`, { bold: true, size: fs(9) }),
+                  ],
+                }),
+              ],
+            }),
+            new TableCell({
+              borders: BORDER_NONE,
+              margins: CELL_MARGIN_COMPACT,
+              width: { size: 67, type: WidthType.PERCENTAGE },
+              children: statementParas,
+            }),
+            new TableCell({
+              borders: BORDER_NONE,
+              margins: CELL_MARGIN_COMPACT,
+              width: { size: 8, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: pt(1), after: pt(1) },
+                  children: [textRun(pad2(q.marks), { size: fs(9) })],
+                }),
+              ],
+            }),
+            new TableCell({
+              borders: BORDER_NONE,
+              margins: CELL_MARGIN_COMPACT,
+              width: { size: 8, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: pt(1), after: pt(1) },
+                  children: [textRun(pad2(q.bt_level), { size: fs(9) })],
+                }),
+              ],
+            }),
+            new TableCell({
+              borders: BORDER_NONE,
+              margins: CELL_MARGIN_COMPACT,
+              width: { size: 8, type: WidthType.PERCENTAGE },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  spacing: { before: pt(1), after: pt(1) },
+                  children: [textRun(pad2(q.co_no), { size: fs(9) })],
+                }),
+              ],
+            }),
+          ],
+        })
+      );
+    }
+  }
+
+  children.push(
+    new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      borders: BORDER_NONE,
+      rows: tableRows,
+    })
+  );
+
+  // Signoff
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      border: { top: { style: BorderStyle.SINGLE, size: 6, color: "000000" } },
+      spacing: { before: pt(14), after: pt(6) },
+      children: [
+        textRun("*** END OF QUESTION PAPER ***", {
+          bold: true,
+          size: fs(9),
+        }),
+      ],
+    })
+  );
+
+  const doc = new Document({
+    sections: [
+      {
+        properties: {
+          page: {
+            margin: {
+              top: pt(topMarginPt),
+              bottom: pt(bottomMarginPt),
+              left: pt(sideMarginPt),
+              right: pt(sideMarginPt),
+            },
+          },
+        },
+        children,
+      },
+    ],
+  });
+
+  return await Packer.toBlob(doc);
+}
+
 export async function exportPaperToDocx(
   settings: PaperSettings,
   questions: Question[]
 ): Promise<Blob> {
+  const isCollegeTable =
+    settings.layoutMode === "college_table" ||
+    questions.some(
+      (q) =>
+        q.part ||
+        (q.items && q.items.some((it: any) => it.bt_level != null || it.co_no != null))
+    );
+
+  if (isCollegeTable) {
+    return await exportCollegePaperToDocx(settings, questions);
+  }
   const language = settings.language || "english";
   const copy = copyFor(language);
   const baseFontSize = settings.fontSize || 12;

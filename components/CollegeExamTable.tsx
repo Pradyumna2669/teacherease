@@ -86,14 +86,24 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
       </div>
 
       {/* Examination Table — NO horizontal lines between rows, only header border */}
-      <table className="w-full text-xs" style={{ borderCollapse: "collapse" }}>
+      <table className="w-full text-xs font-serif" style={{ borderCollapse: "collapse" }}>
         <thead>
-          <tr style={{ borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
-            <th className="py-1 px-2 text-left font-bold" style={{ width: "9%" }}>Q. No</th>
-            <th className="py-1 px-2 text-left font-bold" style={{ width: "67%" }}>Question Statement &amp; Diagram</th>
-            <th className="py-1 px-2 text-center font-bold" style={{ width: "8%" }}>Marks</th>
-            <th className="py-1 px-2 text-center font-bold" style={{ width: "8%" }}>BTL</th>
-            <th className="py-1 px-2 text-center font-bold" style={{ width: "8%" }}>CO</th>
+          <tr>
+            <th className="py-1.5 px-2 text-left font-bold text-black" style={{ width: "9%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+              Q. No
+            </th>
+            <th className="py-1.5 px-2 text-left font-bold text-black" style={{ width: "67%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+              Question Statement &amp; Diagram
+            </th>
+            <th className="py-1.5 px-2 text-center font-bold text-black" style={{ width: "8%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+              Marks
+            </th>
+            <th className="py-1.5 px-2 text-center font-bold text-black" style={{ width: "8%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+              BTL
+            </th>
+            <th className="py-1.5 px-2 text-center font-bold text-black" style={{ width: "8%", borderTop: "2px solid #000", borderBottom: "2px solid #000" }}>
+              CO
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -103,19 +113,19 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
 
             return (
               <React.Fragment key={q.id || qIdx}>
-                {/* Group Heading Row (Q1 A), Q1 B), etc.) — no border */}
+                {/* Group Heading Row (Q1 A), Q1 B), etc.) — no horizontal border */}
                 {isGroup ? (
-                  <tr>
-                    <td className="pt-3 pb-0.5 px-2 align-top whitespace-nowrap font-bold">
+                  <tr className="pp-row">
+                    <td className="pt-3 pb-1 px-2 align-top whitespace-nowrap font-bold text-left text-black">
                       Q{q.q_no ?? qIdx + 1} {q.part ? `${q.part})` : ""}
                     </td>
-                    <td className="pt-3 pb-0.5 px-2 align-top font-bold" colSpan={4}>
+                    <td className="pt-3 pb-1 px-2 align-top font-bold text-black" colSpan={4}>
                       {q.title}
                     </td>
                   </tr>
                 ) : null}
 
-                {/* Question sub-items — NO horizontal lines */}
+                {/* Question sub-items — NO horizontal lines, Roman numerals under Q. No */}
                 {hasSubItems ? (
                   q.items.map((sub, sIdx) => {
                     const itemBt = (sub as any).bt_level ?? q.bt_level;
@@ -124,46 +134,41 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
                     const imgUrl = (sub as any).image_url || q.image_url;
 
                     return (
-                      <tr key={sub.id || sIdx}>
-                        <td className="py-0.5 px-2 align-top text-center text-gray-500 font-mono">
-                          {isGroup ? "" : `Q${qIdx + 1}`}
+                      <tr key={sub.id || sIdx} className="pp-row">
+                        <td className="py-0.5 px-2 align-top text-center font-serif text-black">
+                          {isGroup ? `${ROMAN[sIdx] || sIdx + 1})` : `Q${qIdx + 1}`}
                         </td>
-                        <td className="py-0.5 px-2 align-top" style={{ paddingLeft: isGroup ? "24px" : "8px" }}>
-                          <div className="flex items-start gap-1.5">
-                            {isGroup && (
-                              <span className="font-semibold">{ROMAN[sIdx] || sIdx + 1})</span>
-                            )}
-                            <div className="flex-1">
-                              <span>{sub.content || q.title}</span>
-                              {imgUrl && (
-                                <div className="mt-2 mb-1">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                                  <img
-                                    src={imgUrl}
-                                    alt="Question Diagram"
-                                    className="max-w-[360px] h-auto border border-gray-300 rounded p-1 bg-white"
-                                  />
-                                </div>
-                              )}
+                        <td className="py-0.5 px-2 align-top font-serif text-black leading-relaxed">
+                          <div>{sub.content || q.title}</div>
+                          {imgUrl && (
+                            <div className="mt-2 mb-1">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={imgUrl}
+                                alt="Question Diagram"
+                                className="max-w-[360px] h-auto border border-gray-300 rounded p-1 bg-white"
+                              />
                             </div>
-                          </div>
+                          )}
                         </td>
-                        <td className="py-0.5 px-2 align-top text-center font-mono font-medium">
+                        <td className="py-0.5 px-2 align-top text-center font-serif font-medium text-black">
                           {pad2(itemMarks)}
                         </td>
-                        <td className="py-0.5 px-2 align-top text-center font-mono">
+                        <td className="py-0.5 px-2 align-top text-center font-serif text-black">
                           {pad2(itemBt)}
                         </td>
-                        <td className="py-0.5 px-2 align-top text-center font-mono">
+                        <td className="py-0.5 px-2 align-top text-center font-serif text-black">
                           {pad2(itemCo)}
                         </td>
                       </tr>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td className="py-0.5 px-2 align-top font-bold">Q{q.q_no ?? qIdx + 1}</td>
-                    <td className="py-0.5 px-2 align-top">
+                  <tr className="pp-row">
+                    <td className="py-0.5 px-2 align-top font-bold text-left text-black">
+                      Q{q.q_no ?? qIdx + 1}
+                    </td>
+                    <td className="py-0.5 px-2 align-top font-serif text-black leading-relaxed">
                       <div>{q.title}</div>
                       {q.image_url && (
                         <div className="mt-2 mb-1">
@@ -176,9 +181,9 @@ export default function CollegeExamTable({ settings, questions, watermark = fals
                         </div>
                       )}
                     </td>
-                    <td className="py-0.5 px-2 align-top text-center font-mono font-medium">{pad2(q.marks)}</td>
-                    <td className="py-0.5 px-2 align-top text-center font-mono">{pad2(q.bt_level)}</td>
-                    <td className="py-0.5 px-2 align-top text-center font-mono">{pad2(q.co_no)}</td>
+                    <td className="py-0.5 px-2 align-top text-center font-serif font-medium text-black">{pad2(q.marks)}</td>
+                    <td className="py-0.5 px-2 align-top text-center font-serif text-black">{pad2(q.bt_level)}</td>
+                    <td className="py-0.5 px-2 align-top text-center font-serif text-black">{pad2(q.co_no)}</td>
                   </tr>
                 )}
               </React.Fragment>
