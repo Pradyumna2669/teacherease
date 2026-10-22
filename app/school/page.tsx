@@ -24,6 +24,7 @@ import {
   BookOpen,
   History,
   GraduationCap,
+  X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ConfirmModal } from "@/components/Modal";
@@ -79,8 +80,20 @@ interface AllotmentItem {
   user_id: string;
   teacher_email: string;
   subject_name: string;
-  subject_code: string;
+  subject_code?: string;
+  department?: string;
+  semester?: number | null;
+  class_name?: string;
   created_at: string;
+}
+
+interface SubjectItem {
+  id: string;
+  name: string;
+  code?: string | null;
+  department?: string | null;
+  semester?: number | null;
+  class_name?: string | null;
 }
 
 interface AuditLogItem {
@@ -135,12 +148,21 @@ export default function SchoolPage() {
   const [reviewingId, setReviewingId] = useState<string | null>(null);
   const [synthesisTemplate, setSynthesisTemplate] = useState<SchoolTemplate | null>(null);
 
-  // Allotments
+  // Allotments & Subjects
   const [allotments, setAllotments] = useState<AllotmentItem[]>([]);
-  const [subjectsList, setSubjectsList] = useState<{ id: string; name: string; code?: string }[]>([]);
+  const [subjectsList, setSubjectsList] = useState<SubjectItem[]>([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [selectedTeacherId, setSelectedTeacherId] = useState("");
   const [loadingAllotments, setLoadingAllotments] = useState(false);
+
+  // Create Subject Form
+  const [showCreateSubjectModal, setShowCreateSubjectModal] = useState(false);
+  const [newSubName, setNewSubName] = useState("");
+  const [newSubCode, setNewSubCode] = useState("");
+  const [newSubDepartment, setNewSubDepartment] = useState("");
+  const [newSubSemester, setNewSubSemester] = useState("");
+  const [newSubClassName, setNewSubClassName] = useState("");
+  const [creatingSubject, setCreatingSubject] = useState(false);
 
   // Audit Logs
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
@@ -297,6 +319,50 @@ export default function SchoolPage() {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handleCreateSubject(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newSubName.trim()) {
+      setError("Subject name is required.");
+      return;
+    }
+    setCreatingSubject(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/school/subjects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newSubName.trim(),
+          code: newSubCode.trim() || undefined,
+          department: newSubDepartment.trim() || undefined,
+          semester: newSubSemester ? parseInt(newSubSemester, 10) : undefined,
+          class_name: newSubClassName.trim() || undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not create subject.");
+
+      setSuccess(`Course "${data.subject.name}" created and automatically allotted to you (Admin).`);
+      setTimeout(() => setSuccess(null), 5000);
+
+      setNewSubName("");
+      setNewSubCode("");
+      setNewSubDepartment("");
+      setNewSubSemester("");
+      setNewSubClassName("");
+      setShowCreateSubjectModal(false);
+
+      await loadAllotments();
+      if (data.subject?.id) {
+        setSelectedSubjectId(data.subject.id);
+      }
+    } catch (err: any) {
+      setError(err.message || "Could not create subject.");
+    } finally {
+      setCreatingSubject(false);
     }
   }
 
@@ -668,60 +734,215 @@ export default function SchoolPage() {
             {activeTab === "allotments" && (
               <div className="space-y-6">
                 <div className="bg-white rounded-2xl border border-rule p-6">
-                  <h3 className="font-bold text-ink text-base mb-1">Course &amp; Subject Allotment</h3>
-                  <p className="text-xs text-graphite mb-4 leading-relaxed">
-                    Admin can allot the same course to multiple teachers or assign individual faculty to specific courses. Teachers only see and author question banks for their allotted courses.
-                  </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="font-bold text-ink text-base">Course &amp; Subject Allotment</h3>
+                      <p className="text-xs text-graphite mt-1 leading-relaxed max-w-2xl">
+                        Create subjects for your institution. Newly created subjects are <strong>by default active &amp; allotted to the admin</strong> who created them, and can subsequently be allotted to any faculty member.
+                      </p>
+                    </div>
+
+                    {ctx.isAdmin && (
+                      <button
+                        type="button"
+                        onClick={() => setShowCreateSubjectModal(true)}
+                        className="inline-flex items-center gap-1.5 bg-pen text-white px-4 py-2 rounded-xl font-semibold text-xs hover:bg-ink transition shadow-sm shrink-0"
+                      >
+                        <Plus size={15} /> Create New Subject
+                      </button>
+                    )}
+                  </div>
 
                   {ctx.isAdmin && (
-                    <form onSubmit={handleGrantAllotment} className="flex flex-col sm:flex-row gap-3 items-end pt-2 border-t border-rule">
-                      <div className="flex-1 w-full">
-                        <label className="block text-xs font-semibold text-ink mb-1">Select Course / Subject</label>
-                        <select
-                          value={selectedSubjectId}
-                          onChange={(e) => setSelectedSubjectId(e.target.value)}
-                          className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
-                        >
-                          {subjectsList.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.code ? `${s.code} · ` : ""}{s.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                    <div className="pt-4 border-t border-rule">
+                      <h4 className="text-xs font-bold text-ink uppercase tracking-wider mb-3">Allot Course to Faculty Member</h4>
+                      <form onSubmit={handleGrantAllotment} className="flex flex-col sm:flex-row gap-3 items-end">
+                        <div className="flex-1 w-full">
+                          <label className="block text-xs font-semibold text-ink mb-1">Select Course / Subject</label>
+                          <select
+                            value={selectedSubjectId}
+                            onChange={(e) => setSelectedSubjectId(e.target.value)}
+                            className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                          >
+                            {subjectsList.length === 0 ? (
+                              <option value="">No subjects found. Create one first!</option>
+                            ) : (
+                              subjectsList.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.code ? `[${s.code}] ` : ""}{s.name}{s.semester ? ` (Sem ${s.semester})` : ""}{s.department ? ` - ${s.department}` : ""}
+                                </option>
+                              ))
+                            )}
+                          </select>
+                        </div>
 
-                      <div className="flex-1 w-full">
-                        <label className="block text-xs font-semibold text-ink mb-1">Select Faculty Member</label>
-                        <select
-                          value={selectedTeacherId}
-                          onChange={(e) => setSelectedTeacherId(e.target.value)}
-                          className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
-                        >
-                          <option value="">Choose teacher...</option>
-                          {(ctx.members || []).map((m) => (
-                            <option key={m.user_id} value={m.user_id}>
-                              {m.email} ({m.role})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                        <div className="flex-1 w-full">
+                          <label className="block text-xs font-semibold text-ink mb-1">Select Faculty Member</label>
+                          <select
+                            value={selectedTeacherId}
+                            onChange={(e) => setSelectedTeacherId(e.target.value)}
+                            className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                          >
+                            <option value="">Choose teacher...</option>
+                            {(ctx.members || []).map((m) => (
+                              <option key={m.user_id} value={m.user_id}>
+                                {m.email} ({m.role})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                      <button
-                        type="submit"
-                        disabled={busy || !selectedSubjectId || !selectedTeacherId}
-                        className="bg-pen text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-ink transition-colors disabled:opacity-50 shrink-0"
-                      >
-                        Allot Subject
-                      </button>
-                    </form>
+                        <button
+                          type="submit"
+                          disabled={busy || !selectedSubjectId || !selectedTeacherId}
+                          className="bg-pen text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-ink transition-colors disabled:opacity-50 shrink-0 flex items-center gap-1.5"
+                        >
+                          {busy && <Loader2 size={14} className="animate-spin" />}
+                          Allot Subject
+                        </button>
+                      </form>
+                      {(ctx.members || []).length <= 1 && (
+                        <p className="text-[11px] text-graphite mt-2">
+                          💡 You currently have 1 member in the roster (Admin). To allot courses to additional teachers, invite them from the <strong>Pool &amp; Teachers</strong> tab.
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
+
+                {/* Create Subject Modal */}
+                {showCreateSubjectModal && (
+                  <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl shadow-xl border border-rule max-w-lg w-full p-6 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between pb-3 border-b border-rule mb-4">
+                        <div>
+                          <h4 className="font-bold text-base text-ink">Create New Subject / Course</h4>
+                          <p className="text-xs text-graphite mt-0.5">
+                            Added to institutional curriculum and <strong>by default active &amp; allotted to you (Admin)</strong>.
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowCreateSubjectModal(false)}
+                          className="text-graphite hover:text-ink p-1 rounded-lg hover:bg-paper"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleCreateSubject} className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-ink mb-1">
+                            Course / Subject Name <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={newSubName}
+                            onChange={(e) => setNewSubName(e.target.value)}
+                            placeholder="e.g. Artificial Intelligence, Data Structures, Operating Systems"
+                            className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                            autoFocus
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-ink mb-1">
+                              Course Code <span className="text-graphite font-normal">(Optional)</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={newSubCode}
+                              onChange={(e) => setNewSubCode(e.target.value)}
+                              placeholder="e.g. CS401PCC01"
+                              className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none font-mono"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-semibold text-ink mb-1">
+                              Semester <span className="text-graphite font-normal">(Optional)</span>
+                            </label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="12"
+                              value={newSubSemester}
+                              onChange={(e) => setNewSubSemester(e.target.value)}
+                              placeholder="e.g. 4"
+                              className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-ink mb-1">
+                              Department <span className="text-graphite font-normal">(Optional)</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={newSubDepartment}
+                              onChange={(e) => setNewSubDepartment(e.target.value)}
+                              placeholder="e.g. Computer Science &amp; Engg"
+                              className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-semibold text-ink mb-1">
+                              Class / Year <span className="text-graphite font-normal">(Optional)</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={newSubClassName}
+                              onChange={(e) => setNewSubClassName(e.target.value)}
+                              placeholder="e.g. Second Year B.Tech"
+                              className="w-full border border-rule rounded-lg px-3 py-2 text-sm focus:border-pen outline-none"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3 text-xs text-emerald-900 flex items-start gap-2">
+                          <CheckCircle2 size={16} className="text-emerald-700 shrink-0 mt-0.5" />
+                          <span>
+                            Once created, this subject is <strong>by default active and allotted to the admin</strong>, and can subsequently be allotted to any teacher in your roster.
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowCreateSubjectModal(false)}
+                            className="px-4 py-2 border border-rule rounded-lg text-xs font-medium text-graphite hover:bg-paper"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={creatingSubject || !newSubName.trim()}
+                            className="bg-pen text-white px-5 py-2 rounded-lg font-semibold text-xs hover:bg-ink transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                          >
+                            {creatingSubject && <Loader2 size={13} className="animate-spin" />}
+                            Create &amp; Allot to Admin
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
 
                 {/* Allotment Ledger */}
                 <div className="bg-white rounded-2xl border border-rule overflow-hidden">
                   <div className="px-6 py-4 border-b border-rule bg-paper/40 flex items-center justify-between">
-                    <h4 className="font-bold text-sm text-ink">Active Course Allotments</h4>
-                    <span className="font-mono text-xs text-graphite">{allotments.length} total assignments</span>
+                    <div>
+                      <h4 className="font-bold text-sm text-ink">Active Course Allotments</h4>
+                      <p className="text-[11px] text-graphite">Courses active and allotted to faculty members</p>
+                    </div>
+                    <span className="font-mono text-xs text-graphite font-semibold bg-white border border-rule px-2.5 py-1 rounded-full">
+                      {allotments.length} total assignments
+                    </span>
                   </div>
 
                   {loadingAllotments ? (
@@ -730,26 +951,49 @@ export default function SchoolPage() {
                     </div>
                   ) : allotments.length === 0 ? (
                     <div className="text-center py-12 text-graphite text-xs">
-                      No course allotments configured yet.
+                      No course allotments configured yet. Click &quot;Create New Subject&quot; above to add your first subject.
                     </div>
                   ) : (
                     <div className="divide-y divide-rule">
                       {allotments.map((alt) => (
                         <div key={alt.id} className="px-6 py-3.5 flex items-center justify-between gap-4 hover:bg-paper/30 transition-colors">
-                          <div>
-                            <p className="text-sm font-semibold text-ink">
-                              {alt.subject_code ? <span className="font-mono text-xs font-bold text-pen mr-2">[{alt.subject_code}]</span> : null}
-                              {alt.subject_name}
-                            </p>
-                            <p className="text-xs text-graphite mt-0.5">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {alt.subject_code ? (
+                                <span className="font-mono text-xs font-bold text-pen bg-pen/10 px-2 py-0.5 rounded">
+                                  {alt.subject_code}
+                                </span>
+                              ) : null}
+                              <span className="text-sm font-bold text-ink">
+                                {alt.subject_name}
+                              </span>
+                              {alt.semester && (
+                                <span className="text-[11px] bg-paper text-graphite px-1.5 py-0.5 rounded font-medium">
+                                  Sem {alt.semester}
+                                </span>
+                              )}
+                              {alt.department && (
+                                <span className="text-[11px] bg-paper text-graphite px-1.5 py-0.5 rounded font-medium">
+                                  {alt.department}
+                                </span>
+                              )}
+                              <span className="inline-flex items-center gap-1 text-[11px] bg-emerald-50 text-emerald-700 font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                Active
+                              </span>
+                            </div>
+                            <p className="text-xs text-graphite">
                               Allotted to: <b className="text-ink">{alt.teacher_email}</b>
+                              {alt.user_id === ctx.school?.id || (ctx.members || []).find((m) => m.user_id === alt.user_id)?.role === "admin" ? (
+                                <span className="ml-1.5 text-[10px] font-bold text-pen bg-pen/5 px-1.5 py-0.5 rounded">ADMIN</span>
+                              ) : null}
                             </p>
                           </div>
 
                           {ctx.isAdmin && (
                             <button
                               onClick={() => handleRevokeAllotment(alt.id)}
-                              className="text-xs text-red-600 hover:text-red-800 hover:underline px-2 py-1"
+                              className="text-xs text-red-600 hover:text-red-800 hover:bg-red-50 border border-transparent hover:border-red-200 rounded-lg px-2.5 py-1.5 transition-colors font-medium shrink-0"
                               title="Revoke allotment"
                             >
                               Revoke

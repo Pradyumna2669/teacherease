@@ -192,7 +192,12 @@ export default function BankPage() {
 
   async function addSubject(values: Record<string, string>) {
     try {
-      const s = await createSubject(values.name, values.class_name);
+      const s = await createSubject(values.name, {
+        className: values.class_name,
+        code: values.code,
+        department: values.department,
+        semester: values.semester ? parseInt(values.semester, 10) : null,
+      });
       setSubjects((p) => [...p, s].sort((a, b) => a.name.localeCompare(b.name)));
       setActiveSubject(s.id);
       setActiveUnit(null);
@@ -1107,10 +1112,13 @@ export default function BankPage() {
       {dialog?.kind === "subject" && (
         <PromptModal
           title="New subject"
-          subtitle="Group your units under a subject, e.g. Maths for Class 4."
+          subtitle="Add a subject / course with syllabus and blueprint details."
           fields={[
-            { name: "name", label: "Subject name", placeholder: "Maths", required: true },
-            { name: "class_name", label: "Class", placeholder: "4" },
+            { name: "name", label: "Subject / Course Name", placeholder: "e.g. Data Structures or Mathematics", required: true },
+            { name: "code", label: "Course Code (Optional)", placeholder: "e.g. CS201BSC03" },
+            { name: "department", label: "Department (Optional)", placeholder: "e.g. Computer Science & Engineering" },
+            { name: "semester", label: "Semester (Optional)", placeholder: "e.g. 3" },
+            { name: "class_name", label: "Class / Year (Optional)", placeholder: "e.g. 4 or B.Tech Second Year" },
           ]}
           submitLabel="Add subject"
           onCancel={() => setDialog(null)}

@@ -25,7 +25,7 @@ export async function GET() {
   // Fetch subjects for this school
   const { data: subjects } = await admin
     .from("bank_subjects")
-    .select("id, name, code, semester, department")
+    .select("id, name, code, semester, department, class_name, created_at")
     .eq("school_id", membership.school_id)
     .order("name");
 
@@ -33,7 +33,8 @@ export async function GET() {
   const { data: allotments } = await admin
     .from("college_course_allotments")
     .select("id, subject_id, user_id, created_at")
-    .eq("school_id", membership.school_id);
+    .eq("school_id", membership.school_id)
+    .order("created_at", { ascending: false });
 
   // Fetch member emails
   const { data: members } = await admin.rpc("school_members_detail", {
@@ -45,15 +46,21 @@ export async function GET() {
     memberMap[m.user_id] = m.email;
   });
 
-  const enrichedAllotments = (allotments || []).map((a: any) => ({
-    id: a.id,
-    subject_id: a.subject_id,
-    user_id: a.user_id,
-    teacher_email: memberMap[a.user_id] || a.user_id,
-    subject_name: (subjects || []).find((s: any) => s.id === a.subject_id)?.name || "Subject",
-    subject_code: (subjects || []).find((s: any) => s.id === a.subject_id)?.code || "",
-    created_at: a.created_at,
-  }));
+  const enrichedAllotments = (allotments || []).map((a: any) => {
+    const sub = (subjects || []).find((s: any) => s.id === a.subject_id);
+    return {
+      id: a.id,
+      subject_id: a.subject_id,
+      user_id: a.user_id,
+      teacher_email: memberMap[a.user_id] || a.user_id,
+      subject_name: sub?.name || "Subject",
+      subject_code: sub?.code || "",
+      department: sub?.department || "",
+      semester: sub?.semester ?? null,
+      class_name: sub?.class_name || "",
+      created_at: a.created_at,
+    };
+  });
 
   return NextResponse.json({
     allotments: enrichedAllotments,
@@ -103,6 +110,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  // Fetch subject name & teacher email for clear audit trail
+  const { data: subObj } = await admin
+    .from("bank_subjects")
+    .select("name, code")
+    .eq("id", subject_id)
+    .maybeSingle();
+
+  const { data: teacherProfile } = await admin.auth.admin.getUserById(user_id);
+  const teacherEmail = teacherProfile?.user?.email || user_id;
+  const subLabel = subObj ? (subObj.code ? `${subObj.code} · ${subObj.name}` : subObj.name) : "Course";
+
   // Record audit log
   await admin.from("audit_logs").insert({
     school_id: membership.school_id,
@@ -112,8 +130,8 @@ export async function POST(req: NextRequest) {
     action: "allotment.grant",
     entity: "allotment",
     entity_id: data.id,
-    summary: `Allotted subject to faculty`,
-    details: { subject_id, user_id },
+    summary: `Allotted course "${subLabel}" to faculty (${teacherEmail})`,
+    details: { subject_id, user_id, teacher_email: teacherEmail, subject_label: subLabel },
   });
 
   return NextResponse.json({ ok: true, allotment: data });

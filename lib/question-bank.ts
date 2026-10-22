@@ -86,31 +86,88 @@ export async function listSubjects(): Promise<BankSubject[]> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("bank_subjects")
-    .select("id, name, class_name, code, semester, department, created_at")
+    .select("id, name, class_name, code, semester, department, school_id, created_at")
     .order("name");
   if (error) throw error;
   return (data ?? []) as BankSubject[];
 }
 
+export interface CreateSubjectOptions {
+  className?: string | null;
+  code?: string | null;
+  department?: string | null;
+  semester?: number | null;
+}
+
 export async function createSubject(
   name: string,
-  className?: string | null
+  classNameOrOptions?: string | null | CreateSubjectOptions,
+  legacyOptions?: CreateSubjectOptions
 ): Promise<BankSubject> {
   const { supabase, user } = await requireUser();
+
+  let className: string | null = null;
+  let code: string | null = null;
+  let department: string | null = null;
+  let semester: number | null = null;
+
+  if (typeof classNameOrOptions === "object" && classNameOrOptions !== null) {
+    className = classNameOrOptions.className ?? null;
+    code = classNameOrOptions.code ?? null;
+    department = classNameOrOptions.department ?? null;
+    semester = classNameOrOptions.semester ?? null;
+  } else {
+    className = classNameOrOptions?.trim() || null;
+    if (legacyOptions) {
+      code = legacyOptions.code ?? null;
+      department = legacyOptions.department ?? null;
+      semester = legacyOptions.semester ?? null;
+    }
+  }
+
+  // Check if current user is affiliated with a school
+  const { data: membership } = await supabase
+    .from("school_members")
+    .select("school_id, role")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const schoolId = membership?.school_id || null;
+
   const { data, error } = await supabase
     .from("bank_subjects")
     .insert({
       user_id: user.id,
       name: name.trim(),
       class_name: className?.trim() || null,
+      code: code?.trim() || null,
+      department: department?.trim() || null,
+      semester: semester ? Number(semester) : null,
+      school_id: schoolId,
     })
-    .select("id, name, class_name, created_at")
+    .select("id, name, class_name, code, department, semester, school_id, created_at")
     .single();
+
   // 23505 = the unique index — the teacher already has this subject.
   if (error) {
     if (error.code === "23505") throw new Error("You already have that subject.");
     throw error;
   }
+
+  // If user belongs to a school, auto-allot this newly created subject to them so it's active immediately
+  if (schoolId && data?.id) {
+    try {
+      await supabase.from("college_course_allotments").insert({
+        school_id: schoolId,
+        subject_id: data.id,
+        user_id: user.id,
+        allotted_by: user.id,
+      });
+    } catch {
+      // ignore duplicate or non-fatal allotment errors
+    }
+  }
+
   return data as BankSubject;
 }
 
